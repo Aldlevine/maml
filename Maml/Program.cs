@@ -35,6 +35,8 @@ internal class Program
 {
     private const string WindowClassName = "Maml";
 
+    public static Size WindowSize { get; private set; } = new Size();
+
     private static void Main()
     {
         RegisterWindowClass();
@@ -94,7 +96,13 @@ internal class Program
     }
 
     private static short LoWord(int value) => (short)(value & (0xffff));
+    private static short LoWord(LPARAM value) => LoWord((int)value.Value);
+    private static short LoWord(WPARAM value) => LoWord((int)value.Value);
     private static short HiWord(int value) => (short)((value >> 16) & (0xffff));
+    private static short HiWord(LPARAM value) => HiWord((int)value.Value);
+    private static short HiWord(WPARAM value) => HiWord((int)value.Value);
+
+    private static Point pointerPosition;
 
     private static LRESULT WndProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
     {
@@ -110,11 +118,22 @@ internal class Program
                     PostQuitMessage(0);
                     break;
                 }
+            case WM_SIZING:
             case WM_SIZE:
                 {
-                    int width = LoWord((int)lParam);
-                    int height = HiWord((int)lParam);
+                    int width = LoWord(lParam);
+                    int height = HiWord(lParam);
                     SetWindowText(hWnd, $"Maml ({width}x{height})");
+                    WindowSize = new Size(width, height);
+                    InvalidateRect(hWnd, (RECT?)null, true);
+                    break;
+                }
+            case WM_MOUSEMOVE:
+                {
+                    int x = LoWord(lParam);
+                    int y = HiWord(lParam);
+                    pointerPosition = new Point(x, y);
+                    InvalidateRect(hWnd, (RECT?)null, true);
                     break;
                 }
             case WM_LBUTTONDOWN:
@@ -149,7 +168,7 @@ internal class Program
                 }
             case WM_MOUSEWHEEL:
                 {
-                    double delta = HiWord((int)wParam.Value) / 100;
+                    double delta = HiWord(wParam) / 120d;
                     Console.WriteLine("MOUSE WHEEL {0}", delta);
                     break;
                 }
@@ -157,7 +176,11 @@ internal class Program
             case WM_SYSKEYDOWN:
                 {
                     VirtualKey vKey = (VirtualKey)wParam.Value;
-                    if ((vKey & ~(VirtualKey.Control | VirtualKey.Menu | VirtualKey.Shift)) > 0)
+                    if (vKey == VirtualKey.Control || vKey == VirtualKey.Menu || vKey == VirtualKey.Shift)
+                    {
+                        // NOOP
+                    }
+                    else
                     {
                         // Non-Modifier
                         Console.Write("KEYDOWN: ");
@@ -167,7 +190,8 @@ internal class Program
                         }
                         if ((GetAsyncKeyState((int)VirtualKey.Menu) & 0xf000) > 0)
                         {
-                            Console.Write(VirtualKey.Menu + " + ");
+                            Console.Write("Alt" + " + ");
+                            // HACK: Should move this out of the message pump
                             if (vKey == VirtualKey.F4)
                             {
                                 PostQuitMessage(0);
@@ -185,7 +209,11 @@ internal class Program
             case WM_SYSKEYUP:
                 {
                     VirtualKey vKey = (VirtualKey)wParam.Value;
-                    if ((vKey & ~(VirtualKey.Control | VirtualKey.Menu | VirtualKey.Shift)) > 0)
+                    if (vKey == VirtualKey.Control || vKey == VirtualKey.Menu || vKey == VirtualKey.Shift)
+                    {
+                        // NOOP
+                    }
+                    else
                     {
                         // Non-Modifier
                         Console.Write("KEYUP: ");
@@ -195,7 +223,7 @@ internal class Program
                         }
                         if ((GetAsyncKeyState((int)VirtualKey.Menu) & 0xf000) > 0)
                         {
-                            Console.Write(VirtualKey.Menu + " + ");
+                            Console.Write("Alt" + " + ");
                         }
                         if ((GetAsyncKeyState((int)VirtualKey.Shift) & 0xf000) > 0)
                         {
@@ -205,21 +233,60 @@ internal class Program
                     }
                     return new LRESULT(0);
                 }
+            case WM_ERASEBKGND:
+                {
+                    return new LRESULT(1);
+                }
             case WM_PAINT:
+                // Console.WriteLine("PAINT");
                 unsafe
                 {
-                    PAINTSTRUCT ps;
-                    HDC hdc = BeginPaint(hWnd, out ps);
-                    if (hdc == HDC.Null)
+
+                    HDC mainHdc = BeginPaint(hWnd, out PAINTSTRUCT ps);
+                    if (mainHdc == HDC.Null)
                     {
                         throw new Exception();
                     }
 
-                    HBRUSH bgBrush = CreateSolidBrush(ColorToRef(Color.DarkSlateBlue));
+                    HDC hdc = (HDC)CreateCompatibleDC(mainHdc).Value;
+                    HBITMAP bmp = CreateBitmap(WindowSize.Width, WindowSize.Height, 1, 32);
+                    HBITMAP mainBmp = new(SelectObject(hdc, (HGDIOBJ)bmp.Value).Value);
 
-                    FillRect(hdc, &ps.rcPaint, bgBrush);
+                    HBRUSH bgBrush = CreateSolidBrush(Color.DarkSlateBlue.ToColorRef());
+                    if (FillRect(hdc, &ps.rcPaint, bgBrush) == 0)
+                    {
+                        Console.Error.WriteLine("FillRect() Failed");
+                    }
+
+                    string text = $"Hello World: {pointerPosition}";
+                    fixed(char* pText = text)
+                    {
+                        SelectObject(hdc, (HGDIOBJ)DefaultFont().Value);
+
+                        PWSTR pStr = new(pText);
+                        SIZE textSize;
+                        GetTextExtentPoint32W(hdc, pStr, text.Length, &textSize);
+                        RECT textRect = new(4, 4, textSize.Width + 4, textSize.Height + 4);
+                        
+                        SetBkColor(hdc, Color.DarkSlateBlue.ToColorRef());
+                        SetTextColor(hdc, Color.White.ToColorRef());
+                        
+                        if (DrawText(hdc, pStr, text.Length, &textRect, DRAW_TEXT_FORMAT.DT_TOP | DRAW_TEXT_FORMAT.DT_LEFT) == 0)
+                        {
+                            Console.Error.WriteLine("DrawText() Failed");
+                        }
+                    }
+
+                    if (BitBlt(mainHdc, ps.rcPaint.X, ps.rcPaint.Y, ps.rcPaint.Width, ps.rcPaint.Height, hdc, 0, 0, ROP_CODE.SRCCOPY) == 0)
+                    {
+                        Console.Error.WriteLine("BitBlt() Failed");
+                    }
 
                     EndPaint(hWnd, in ps);
+                    ReleaseDC(hWnd, hdc);
+                    DeleteObject((HGDIOBJ)bgBrush.Value);
+                    SelectObject(hdc, (HGDIOBJ)mainBmp.Value);
+                    DeleteObject((HGDIOBJ)bmp.Value);
                     return new LRESULT(0);
                 }
         }
@@ -227,13 +294,26 @@ internal class Program
         return DefWindowProc(hWnd, msg, wParam, lParam);
     }
 
-    static COLORREF ColorToRef(Color color)
+    unsafe private static HFONT DefaultFont()
     {
-        return new COLORREF((uint)((color.B << 16) | (color.G << 8) | (color.R << 0)));
+        string fontName = "Consolas";
+        fixed(char* pFontName = fontName)
+        {
+            PWSTR fontNameStr = new PWSTR(pFontName);
+            return CreateFont(
+                0, 0,
+                0, 0,
+                400, 0, 0, 0,
+                (uint)FONT_CHARSET.DEFAULT_CHARSET,
+                FONT_OUTPUT_PRECISION.OUT_DEFAULT_PRECIS,
+                FONT_CLIP_PRECISION.CLIP_DEFAULT_PRECIS,
+                FONT_QUALITY.DEFAULT_QUALITY,
+                FONT_PITCH_AND_FAMILY.FF_DONTCARE,
+                fontNameStr);
+        }
     }
 }
 
-/*
 class App : Box
 {
     public App()
@@ -258,216 +338,3 @@ class App : Box
         };
     }
 }
-
-unsafe class Window : IDisposable
-{
-    public IntPtr hWnd { get; private set; }
-
-    private bool disposed;
-    private WndProc wndProcDelegate;
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (!disposed)
-        {
-            if (disposing)
-            {
-                // Dispose managed resources
-            }
-
-            if (hWnd != IntPtr.Zero)
-            {
-                DestroyWindow(hWnd);
-                hWnd = IntPtr.Zero;
-            }
-            disposed = true;
-        }
-    }
-
-    public Window()
-    {
-        string className = "My Class Name";
-        fixed (char* classNameC = className)
-        {
-            wndProcDelegate = GetWndProc;
-
-            WNDCLASS wndClass = new();
-            wndClass.lpszClassName = classNameC;
-            wndClass.lpfnWndProc = wndProcDelegate;
-            ushort classAtom = RegisterClass(ref wndClass);
-            int lastError = Marshal.GetLastWin32Error();
-
-            if (classAtom == 0 && lastError != (int)Win32ErrorCode.ERROR_CLASS_ALREADY_EXISTS)
-            {
-                throw new Exception("Could not register window class");
-            }
-
-            hWnd = CreateWindowEx(
-                WindowStylesEx.WS_EX_APPWINDOW,
-                className,
-                String.Empty,
-                WindowStyles.WS_BORDER | WindowStyles.WS_CAPTION | WindowStyles.WS_SYSMENU | WindowStyles.WS_MAXIMIZEBOX | WindowStyles.WS_MINIMIZEBOX | WindowStyles.WS_SIZEFRAME,
-                100,
-                100,
-                400,
-                300,
-                IntPtr.Zero,
-                IntPtr.Zero,
-                IntPtr.Zero,
-                (void*)IntPtr.Zero);
-
-            ShowWindow(hWnd, WindowShowStyle.SW_SHOW);
-
-        }
-    }
-
-    ~Window() => Dispose(false);
-
-    private static short LoWord(int value) => (short)(value & (0xffff));
-    private static short HiWord(int value) => (short)((value >> 16) & (0xffff));
-
-    private static IntPtr GetWndProc(IntPtr hWnd, WindowMessage msg, void* wParam, void* lParam)
-    {
-        switch (msg)
-        {
-            case WindowMessage.WM_SIZE:
-                {
-                    int width = LoWord((int)lParam);
-                    int height = HiWord((int)lParam);
-                    SetWindowText(hWnd, $"Maml ({width}x{height})");
-                    break;
-                }
-            case WindowMessage.WM_LBUTTONDOWN:
-                {
-                    Console.WriteLine("L BUTTON DOWN");
-                    break;
-                }
-            case WindowMessage.WM_LBUTTONUP:
-                {
-                    Console.WriteLine("L BUTTON UP");
-                    break;
-                }
-            case WindowMessage.WM_RBUTTONDOWN:
-                {
-                    Console.WriteLine("R BUTTON DOWN");
-                    break;
-                }
-            case WindowMessage.WM_RBUTTONUP:
-                {
-                    Console.WriteLine("R BUTTON UP");
-                    break;
-                }
-            case WindowMessage.WM_MBUTTONDOWN:
-                {
-                    Console.WriteLine("M BUTTON DOWN");
-                    break;
-                }
-            case WindowMessage.WM_MBUTTONUP:
-                {
-                    Console.WriteLine("M BUTTON UP");
-                    break;
-                }
-            case WindowMessage.WM_MOUSEWHEEL:
-                {
-                    double delta = HiWord((int)wParam) / 100;
-                    Console.WriteLine("MOUSE WHEEL {0}", delta);
-                    break;
-                }
-            case WindowMessage.WM_KEYDOWN:
-            case WindowMessage.WM_SYSKEYDOWN:
-                {
-                    VirtualKey vKey = (VirtualKey)(int)wParam;
-                    if ((vKey & ~(VirtualKey.VK_CONTROL | VirtualKey.VK_MENU | VirtualKey.VK_SHIFT)) > 0)
-                    {
-                        // Non-Modifier
-                        Console.Write("KEYDOWN: ");
-                        if ((GetAsyncKeyState((int)VirtualKey.VK_CONTROL) & 0xf000) > 0)
-                        {
-                            Console.Write(VirtualKey.VK_CONTROL + " + ");
-                        }
-                        if ((GetAsyncKeyState((int)VirtualKey.VK_MENU) & 0xf000) > 0)
-                        {
-                            Console.Write(VirtualKey.VK_MENU + " + ");
-                        }
-                        if ((GetAsyncKeyState((int)VirtualKey.VK_SHIFT) & 0xf000) > 0)
-                        {
-                            Console.Write(VirtualKey.VK_SHIFT + " + ");
-                        }
-                        Console.WriteLine(vKey);
-                    }
-                    return IntPtr.Zero;
-                }
-            case WindowMessage.WM_KEYUP:
-            case WindowMessage.WM_SYSKEYUP:
-                {
-                    VirtualKey vKey = (VirtualKey)(int)wParam;
-
-                    if ((vKey & ~(VirtualKey.VK_CONTROL | VirtualKey.VK_MENU | VirtualKey.VK_SHIFT)) > 0)
-                    {
-                        // Non-Modifier
-                        Console.Write("KEYUP: ");
-                        if ((GetAsyncKeyState((int)VirtualKey.VK_CONTROL) & 0xf000) > 0)
-                        {
-                            Console.Write(VirtualKey.VK_CONTROL + " + ");
-                        }
-                        if ((GetAsyncKeyState((int)VirtualKey.VK_MENU) & 0xf000) > 0)
-                        {
-                            Console.Write(VirtualKey.VK_MENU + " + ");
-                        }
-                        if ((GetAsyncKeyState((int)VirtualKey.VK_SHIFT) & 0xf000) > 0)
-                        {
-                            Console.Write(VirtualKey.VK_SHIFT + " + ");
-                        }
-                        Console.WriteLine(vKey);
-                    }
-
-                    break;
-                }
-            case WindowMessage.WM_PAINT:
-                {
-                    PAINTSTRUCT ps;
-                    SafeDCHandle hdc = BeginPaint(hWnd, &ps);
-
-                    // FillRect(hdc, &ps.rcPaint, Color.White);
-
-                    EndPaint(hWnd, &ps);
-                    return IntPtr.Zero;
-                }
-        }
-
-        return DefWindowProc(hWnd, msg, (IntPtr)wParam, (IntPtr)lParam);
-    }
-}
-
-static class Program
-{
-    private static Window? window;
-
-    static void Main()
-    {
-        var app = new App();
-        Console.WriteLine(app.Tree(4));
-
-        window = new Window();
-
-        MSG msg = new();
-
-        unsafe
-        {
-            while (GetMessage(&msg, window.hWnd, 0, 0) > 0)
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
-
-        // Console.ReadLine();
-    }
-}
-*/

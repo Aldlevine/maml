@@ -1,5 +1,9 @@
 ﻿﻿BeginPaint
+BitBlt
 BS_PUSHBUTTON
+CreateBitmap
+CreateCompatibleDC
+CreateFont
 CreateHatchBrush
 CreateSolidBrush
 CreateWindowExW
@@ -7,11 +11,14 @@ CW_USEDEFAULT
 DefWindowProc
 DestroyWindow
 DispatchMessage
+DrawText
 EndPaint
 FillRect
+FONT_CHARSET
 GetAsyncKeyState
 GetMessage
 GetModuleHandle
+GetTextExtentPoint32
 HDC
 HINSTANCE
 HMENU
@@ -26,6 +33,9 @@ PAINTSTRUCT
 PostMessage
 PostQuitMessage
 RegisterClassExW
+SelectObject
+SetBkColor
+SetTextColor
 SetWindowText
 ShowWindow
 TranslateMessage
