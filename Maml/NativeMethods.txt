@@ -2,6 +2,7 @@
 BitBlt
 BS_PUSHBUTTON
 CreateBitmap
+CreateCompatibleBitmap
 CreateCompatibleDC
 CreateFont
 CreateHatchBrush
@@ -35,6 +36,8 @@ PostQuitMessage
 RegisterClassExW
 SelectObject
 SetBkColor
+SetBkMode
+SetCursor
 SetTextColor
 SetWindowText
 ShowWindow

@@ -1,41 +1,55 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System;
+﻿using System;
 using System.Drawing;
-using System.IO;
-using System.Runtime.CompilerServices;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
+using Windows.Globalization.DateTimeFormatting;
 using Windows.System;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
 
+[assembly: MetadataUpdateHandler(typeof(Maml.HotReloadManager))]
+
 namespace Maml;
 
-internal class NoReleaseSafeHandle : SafeHandle
+internal static class HotReloadManager
 {
-    public NoReleaseSafeHandle(int value): base(IntPtr.Zero, true)
+    public static void ClearCache(Type[]? types)
     {
-        SetHandle(new IntPtr(value));
     }
 
-    public NoReleaseSafeHandle(IntPtr value) : base(value, true) { }
-
-    public override bool IsInvalid => throw new NotImplementedException();
-
-    protected override bool ReleaseHandle()
+    public static void UpdateApplication(Type[]? types)
     {
-        return true;
+        InvalidateRect(Program.HWnd, (RECT?)null, true);
     }
+}
+
+
+internal sealed class ReleaseDCSafeHandle : DeleteDCSafeHandle
+{
+    public HWND HWnd { get; }
+    public HDC HDC { get; }
+
+    public ReleaseDCSafeHandle(HWND hWnd, HDC hDC) : base(hDC.Value)
+    {
+        HWnd = hWnd;
+        HDC = hDC;
+    }
+
+    protected override bool ReleaseHandle() => ReleaseDC(HWnd, HDC) > 0;
 }
 
 
 internal class Program
 {
     private const string WindowClassName = "Maml";
-
     public static Size WindowSize { get; private set; } = new Size();
+    public static HWND HWnd { get; private set; }
+
+    private static readonly HFONT DefaultFont = GetDefaultFont();
+    private static readonly WNDPROC WndProcDelegate = WndProc;
 
     private static void Main()
     {
@@ -60,10 +74,10 @@ internal class Program
                 PCWSTR szCursorName = new((char*)IDC_ARROW);
                 PCWSTR szIconName = new((char*)IDI_APPLICATION);
                 wcex.cbSize = (uint)Marshal.SizeOf<WNDCLASSEXW>();
-                wcex.lpfnWndProc = WndProc;
+                wcex.lpfnWndProc = WndProcDelegate;
                 wcex.cbClsExtra = 0;
                 wcex.hInstance = GetModuleHandle(szNull);
-                wcex.hCursor = LoadCursor(wcex.hInstance, szIconName);
+                wcex.hCursor = LoadCursor(wcex.hInstance, szCursorName);
                 wcex.hbrBackground = new HBRUSH(new IntPtr(6));
                 wcex.lpszClassName = szClassName;
                 RegisterClassEx(wcex);
@@ -73,10 +87,9 @@ internal class Program
 
     private static void InitInstance()
     {
-        HWND hWnd;
         unsafe
         {
-            hWnd = CreateWindowEx(
+            HWnd = CreateWindowEx(
                 0,
                 WindowClassName,
                 "Maml",
@@ -88,11 +101,11 @@ internal class Program
                 default,
                 default,
                 default,
-                null );
+                null);
         }
 
-        ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
-        UpdateWindow(hWnd);
+        ShowWindow(HWnd, SHOW_WINDOW_CMD.SW_NORMAL);
+        UpdateWindow(HWnd);
     }
 
     private static short LoWord(int value) => (short)(value & (0xffff));
@@ -118,13 +131,23 @@ internal class Program
                     PostQuitMessage(0);
                     break;
                 }
-            case WM_SIZING:
+            case WM_SETCURSOR:
+                unsafe
+                {
+                    SetCursor(LoadCursor(HINSTANCE.Null, new PWSTR((char*)IDC_ARROW)));
+                    break;
+                }
             case WM_SIZE:
                 {
-                    int width = LoWord(lParam);
-                    int height = HiWord(lParam);
+                    int width = Math.Max((int)LoWord(lParam), 0);
+                    int height = Math.Max((int)HiWord(lParam), 0);
                     SetWindowText(hWnd, $"Maml ({width}x{height})");
                     WindowSize = new Size(width, height);
+                    InvalidateRect(hWnd, (RECT?)null, true);
+                    break;
+                }
+            case WM_MOVE:
+                {
                     InvalidateRect(hWnd, (RECT?)null, true);
                     break;
                 }
@@ -238,55 +261,58 @@ internal class Program
                     return new LRESULT(1);
                 }
             case WM_PAINT:
-                // Console.WriteLine("PAINT");
                 unsafe
                 {
-
-                    HDC mainHdc = BeginPaint(hWnd, out PAINTSTRUCT ps);
-                    if (mainHdc == HDC.Null)
+                    // Get the window hdc
+                    HDC windowHdc = BeginPaint(hWnd, out PAINTSTRUCT ps);
+                    if (windowHdc == HDC.Null)
                     {
-                        throw new Exception();
+                        throw new Exception("BeginPaint() Failed");
                     }
 
-                    HDC hdc = (HDC)CreateCompatibleDC(mainHdc).Value;
-                    HBITMAP bmp = CreateBitmap(WindowSize.Width, WindowSize.Height, 1, 32);
-                    HBITMAP mainBmp = new(SelectObject(hdc, (HGDIOBJ)bmp.Value).Value);
-
-                    HBRUSH bgBrush = CreateSolidBrush(Color.DarkSlateBlue.ToColorRef());
-                    if (FillRect(hdc, &ps.rcPaint, bgBrush) == 0)
+                    // Get a buffer hdc compatible with the window
+                    HDC bufferHdc = (HDC)CreateCompatibleDC(windowHdc).Value;
+                    if (bufferHdc == HDC.Null)
                     {
-                        Console.Error.WriteLine("FillRect() Failed");
+                        throw new Exception("CreateCompatibleDC() Failed ");
                     }
 
-                    string text = $"Hello World: {pointerPosition}";
-                    fixed(char* pText = text)
+                    // Get a bitmap for the buffer hdc same size as the window
+                    HBITMAP bufferBmp = CreateCompatibleBitmap(windowHdc, WindowSize.Width, WindowSize.Height);
+                    if (bufferBmp == HBITMAP.Null)
                     {
-                        SelectObject(hdc, (HGDIOBJ)DefaultFont().Value);
-
-                        PWSTR pStr = new(pText);
-                        SIZE textSize;
-                        GetTextExtentPoint32W(hdc, pStr, text.Length, &textSize);
-                        RECT textRect = new(4, 4, textSize.Width + 4, textSize.Height + 4);
-                        
-                        SetBkColor(hdc, Color.DarkSlateBlue.ToColorRef());
-                        SetTextColor(hdc, Color.White.ToColorRef());
-                        
-                        if (DrawText(hdc, pStr, text.Length, &textRect, DRAW_TEXT_FORMAT.DT_TOP | DRAW_TEXT_FORMAT.DT_LEFT) == 0)
-                        {
-                            Console.Error.WriteLine("DrawText() Failed");
-                        }
+                        throw new Exception("CreateCompatibleBitmap() Failed");
                     }
 
-                    if (BitBlt(mainHdc, ps.rcPaint.X, ps.rcPaint.Y, ps.rcPaint.Width, ps.rcPaint.Height, hdc, 0, 0, ROP_CODE.SRCCOPY) == 0)
+                    // Swap to buffer bitmap and store the window bitmap
+                    HBITMAP windowBmp = new(SelectObject(bufferHdc, (HGDIOBJ)bufferBmp.Value).Value);
+
+                    // Paint the window
+                    SetBkMode(bufferHdc, BACKGROUND_MODE.TRANSPARENT);
+                    PaintWindow(hWnd,bufferHdc, ps);
+
+                    // Blit the buffer bitmap to the window bitmap
+                    if (BitBlt(windowHdc, ps.rcPaint.X, ps.rcPaint.Y, ps.rcPaint.Width, ps.rcPaint.Height, bufferHdc, 0, 0, ROP_CODE.SRCCOPY) == 0)
                     {
-                        Console.Error.WriteLine("BitBlt() Failed");
+                        throw new Exception("BitBlt() Failed");
                     }
 
                     EndPaint(hWnd, in ps);
-                    ReleaseDC(hWnd, hdc);
-                    DeleteObject((HGDIOBJ)bgBrush.Value);
-                    SelectObject(hdc, (HGDIOBJ)mainBmp.Value);
-                    DeleteObject((HGDIOBJ)bmp.Value);
+
+                    // Swap back to window bitmap
+                    SelectObject(bufferHdc, (HGDIOBJ)windowBmp.Value);
+
+                    // Delete buffer bitmap
+                    if (DeleteObject((HGDIOBJ)bufferBmp.Value) == 0)
+                    {
+                        throw new Exception("DeleteObject() Failed");
+                    }
+                    // Delete buffer hdc
+                    if (DeleteDC(new CreatedHDC(bufferHdc.Value)) == 0)
+                    {
+                        throw new Exception("DeleteDC() Failed");
+                    }
+
                     return new LRESULT(0);
                 }
         }
@@ -294,20 +320,68 @@ internal class Program
         return DefWindowProc(hWnd, msg, wParam, lParam);
     }
 
-    unsafe private static HFONT DefaultFont()
+    unsafe private static void PaintWindow(HWND hWnd, HDC hdc, PAINTSTRUCT ps)
     {
-        string fontName = "Consolas";
-        fixed(char* pFontName = fontName)
+        HBRUSH bgBrush = CreateSolidBrush(Color.DarkSlateBlue.ToColorRef());
+        HBRUSH barBrush = CreateSolidBrush(Color.FromArgb(unchecked((int)0xff333333)).ToColorRef());
+
+        RECT rect = new(0, 0, WindowSize.Width, WindowSize.Height);
+        if (FillRect(hdc, &rect, bgBrush) == 0)
         {
-            PWSTR fontNameStr = new PWSTR(pFontName);
+            throw new Exception("FillRect() Failed");
+        }
+
+        rect = new(0, 0, WindowSize.Width, 24);
+        if (FillRect(hdc, &rect, barBrush) == 0)
+        {
+            throw new Exception("FillRect() Failed");
+        }
+
+        string text = $"Hello World: {pointerPosition}";
+        fixed (char* pText = text)
+        {
+            SelectObject(hdc, (HGDIOBJ)DefaultFont.Value);
+
+            PWSTR pStr = new(pText);
+            SIZE textSize;
+            GetTextExtentPoint32W(hdc, pStr, text.Length, &textSize);
+            RECT textRect = new(4 - ps.rcPaint.X, 4 - ps.rcPaint.Y, textSize.Width + 4, textSize.Height + 4);
+
+            SetTextColor(hdc, Color.White.ToColorRef());
+
+            if (DrawText(hdc, pStr, text.Length, &textRect, DRAW_TEXT_FORMAT.DT_TOP | DRAW_TEXT_FORMAT.DT_LEFT) == 0)
+            {
+                throw new Exception("DrawText() Failed");
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                textRect = textRect with { top = textRect.top + 24, bottom = textRect.bottom + 24 };
+                if (DrawText(hdc, pStr, text.Length, &textRect, DRAW_TEXT_FORMAT.DT_TOP | DRAW_TEXT_FORMAT.DT_LEFT) == 0)
+                {
+                    throw new Exception("DrawText() Failed");
+                }
+            }
+        }
+
+        DeleteObject((HGDIOBJ)bgBrush.Value);
+        DeleteObject((HGDIOBJ)barBrush.Value);
+    }
+
+    unsafe private static HFONT GetDefaultFont()
+    {
+        string fontName = "Segoe UI";
+        fixed (char* pFontName = fontName)
+        {
+            PWSTR fontNameStr = new(pFontName);
             return CreateFont(
-                0, 0,
+                16, 0,
                 0, 0,
                 400, 0, 0, 0,
                 (uint)FONT_CHARSET.DEFAULT_CHARSET,
                 FONT_OUTPUT_PRECISION.OUT_DEFAULT_PRECIS,
                 FONT_CLIP_PRECISION.CLIP_DEFAULT_PRECIS,
-                FONT_QUALITY.DEFAULT_QUALITY,
+                FONT_QUALITY.CLEARTYPE_QUALITY,
                 FONT_PITCH_AND_FAMILY.FF_DONTCARE,
                 fontNameStr);
         }
