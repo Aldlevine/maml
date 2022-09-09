@@ -10,4 +10,6 @@ internal static class ColorExtensions
     {
         return new COLORREF((uint)((color.B << 16) | (color.G << 8) | (color.R << 0)));
     }
+
+    public static Color FromArgb(uint color) => Color.FromArgb(unchecked((int)color));
 }

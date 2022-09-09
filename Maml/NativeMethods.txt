@@ -17,6 +17,7 @@ EndPaint
 FillRect
 FONT_CHARSET
 GetAsyncKeyState
+GetDC
 GetMessage
 GetModuleHandle
 GetTextExtentPoint32
@@ -27,6 +28,7 @@ HWND
 IDC_ARROW
 IDI_APPLICATION
 InvalidateRect
+InvalidateRgn
 LoadCursor
 LoadIcon
 MSG
