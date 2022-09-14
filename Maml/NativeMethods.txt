@@ -1,8 +1,21 @@
-﻿Windows.Win32.Foundation
-Windows.Win32.Graphics.Direct2D
+﻿AllocConsole
+AttachConsole
+
+Windows.Win32.Foundation
 Windows.Win32.UI.WindowsAndMessaging
+WNDPROC
+
+// Windows.Win32.Graphics.Direct2D
+D2D1CreateFactory
+ID2D1Factory
+ID2D1HwndRenderTarget
+ID2D1SolidColorBrush
 
 GetDpiForWindow
 GetModuleHandle
 UpdateWindow
 
+InvalidateRect
+InvalidateRgn
+ValidateRect
+ValidateRgn

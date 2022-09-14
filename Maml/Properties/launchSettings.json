@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Maml": {
+      "commandName": "Project",
+      "commandLineArgs": "true",
+      "nativeDebugging": false,
+      "hotReloadEnabled": true
+    }
+  }
+}

@@ -1,30 +1,31 @@
-﻿using Windows.Win32.Graphics.Direct2D.Common;
+﻿using System;
+using System.Runtime.InteropServices;
+using Windows.Win32.Graphics.Direct2D.Common;
 
 namespace Maml;
+
+[StructLayout(LayoutKind.Sequential)]
 public struct Color
 {
-	public double R;
-	public double G;
-	public double B;
-	public double A;
+	public float R;
+	public float G;
+	public float B;
+	public float A;
 
 	public Color(uint hex)
 	{
-		R = hex & 0xff000000 >> 24;
-		G = hex & 0x00ff0000 >> 16;
-		B = hex & 0x0000ff00 >> 8;
-		A = hex & 0x000000ff;
+		R = (float)((double)((hex & 0xff000000) >> 24) / (double)0xff);
+		G = (float)((double)((hex & 0x00ff0000) >> 16) / (double)0xff);
+		B = (float)((double)((hex & 0x0000ff00) >> 08) / (double)0xff);
+		A = (float)((double)((hex & 0x000000ff) >> 00) / (double)0xff);
 	}
 
-	internal D2D1_COLOR_F To2D2ColorF()
+	unsafe internal D2D1_COLOR_F ToD2DColorF()
 	{
-		return new D2D1_COLOR_F
+		fixed (Color* pThis = &this)
 		{
-			r = (float)R,
-			g = (float)G,
-			b = (float)B,
-			a = (float)A
-		};
+            return *(D2D1_COLOR_F*)pThis;
+		}
 	}
 }
 
@@ -119,7 +120,7 @@ public static class Colors
 	public static readonly Color LightSalmon			= new(0xffa07aff);
 	public static readonly Color LightSeagreen			= new(0x20b2aaff);
 	public static readonly Color LightSkyblue			= new(0x87cefaff);
-	public static readonly Color LightSlategray			= new(0x778899ff);
+	public static readonly Color LightSlateGray			= new(0x778899ff);
 	public static readonly Color LightSlategrey			= new(0x778899ff);
 	public static readonly Color LightSteelblue			= new(0xb0c4deff);
 	public static readonly Color LightYellow			= new(0xffffe0ff);
