@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Windows.Win32.Graphics.Direct2D.Common;
 
 namespace Maml;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct Color
+public partial struct Color
 {
 	public float R;
 	public float G;
@@ -20,13 +19,6 @@ public struct Color
 		A = (float)((double)((hex & 0x000000ff) >> 00) / (double)0xff);
 	}
 
-	unsafe internal D2D1_COLOR_F ToD2DColorF()
-	{
-		fixed (Color* pThis = &this)
-		{
-            return *(D2D1_COLOR_F*)pThis;
-		}
-	}
 }
 
 public static class Colors

@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Maml.WIndows": {
+      "commandName": "Project",
+      "commandLineArgs": "true",
+      "nativeDebugging": false,
+      "hotReloadEnabled": true,
+      "launchBrowser": false
+    }
+  }
+}
