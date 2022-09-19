@@ -8,7 +8,7 @@
 		"target": "ES2015",
 		"module": "ES2015",
 		"rootDir": "wwwroot",
-		"lib": ["ES2017"]
+		"lib": ["ES2017", "DOM"]
 	},
 	"exclude": [
 		"node_modules"

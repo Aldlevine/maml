@@ -7,10 +7,7 @@ public class Box
 	public string Name { get; set; } = "";
 	public BoxCollection Content { get; set; } = new();
 
-	public static implicit operator Box(string str)
-	{
-		return new TextBox { Text = str };
-	}
+	public static implicit operator Box(string str) => new TextBox { Text = str };
 
 	public string Tree(int indentSize = 2, int indent = 0)
 	{

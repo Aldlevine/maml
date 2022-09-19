@@ -1,40 +1,38 @@
-﻿using System.Collections.Generic;
+﻿namespace Maml.Geometry;
 
-namespace Maml.Geometry;
-
-public abstract record Figure
+public abstract partial record Figure
 {
 	public Vector2 Origin;
 
-	public record Line : Figure
+	public partial record Line : Figure
 	{
 		public Vector2 Dest;
 	}
 
-	public record BezierCurve : Line
+	public partial record BezierCurve : Line
 	{
 		public Vector2 ControlPointIn;
 		public Vector2 ControlPointOut;
 	}
 
-	public record QuadraticCurve : Line
+	public partial record QuadraticCurve : Line
 	{
 		public Vector2 ControlPoint;
 	}
 
-	public record Arc : Figure
+	public partial record Arc : Figure
 	{
 		public double Radius;
 		public double StartAngle;
 		public double EndAngle;
 	}
 
-	public record ArcTo : Line
+	public partial record ArcTo : Line
 	{
 		public double Radius;
 	}
 
-	public record Ellipse : Figure
+	public partial record Ellipse : Figure
 	{
 		public Vector2 Radii;
 		public double Rotation;
@@ -42,7 +40,7 @@ public abstract record Figure
 		public double EndAngle;
 	}
 
-	public record Rect : Figure
+	public partial record Rect : Figure
 	{
 		public Vector2 Size;
 	}

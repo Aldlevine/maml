@@ -1,6 +1,6 @@
 ﻿import { wasm } from "./wasm.js";
 
-type InputWasm = {
+type InputInterop = {
 	HandlePointerMove: (x: number, y: number, buttonMask: number) => void;
 	HandlePointerDown: (x: number, y: number, button: number, buttonMask: number) => void;
 	HandlePointerUp: (x: number, y: number, button: number, buttonMask: number) => void;
@@ -24,26 +24,21 @@ class Input {
 	public async init() {
 		wasm.setModuleImports("input.js", this);
 
-		const input = await wasm.getAssemblyExports<InputWasm>("Maml.Wasm", "Maml.UserInput.Input");
-
-		window.onscroll = (e: UIEvent) => {
-			e.preventDefault();
-			window.scrollTo(0, 0);
-		};
+		const inputInterop = await wasm.getAssemblyExports<InputInterop>("Maml.Wasm", "Maml.UserInput.Input");
 
 		window.onpointermove = (e: PointerEvent) => {
 			e.preventDefault();
-			input.HandlePointerMove(e.clientX, e.clientY, e.buttons);
+			inputInterop.HandlePointerMove(e.clientX, e.clientY, e.buttons);
 		}
 
 		window.onpointerdown = (e: PointerEvent) => {
 			e.preventDefault();
-			input.HandlePointerDown(e.clientX, e.clientY, 1 << e.button, e.buttons);
+			inputInterop.HandlePointerDown(e.clientX, e.clientY, 1 << e.button, e.buttons);
 		}
 
 		window.onpointerup = (e: PointerEvent) => {
 			e.preventDefault();
-			input.HandlePointerUp(e.clientX, e.clientY, 1 << e.button, e.buttons);
+			inputInterop.HandlePointerUp(e.clientX, e.clientY, 1 << e.button, e.buttons);
 		}
 
 		window.ontouchstart = (e: TouchEvent) => {
@@ -51,23 +46,23 @@ class Input {
 		}
 
 		window.onwheel = (e: WheelEvent) => {
-			input.HandleWheel(e.clientX, e.clientY, e.deltaX, e.deltaY);
+			inputInterop.HandleWheel(e.clientX, e.clientY, e.deltaX, e.deltaY);
 		}
 
 		window.onkeydown = (e: KeyboardEvent) => {
-			input.HandleKeyDown(e.key, e.repeat);
+			inputInterop.HandleKeyDown(e.key, e.repeat);
 		}
 
 		window.onkeyup = (e: KeyboardEvent) => {
-			input.HandleKeyUp(e.key);
+			inputInterop.HandleKeyUp(e.key);
 		}
 
 		window.onfocus = (e: FocusEvent) => {
-			input.HandleFocus();
+			inputInterop.HandleFocus();
 		}
 
 		window.onblur = (e: FocusEvent) => {
-			input.HandleBlur();
+			inputInterop.HandleBlur();
 		}
 	}
 

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Maml.Drawing;
+namespace Maml.Graphics;
 
 public abstract class Brush { }
 

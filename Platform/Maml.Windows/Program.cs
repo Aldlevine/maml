@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Maml.Events;
+using Maml.UserInput;
+using System;
 using System.Reflection.Metadata;
 using static Windows.Win32.PInvoke;
 
@@ -12,6 +14,8 @@ internal static class Program
 
 	private static int Main(string[] args)
 	{
+		EnableMouseInPointer(true);
+
 		if (args.Length > 0)
 		{
 			bool consoleMode = Boolean.Parse(args[0]);
@@ -23,6 +27,11 @@ internal static class Program
 				}
 			}
 		}
+
+		Input.PointerMove += (PointerEvent evt) =>
+		{
+			Console.WriteLine(evt);
+		};
 
 		App = new();
 		App.RunMessageLoop();

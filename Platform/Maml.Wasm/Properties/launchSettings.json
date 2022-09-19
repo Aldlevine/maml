@@ -1,10 +1,11 @@
 {
-  "profiles": {
-    "Maml.WasmBrowser": {
-      "commandName": "Project",
-      "workingDirectory": "$(ProjectDir)/bin/$(Configuration)/net7.0/browser-wasm/AppBundle",
-      "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
-    }
-  }
+	"profiles": {
+	"Maml.Wasm": {
+		"commandName": "Project",
+		"workingDirectory": "$(ProjectDir)/bin/$(Configuration)/net7.0/browser-wasm/AppBundle",
+			"launchBrowser": true,
+			"executablePath": "",
+			"applicationUrl": "http://localhost:8000"
+		}
+	}
 }

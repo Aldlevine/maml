@@ -67,6 +67,9 @@
 		<WasmExtraFilesToDeploy Remove="bin\**" />
 	</ItemGroup>
 	<ItemGroup>
+	  <WasmExtraFilesToDeploy Remove="wwwroot\viewport.ts" />
+	</ItemGroup>
+	<ItemGroup>
 	  <None Update="wwwroot\index.html">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </None>
@@ -74,7 +77,5 @@
 	<!-- /HideThisForSomeReason -->
 
 	<Import Project="..\..\Maml.Shared\Maml.Shared.projitems" Label="Shared" />
-
-	<ProjectExtensions><VisualStudio><UserProperties wwwroot_4manifest_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

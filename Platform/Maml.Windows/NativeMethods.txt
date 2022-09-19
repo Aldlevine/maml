@@ -1,6 +1,9 @@
 ﻿AllocConsole
 AttachConsole
 
+EnableMouseInPointer
+GetPointerInfo
+MODIFIERKEYS_FLAGS
 Windows.Win32.Foundation
 Windows.Win32.UI.WindowsAndMessaging
 WNDPROC

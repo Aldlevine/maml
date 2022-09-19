@@ -10,21 +10,21 @@ public record Event
 
 }
 
-public record KeyEvent: Event
+public record KeyEvent : Event
 {
 	public VirtualKey VirtualKey;
 	public bool Pressed;
 	public bool Echo;
 }
 
-public record ResizeEvent: Event
+public record ResizeEvent : Event
 {
 	// public int Width;
 	// public int Height;
 	public Vector2 Size;
 }
 
-public record PointerEvent: Event
+public record PointerEvent : Event
 {
 	// public int X;
 	// public int Y;
@@ -33,14 +33,14 @@ public record PointerEvent: Event
 	public PointerButton ButtonMask;
 }
 
-public record WheelEvent: PointerEvent
+public record WheelEvent : PointerEvent
 {
 	// public double DX;
 	// public double DY;
 	public Vector2 Delta;
 }
 
-public record FocusEvent: Event
+public record FocusEvent : Event
 {
 	public bool Focused;
 }

@@ -1,6 +1,6 @@
 ﻿import { wasm } from "./wasm.js";
 
-type RendererWasm = {
+type ViewportInterop = {
 	HandleResize: (width: number, height: number) => void;
 	HandleInit: (width: number, height: number) => void;
 }
@@ -9,30 +9,30 @@ function colorIntToHex(color: number) {
 	return "#"+Math.round(color).toString(16).padStart(8, "0");
 }
 
-class Renderer {
+class Viewport {
 	private canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("canvas");
 	private ctx: CanvasRenderingContext2D = this.canvas.getContext("2d", {
 		alpha: true,
 		desynchronized: false
 	});
-	private renderer: RendererWasm;
+	private viewportInterop: ViewportInterop;
 
 	public async init(): Promise<void> {
-		wasm.setModuleImports("renderer.js", this);
-		this.renderer = await wasm.getAssemblyExports<RendererWasm>("Maml.Wasm", "Maml.Drawing.Renderer");
+		wasm.setModuleImports("viewport.js", this);
+		this.viewportInterop = await wasm.getAssemblyExports<ViewportInterop>("Maml.Wasm", "Maml.Graphics.Viewport");
 
 		window.onresize = window.onorientationchange = () => this.resize();
 		this.resize();
 	}
 
 	public resize(): void {
-		let width: number = Math.ceil(window.innerWidth / 2) * 2;
-		let height: number = Math.ceil(window.innerHeight / 2) * 2;
+		let width: number = Math.ceil(window.innerWidth / 2) * 2 + 1;
+		let height: number = Math.ceil(window.innerHeight / 2) * 2 + 1;
 		this.canvas.width = Math.ceil(width * devicePixelRatio);
 		this.canvas.height = Math.ceil(height * devicePixelRatio);
 		this.canvas.style.width = `${width}px`;
 		this.canvas.style.height = `${height}px`;
-		this.renderer.HandleResize(window.innerWidth, window.innerHeight);
+		this.viewportInterop.HandleResize(width, height);
 	}
 
 	public beginDraw() {
@@ -124,4 +124,4 @@ class Renderer {
 
 }
 
-export const renderer = new Renderer();
+export const viewport = new Viewport();

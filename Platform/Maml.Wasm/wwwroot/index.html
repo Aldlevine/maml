@@ -7,16 +7,15 @@
 	<meta charset="UTF-8">
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-	<meta name="theme-color" content="#fff" media="(prefers-color-scheme: light)">
-	<meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)">
+	<meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)" />
+	<meta name="theme-color" content="#fff" media="(prefers-color-scheme: light)" />
 	<link rel="manifest" href="manifest.json" />
 
 	<link rel="modulepreload" href="./main.js" />
 	<link rel="modulepreload" href="./wasm.js" />
 	<link rel="modulepreload" href="./dotnet.js" />
 
-	<link rel="modulepreload" href="./renderer.js" />
+	<link rel="modulepreload" href="./viewport.js" />
 	<link rel="modulepreload" href="./input.js" />
 
 	<style>
@@ -31,15 +30,6 @@
 			:root {
 				--theme-bg: #333;
 				--theme-color: #fff;
-			}
-		}
-
-		@supports(padding:max(0px)) {
-			body, header, footer {
-				padding-left: calc(min(0vmin, env(safe-area-inset-left)) * -1);
-				padding-right: calc(min(0vmin, env(safe-area-inset-right)) * -1);
-				padding-top: calc(min(0vmin, env(safe-area-inset-top)) * -1);
-				padding-bottom: calc(min(0vmin, env(safe-area-inset-bottom)) * -1);
 			}
 		}
 
@@ -71,12 +61,17 @@
 
 		#out {
 			position: absolute;
-			padding: 4px;
+			padding-left: calc(env(safe-area-inset-left) + 4px);
+			padding-top: calc(env(safe-area-inset-top) + 4px);
+			padding-right: calc(env(safe-area-inset-right) + 4px);
+			padding-bottom: calc(env(safe-area-inset-bottom) + 4px);
 			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+			color: var(--theme-color);
 		}
 
 		#out > .output {
 			padding: 4px;
+			color: var(--theme-color);
 		}
 
 		#canvas-container {

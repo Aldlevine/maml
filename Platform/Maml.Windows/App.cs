@@ -1,4 +1,6 @@
 ﻿using Maml.Geometry;
+using Maml.Graphics;
+using Maml.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
@@ -7,6 +9,8 @@ using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.System.SystemServices;
+using Windows.Win32.UI.Input.Pointer;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
 
@@ -24,7 +28,7 @@ unsafe internal class App
 	public App()
 	{
 		ID = RegisterApp(this);
-		Initialize();
+		Init();
 	}
 
 	~App()
@@ -76,7 +80,10 @@ unsafe internal class App
 	private const string className = "MamlWindow";
 	private const string windowName = "Maml";
 
-	private void Initialize()
+	private Vector2 windowPosition = Vector2.Zero;
+	public Viewport Viewport { get; private set; }
+
+	private void Init()
 	{
 		CreateDeviceIndependentResources();
 		int err = 0;
@@ -129,9 +136,15 @@ unsafe internal class App
 				throw new Exception("CreateWindow Failed " + err);
 			}
 
-			SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, ID);
-
 			double dpi = GetDpiForWindow(hWnd);
+
+			Viewport = new()
+			{
+				hWnd = hWnd,
+				Dpi = dpi,
+			};
+
+			SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, ID);
 
 			SetWindowPos(
 				hWnd,
@@ -146,8 +159,6 @@ unsafe internal class App
 		}
 
 	}
-
-
 	private void CreateDeviceIndependentResources()
 	{
 		D2D1CreateFactory(D2D1_FACTORY_TYPE.D2D1_FACTORY_TYPE_SINGLE_THREADED, Marshal.GenerateGuidForType(typeof(ID2D1Factory)), null, out var obj).ThrowOnFailure();
@@ -252,37 +263,17 @@ unsafe internal class App
 				null);
 		}
 
-		// D2D_RECT_F rect1 = new()
-		// {
-		//	 left = size.width / 2 - 50f,
-		//	 right = size.width / 2 + 50f,
-		//	 top = size.height / 2 - 50f,
-		//	 bottom = size.height / 2 + 50f,
-		// };
-
-		D2D_RECT_F rect1 = new()
+		D2D_RECT_F rect1 = new Figure.Rect()
 		{
-			left = pointerPosition.X - 50f,
-			right = pointerPosition.X + 50f,
-			top = pointerPosition.Y - 50f,
-			bottom = pointerPosition.Y + 50f,
-		};
+			Origin = new Vector2(pointerPosition.X - 50, pointerPosition.Y - 50),
+			Size = new Vector2(100, 100),
+		}.ToD2DRectF();
 
-		// D2D_RECT_F rect2 = new()
-		// {
-		//	 left = size.width / 2 - 100f,
-		//	 right = size.width / 2 + 100f,
-		//	 top = size.height / 2 - 100f,
-		//	 bottom = size.height / 2 + 100f,
-		// };
-
-		D2D_RECT_F rect2 = new()
+		D2D_RECT_F rect2 = new Figure.Rect()
 		{
-			left = pointerPosition.X - 100f,
-			right = pointerPosition.X + 100f,
-			top = pointerPosition.Y - 100f,
-			bottom = pointerPosition.Y + 100f,
-		};
+			Origin = new Vector2(pointerPosition.X - 100, pointerPosition.Y - 100),
+			Size = new Vector2(200, 200),
+		}.ToD2DRectF();
 
 		pRenderTarget->FillRectangle(in rect1, (ID2D1Brush*)pCornflowerBlueBrush);
 		pRenderTarget->DrawRectangle(in rect2, (ID2D1Brush*)pCornflowerBlueBrush, 1, default);
@@ -309,6 +300,11 @@ unsafe internal class App
 			};
 			pRenderTarget->Resize(in size);
 		}
+	}
+
+	private void OnMove(int x, int y)
+	{
+		windowPosition = new(x, y);
 	}
 
 	#endregion private
@@ -383,6 +379,15 @@ unsafe internal class App
 						wasHandled = true;
 						break;
 
+					case WM_MOVE:
+						{
+							int x = LoWord(lParam);
+							int y = HiWord(lParam);
+							app.OnMove(x, y);
+						}
+						wasHandled = true;
+						break;
+
 					case WM_DISPLAYCHANGE:
 						{
 							InvalidateRect(hWnd, (RECT?)null, false);
@@ -406,13 +411,27 @@ unsafe internal class App
 						wasHandled = true;
 						break;
 
-					case WM_MOUSEMOVE:
+					case WM_POINTERUPDATE:
 						{
-							app.pointerPosition.X = LoWord(lParam);
-							app.pointerPosition.Y = HiWord(lParam);
+							uint pointerId = (uint)LoWord(wParam);
+							GetPointerInfo(pointerId, out var pointerInfo);
+							app.pointerPosition = new Vector2(
+								pointerInfo.ptPixelLocation.X - app.windowPosition.X,
+								pointerInfo.ptPixelLocation.Y - app.windowPosition.Y);
+							PointerButton buttonMask = PointerButton.None;
+							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON) > 0) { buttonMask |= PointerButton.Left; }
+							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON) > 0) { buttonMask |= PointerButton.Right; }
+							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_THIRDBUTTON) > 0) { buttonMask |= PointerButton.Middle; }
+							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FOURTHBUTTON) > 0) { buttonMask |= PointerButton.Back; }
+							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIFTHBUTTON) > 0) { buttonMask |= PointerButton.Forward; }
+							Input.Emit(nameof(Input.PointerMove), new Events.PointerEvent
+							{
+								Position = app.pointerPosition,
+								ButtonMask = buttonMask,
+							});
 							InvalidateRect(hWnd, (RECT?)null, false);
 						}
-						result = new(1);
+						result = new(0);
 						wasHandled = true;
 						break;
 				}

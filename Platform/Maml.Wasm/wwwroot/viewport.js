@@ -2,7 +2,7 @@ import { wasm } from "./wasm.js";
 function colorIntToHex(color) {
     return "#" + Math.round(color).toString(16).padStart(8, "0");
 }
-class Renderer {
+class Viewport {
     constructor() {
         this.canvas = document.getElementById("canvas");
         this.ctx = this.canvas.getContext("2d", {
@@ -15,19 +15,19 @@ class Renderer {
         this.brushes = {};
     }
     async init() {
-        wasm.setModuleImports("renderer.js", this);
-        this.renderer = await wasm.getAssemblyExports("Maml.Wasm", "Maml.Drawing.Renderer");
+        wasm.setModuleImports("viewport.js", this);
+        this.viewportInterop = await wasm.getAssemblyExports("Maml.Wasm", "Maml.Graphics.Viewport");
         window.onresize = window.onorientationchange = () => this.resize();
         this.resize();
     }
     resize() {
-        let width = Math.ceil(window.innerWidth / 2) * 2;
-        let height = Math.ceil(window.innerHeight / 2) * 2;
+        let width = Math.ceil(window.innerWidth / 2) * 2 + 1;
+        let height = Math.ceil(window.innerHeight / 2) * 2 + 1;
         this.canvas.width = Math.ceil(width * devicePixelRatio);
         this.canvas.height = Math.ceil(height * devicePixelRatio);
         this.canvas.style.width = `${width}px`;
         this.canvas.style.height = `${height}px`;
-        this.renderer.HandleResize(window.innerWidth, window.innerHeight);
+        this.viewportInterop.HandleResize(width, height);
     }
     beginDraw() {
         this.ctx.resetTransform();
@@ -94,5 +94,5 @@ class Renderer {
         this.brushes[id].addColorStop(offset, colorIntToHex(color));
     }
 }
-export const renderer = new Renderer();
-//# sourceMappingURL=renderer.js.map
+export const viewport = new Viewport();
+//# sourceMappingURL=viewport.js.map

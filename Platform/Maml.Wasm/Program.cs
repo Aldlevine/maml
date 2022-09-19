@@ -1,7 +1,7 @@
+using Maml.Graphics;
 using Maml.Events;
-using Maml.UserInput;
 using Maml.Geometry;
-using Maml.Drawing;
+using Maml.UserInput;
 
 namespace Maml.WasmBrowser;
 
@@ -9,7 +9,7 @@ public partial class Program
 {
 	public static void Main()
 	{
-		Renderer.Resize += delegate (ResizeEvent evt)
+		Viewport.Main.Resize += delegate (ResizeEvent evt)
 		{
 			Input.Report("WindowResize", $"Window Resize: {evt.Size}");
 			Draw();
@@ -64,14 +64,14 @@ public partial class Program
 
 	private static void Draw()
 	{
-		Renderer.BeginDraw();
-		Renderer.ClearRect(new() { Origin = Vector2.Zero, Size = Renderer.Size });
-		Renderer.SetTransform(new() { Origin = new Vector2(pointerPosition.X, pointerPosition.Y), X = Vector2.Right, Y = Vector2.Down });
-		Renderer.SetFillBrush(fill);
-		Renderer.SetStrokeBrush(stroke);
-		Renderer.FillPath(path);
-		Renderer.StrokePath(path);
-		Renderer.EndDraw();
+		Viewport.Main.BeginDraw();
+		Viewport.Main.ClearRect(new() { Origin = Vector2.Zero, Size = Viewport.Main.Size });
+		Viewport.Main.SetTransform(new() { Origin = new Vector2(pointerPosition.X, pointerPosition.Y), X = Vector2.Right, Y = Vector2.Down });
+		Viewport.Main.SetFillBrush(fill);
+		Viewport.Main.SetStrokeBrush(stroke);
+		Viewport.Main.FillPath(path);
+		Viewport.Main.StrokePath(path);
+		Viewport.Main.EndDraw();
 	}
 
 	static Vector2 pointerPosition = Vector2.Zero;
@@ -94,7 +94,7 @@ public partial class Program
 		Size = new Vector2(100, 100),
 	});
 
-	static Brush fill = new LinearGradientBrush
+	static readonly Brush fill = new LinearGradientBrush
 	{
 		Start = new Vector2(-100, -100),
 		End = new Vector2(100, 100),
@@ -105,7 +105,7 @@ public partial class Program
 		}
 	};
 
-	static Brush stroke = new ColorBrush
+	static readonly Brush stroke = new ColorBrush
 	{
 		Color = Colors.Coral,
 	};

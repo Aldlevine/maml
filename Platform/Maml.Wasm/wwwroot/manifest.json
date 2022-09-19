@@ -1,4 +1,5 @@
 {
 	"$schema": "https://json.schemastore.org/web-manifest-combined.json",
+	"name": "Maml",
 	"display": "standalone"
 }

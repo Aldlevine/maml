@@ -20,40 +20,36 @@ class Input {
     }
     async init() {
         wasm.setModuleImports("input.js", this);
-        const input = await wasm.getAssemblyExports("Maml.Wasm", "Maml.UserInput.Input");
-        window.onscroll = (e) => {
-            e.preventDefault();
-            window.scrollTo(0, 0);
-        };
+        const inputInterop = await wasm.getAssemblyExports("Maml.Wasm", "Maml.UserInput.Input");
         window.onpointermove = (e) => {
             e.preventDefault();
-            input.HandlePointerMove(e.clientX, e.clientY, e.buttons);
+            inputInterop.HandlePointerMove(e.clientX, e.clientY, e.buttons);
         };
         window.onpointerdown = (e) => {
             e.preventDefault();
-            input.HandlePointerDown(e.clientX, e.clientY, 1 << e.button, e.buttons);
+            inputInterop.HandlePointerDown(e.clientX, e.clientY, 1 << e.button, e.buttons);
         };
         window.onpointerup = (e) => {
             e.preventDefault();
-            input.HandlePointerUp(e.clientX, e.clientY, 1 << e.button, e.buttons);
+            inputInterop.HandlePointerUp(e.clientX, e.clientY, 1 << e.button, e.buttons);
         };
         window.ontouchstart = (e) => {
             e.preventDefault();
         };
         window.onwheel = (e) => {
-            input.HandleWheel(e.clientX, e.clientY, e.deltaX, e.deltaY);
+            inputInterop.HandleWheel(e.clientX, e.clientY, e.deltaX, e.deltaY);
         };
         window.onkeydown = (e) => {
-            input.HandleKeyDown(e.key, e.repeat);
+            inputInterop.HandleKeyDown(e.key, e.repeat);
         };
         window.onkeyup = (e) => {
-            input.HandleKeyUp(e.key);
+            inputInterop.HandleKeyUp(e.key);
         };
         window.onfocus = (e) => {
-            input.HandleFocus();
+            inputInterop.HandleFocus();
         };
         window.onblur = (e) => {
-            input.HandleBlur();
+            inputInterop.HandleBlur();
         };
     }
     report(id, value) {
