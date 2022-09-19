@@ -1,13 +1,10 @@
 {
   "profiles": {
-    "Maml.Wasm": {
+    "Maml.WasmBrowser": {
       "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)/bin/$(Configuration)/net7.0/browser-wasm/AppBundle",
       "launchBrowser": true,
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }

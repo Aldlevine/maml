@@ -12,12 +12,23 @@
     <Compile Include="$(MSBuildThisFileDirectory)Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BoxCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Color.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Drawing\Brush.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Drawing\Renderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Figure.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Path.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UserInput\Input.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\Event.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UserInput\PointerButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Transform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Vector2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Vector2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UserInput\VirtualKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Test.maml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Events\" />
   </ItemGroup>
 </Project>

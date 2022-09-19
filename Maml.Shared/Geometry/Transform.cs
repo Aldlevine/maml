@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Maml;
+﻿namespace Maml.Geometry;
 
 public partial struct Transform
 {
-	public Vector2 X;
-	public Vector2 Y;
-	public Vector2 Origin;
+	public Vector2 X = Vector2.Right;
+	public Vector2 Y = Vector2.Down;
+	public Vector2 Origin = Vector2.Zero;
 
 	public Transform(Vector2 x, Vector2 y, Vector2 origin)
 	{

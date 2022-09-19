@@ -1,30 +1,100 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html>
+
 <head>
-    <meta charset="utf-8" />
-    <title>Maml</title>
-    <style>
-        html {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-size: 0;
-        }
-        #canvas {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+	<title>Sample ES6</title>
+	<meta charset="UTF-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="theme-color" content="#fff" media="(prefers-color-scheme: light)">
+	<meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)">
+	<link rel="manifest" href="manifest.json" />
+
+	<link rel="modulepreload" href="./main.js" />
+	<link rel="modulepreload" href="./wasm.js" />
+	<link rel="modulepreload" href="./dotnet.js" />
+
+	<link rel="modulepreload" href="./renderer.js" />
+	<link rel="modulepreload" href="./input.js" />
+
+	<style>
+		@media (prefers-color-scheme: light) {
+			:root {
+				--theme-bg: #fff;
+				--theme-color: #000;
+			}
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--theme-bg: #333;
+				--theme-color: #fff;
+			}
+		}
+
+		@supports(padding:max(0px)) {
+			body, header, footer {
+				padding-left: calc(min(0vmin, env(safe-area-inset-left)) * -1);
+				padding-right: calc(min(0vmin, env(safe-area-inset-right)) * -1);
+				padding-top: calc(min(0vmin, env(safe-area-inset-top)) * -1);
+				padding-bottom: calc(min(0vmin, env(safe-area-inset-bottom)) * -1);
+			}
+		}
+
+		html {
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			user-select: none;
+			pointer-events: none;
+			touch-action: none;
+			overflow: hidden;
+
+			background: var(--theme-bg);
+			color: var(--theme-color);
+		}
+
+		body {
+			position: fixed;
+			margin: 0;
+			padding: 0;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			display: flex;
+			align-items: flex-end;
+			overflow: hidden;
+		}
+
+		#out {
+			position: absolute;
+			padding: 4px;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+		}
+
+		#out > .output {
+			padding: 4px;
+		}
+
+		#canvas-container {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			pointer-events: all;
+		}
+	</style>
 </head>
+
 <body>
-    <canvas id="canvas"></canvas>
-    <!--<script src="_framework/blazor.webassembly.js"></script>-->
-    <script src="App.js"></script>
+	<div id="canvas-container">
+		<canvas id="canvas">Sorry, nothing here for you... try a better browser next time.</canvas>
+	</div>
+	<div id="out"></div>
+	<script type="module" src="./main.js"></script>
 </body>
+
 </html>

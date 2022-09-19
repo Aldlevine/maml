@@ -6,17 +6,6 @@ using static Windows.Win32.PInvoke;
 
 namespace Maml;
 
-// internal static class HotReloadManager
-// {
-// 	public static void ClearCache(Type[]? types)
-// 	{
-// 		_ = types;
-// 	}
-//
-//	public static void UpdateApplication(Type[]? types) {}
-// 
-// }
-
 internal static class Program
 {
 	public static App? App;

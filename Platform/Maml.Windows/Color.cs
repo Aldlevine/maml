@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Win32.Graphics.Direct2D.Common;
+﻿using Windows.Win32.Graphics.Direct2D.Common;
 
 namespace Maml;
 
@@ -13,7 +8,7 @@ public partial struct Color
 	{
 		fixed (Color* pThis = &this)
 		{
-            return *(D2D1_COLOR_F*)pThis;
+			return *(D2D1_COLOR_F*)pThis;
 		}
 	}
 }
