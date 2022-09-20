@@ -42,10 +42,5 @@ public static partial class Input
 				Blur?.Invoke((FocusEvent)evt);
 				break;
 		}
-		// var @event = typeof(Input).GetEvent(name, System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
-		// @event?.RaiseMethod?.Invoke(null, new[] { evt });
-
-		// var @event = typeof(Input).GetEvent(name);
-		// @event?.GetRaiseMethod()?.Invoke(null, new[] { evt });
 	}
 }

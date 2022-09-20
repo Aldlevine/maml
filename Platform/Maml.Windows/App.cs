@@ -13,6 +13,7 @@ using Windows.Win32.System.SystemServices;
 using Windows.Win32.UI.Input.Pointer;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static Windows.Win32.PInvoke;
+using static Maml.Utils.Bits;
 
 [assembly: MetadataUpdateHandler(typeof(Maml.App))]
 
@@ -41,8 +42,6 @@ unsafe internal class App
 			pD2DFactory = null;
 		}
 
-		DiscardDeviceResources();
-
 	}
 
 	public void RunMessageLoop()
@@ -64,7 +63,7 @@ unsafe internal class App
 
 	public void UpdateApplication()
 	{
-		DiscardDeviceResources();
+		// DiscardDeviceResources();
 		InvalidateRect(hWnd, (RECT?)null, true);
 	}
 
@@ -73,14 +72,14 @@ unsafe internal class App
 	#region private
 
 	private ID2D1Factory* pD2DFactory;
-	private ID2D1HwndRenderTarget* pRenderTarget;
-	private ID2D1SolidColorBrush* pLightSlateGrayBrush;
-	private ID2D1SolidColorBrush* pCornflowerBlueBrush;
+	// private ID2D1HwndRenderTarget* pRenderTarget;
+	// private ID2D1SolidColorBrush* pLightSlateGrayBrush;
+	// private ID2D1SolidColorBrush* pCornflowerBlueBrush;
 
 	private const string className = "MamlWindow";
 	private const string windowName = "Maml";
 
-	private Vector2 windowPosition = Vector2.Zero;
+	internal Vector2 windowPosition = Vector2.Zero;
 	public Viewport Viewport { get; private set; }
 
 	private void Init()
@@ -142,6 +141,7 @@ unsafe internal class App
 			{
 				hWnd = hWnd,
 				Dpi = dpi,
+				pD2DFactory = pD2DFactory,
 			};
 
 			SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, ID);
@@ -165,142 +165,142 @@ unsafe internal class App
 		pD2DFactory = (ID2D1Factory*)obj;
 	}
 
-	private void CreateDeviceResources()
-	{
-		if (pRenderTarget == null)
-		{
-			GetClientRect(hWnd, out var rc);
-			D2D_SIZE_U size = new()
-			{
-				width = (uint)(rc.right - rc.left),
-				height = (uint)(rc.bottom - rc.top),
-			};
+	// private void CreateDeviceResources()
+	// {
+	// 	if (pRenderTarget == null)
+	// 	{
+	// 		GetClientRect(hWnd, out var rc);
+	// 		D2D_SIZE_U size = new()
+	// 		{
+	// 			width = (uint)(rc.right - rc.left),
+	// 			height = (uint)(rc.bottom - rc.top),
+	// 		};
 
-			D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new() { };
+	// 		D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new() { };
 
-			D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
-			{
-				hwnd = hWnd,
-				pixelSize = size,
-			};
+	// 		D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
+	// 		{
+	// 			hwnd = hWnd,
+	// 			pixelSize = size,
+	// 		};
 
-			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pRenderTarget)
-			{
-				pD2DFactory->CreateHwndRenderTarget(
-					in renderTargetProps,
-					in hWndRenderTargetProps,
-					ppRenderTarget).ThrowOnFailure();
-			}
+	// 		fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pRenderTarget)
+	// 		{
+	// 			pD2DFactory->CreateHwndRenderTarget(
+	// 				in renderTargetProps,
+	// 				in hWndRenderTargetProps,
+	// 				ppRenderTarget).ThrowOnFailure();
+	// 		}
 
-			fixed (ID2D1SolidColorBrush** ppLightSlateGrayBrush = &pLightSlateGrayBrush)
-			fixed (ID2D1SolidColorBrush** ppCornflowerBlueBrush = &pCornflowerBlueBrush)
-			{
-				var color = Colors.LightSlateGray.ToD2DColorF();
-				pRenderTarget->CreateSolidColorBrush(in color, null, ppLightSlateGrayBrush).ThrowOnFailure();
-				color = (Colors.CornflowerBlue with { A = 0.75f }).ToD2DColorF();
-				pRenderTarget->CreateSolidColorBrush(in color, null, ppCornflowerBlueBrush).ThrowOnFailure();
-			}
-		}
-	}
+	// 		fixed (ID2D1SolidColorBrush** ppLightSlateGrayBrush = &pLightSlateGrayBrush)
+	// 		fixed (ID2D1SolidColorBrush** ppCornflowerBlueBrush = &pCornflowerBlueBrush)
+	// 		{
+	// 			var color = Colors.LightSlateGray.ToD2DColorF();
+	// 			pRenderTarget->CreateSolidColorBrush(in color, null, ppLightSlateGrayBrush).ThrowOnFailure();
+	// 			color = (Colors.CornflowerBlue with { A = 0.75f }).ToD2DColorF();
+	// 			pRenderTarget->CreateSolidColorBrush(in color, null, ppCornflowerBlueBrush).ThrowOnFailure();
+	// 		}
+	// 	}
+	// }
 
-	private void DiscardDeviceResources()
-	{
-		if (pRenderTarget != null)
-		{
-			pRenderTarget->Release();
-			pRenderTarget = null;
-		}
+	// private void DiscardDeviceResources()
+	// {
+	// 	if (pRenderTarget != null)
+	// 	{
+	// 		pRenderTarget->Release();
+	// 		pRenderTarget = null;
+	// 	}
 
-		if (pLightSlateGrayBrush != null)
-		{
-			pLightSlateGrayBrush->Release();
-			pLightSlateGrayBrush = null;
-		}
+	// 	if (pLightSlateGrayBrush != null)
+	// 	{
+	// 		pLightSlateGrayBrush->Release();
+	// 		pLightSlateGrayBrush = null;
+	// 	}
 
-		if (pCornflowerBlueBrush != null)
-		{
-			pCornflowerBlueBrush->Release();
-			pCornflowerBlueBrush = null;
-		}
-	}
+	// 	if (pCornflowerBlueBrush != null)
+	// 	{
+	// 		pCornflowerBlueBrush->Release();
+	// 		pCornflowerBlueBrush = null;
+	// 	}
+	// }
 
-	private void OnRender()
-	{
-		CreateDeviceResources();
+	// private void OnRender()
+	// {
+	// 	CreateDeviceResources();
 
-		var xform = Transform.PixelIdentity.ToD2DMatrix3X2F();
+	// 	var xform = Transform.PixelIdentity.ToD2DMatrix3X2F();
 
-		pRenderTarget->BeginDraw();
-		pRenderTarget->SetTransform(in xform);
+	// 	pRenderTarget->BeginDraw();
+	// 	pRenderTarget->SetTransform(in xform);
 
-		var color = Colors.DarkSlateGray.ToD2DColorF();
-		pRenderTarget->Clear(&color);
+	// 	var color = Colors.DarkSlateGray.ToD2DColorF();
+	// 	pRenderTarget->Clear(&color);
 
-		GetClientRect(hWnd, out var rc);
-		D2D_SIZE_U size = new()
-		{
-			width = (uint)(rc.right - rc.left),
-			height = (uint)(rc.bottom - rc.top),
-		};
+	// 	GetClientRect(hWnd, out var rc);
+	// 	D2D_SIZE_U size = new()
+	// 	{
+	// 		width = (uint)(rc.right - rc.left),
+	// 		height = (uint)(rc.bottom - rc.top),
+	// 	};
 
-		for (int x = 0; x < size.width; x += 10)
-		{
-			pRenderTarget->DrawLine(
-				new D2D_POINT_2F { x = x, y = 0 },
-				new D2D_POINT_2F { x = x, y = size.height },
-				(ID2D1Brush*)pLightSlateGrayBrush,
-				1f,
-				null);
-		}
+	// 	for (int x = 0; x < size.width; x += 10)
+	// 	{
+	// 		pRenderTarget->DrawLine(
+	// 			new D2D_POINT_2F { x = x, y = 0 },
+	// 			new D2D_POINT_2F { x = x, y = size.height },
+	// 			(ID2D1Brush*)pLightSlateGrayBrush,
+	// 			1f,
+	// 			null);
+	// 	}
 
-		for (int y = 0; y < size.height; y += 10)
-		{
-			pRenderTarget->DrawLine(
-				new D2D_POINT_2F { x = 0, y = y },
-				new D2D_POINT_2F { x = size.width, y = y },
-				(ID2D1Brush*)pLightSlateGrayBrush,
-				1f,
-				null);
-		}
+	// 	for (int y = 0; y < size.height; y += 10)
+	// 	{
+	// 		pRenderTarget->DrawLine(
+	// 			new D2D_POINT_2F { x = 0, y = y },
+	// 			new D2D_POINT_2F { x = size.width, y = y },
+	// 			(ID2D1Brush*)pLightSlateGrayBrush,
+	// 			1f,
+	// 			null);
+	// 	}
 
-		D2D_RECT_F rect1 = new Figure.Rect()
-		{
-			Origin = new Vector2(pointerPosition.X - 50, pointerPosition.Y - 50),
-			Size = new Vector2(100, 100),
-		}.ToD2DRectF();
+	// 	D2D_RECT_F rect1 = new Figure.Rect()
+	// 	{
+	// 		Origin = new Vector2(pointerPosition.X - 50, pointerPosition.Y - 50),
+	// 		Size = new Vector2(100, 100),
+	// 	}.ToD2DRectF();
 
-		D2D_RECT_F rect2 = new Figure.Rect()
-		{
-			Origin = new Vector2(pointerPosition.X - 100, pointerPosition.Y - 100),
-			Size = new Vector2(200, 200),
-		}.ToD2DRectF();
+	// 	D2D_RECT_F rect2 = new Figure.Rect()
+	// 	{
+	// 		Origin = new Vector2(pointerPosition.X - 100, pointerPosition.Y - 100),
+	// 		Size = new Vector2(200, 200),
+	// 	}.ToD2DRectF();
 
-		pRenderTarget->FillRectangle(in rect1, (ID2D1Brush*)pCornflowerBlueBrush);
-		pRenderTarget->DrawRectangle(in rect2, (ID2D1Brush*)pCornflowerBlueBrush, 1, default);
+	// 	pRenderTarget->FillRectangle(in rect1, (ID2D1Brush*)pCornflowerBlueBrush);
+	// 	pRenderTarget->DrawRectangle(in rect2, (ID2D1Brush*)pCornflowerBlueBrush, 1, default);
 
-		var hr = pRenderTarget->EndDraw();
-		if (hr == HRESULT.D2DERR_RECREATE_TARGET)
-		{
-			DiscardDeviceResources();
-		}
-		else
-		{
-			hr.ThrowOnFailure();
-		}
-	}
+	// 	var hr = pRenderTarget->EndDraw();
+	// 	if (hr == HRESULT.D2DERR_RECREATE_TARGET)
+	// 	{
+	// 		DiscardDeviceResources();
+	// 	}
+	// 	else
+	// 	{
+	// 		hr.ThrowOnFailure();
+	// 	}
+	// }
 
-	private void OnResize(int width, int height)
-	{
-		if (pRenderTarget != null)
-		{
-			var size = new D2D_SIZE_U
-			{
-				width = (uint)width,
-				height = (uint)height,
-			};
-			pRenderTarget->Resize(in size);
-		}
-	}
+	// private void OnResize(int width, int height)
+	// {
+	// 	if (pRenderTarget != null)
+	// 	{
+	// 		var size = new D2D_SIZE_U
+	// 		{
+	// 			width = (uint)width,
+	// 			height = (uint)height,
+	// 		};
+	// 		pRenderTarget->Resize(in size);
+	// 	}
+	// }
 
 	private void OnMove(int x, int y)
 	{
@@ -308,15 +308,7 @@ unsafe internal class App
 	}
 
 	#endregion private
-
 	#region private static
-
-	private static short LoWord(int value) => (short)(value & (0xffff));
-	private static short LoWord(LPARAM value) => LoWord((int)value.Value);
-	private static short LoWord(WPARAM value) => LoWord((int)value.Value);
-	private static short HiWord(int value) => (short)((value >> 16) & (0xffff));
-	private static short HiWord(LPARAM value) => HiWord((int)value.Value);
-	private static short HiWord(WPARAM value) => HiWord((int)value.Value);
 
 	private delegate LRESULT WNDPROC(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam);
 	private static readonly WNDPROC WndProcDelegate = WndProc;
@@ -345,7 +337,7 @@ unsafe internal class App
 		throw new Exception("GetApp Failed");
 	}
 
-	private Vector2 pointerPosition = new Vector2();
+	internal Vector2 pointerPosition = new Vector2();
 
 	private static LRESULT WndProc(
 		HWND hWnd,
@@ -374,7 +366,7 @@ unsafe internal class App
 						{
 							int width = LoWord(lParam);
 							int height = HiWord(lParam);
-							app.OnResize(width, height);
+							app.Viewport.HandleResize(width, height);
 						}
 						wasHandled = true;
 						break;
@@ -397,7 +389,7 @@ unsafe internal class App
 
 					case WM_PAINT:
 						{
-							app.OnRender();
+							app.Viewport.HandleDraw();
 							ValidateRect(hWnd, (RECT?)null);
 						}
 						wasHandled = true;
@@ -413,22 +405,7 @@ unsafe internal class App
 
 					case WM_POINTERUPDATE:
 						{
-							uint pointerId = (uint)LoWord(wParam);
-							GetPointerInfo(pointerId, out var pointerInfo);
-							app.pointerPosition = new Vector2(
-								pointerInfo.ptPixelLocation.X - app.windowPosition.X,
-								pointerInfo.ptPixelLocation.Y - app.windowPosition.Y);
-							PointerButton buttonMask = PointerButton.None;
-							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON) > 0) { buttonMask |= PointerButton.Left; }
-							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON) > 0) { buttonMask |= PointerButton.Right; }
-							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_THIRDBUTTON) > 0) { buttonMask |= PointerButton.Middle; }
-							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FOURTHBUTTON) > 0) { buttonMask |= PointerButton.Back; }
-							if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIFTHBUTTON) > 0) { buttonMask |= PointerButton.Forward; }
-							Input.Emit(nameof(Input.PointerMove), new Events.PointerEvent
-							{
-								Position = app.pointerPosition,
-								ButtonMask = buttonMask,
-							});
+							Input.HandlePointerMove(wParam, lParam);
 							InvalidateRect(hWnd, (RECT?)null, false);
 						}
 						result = new(0);

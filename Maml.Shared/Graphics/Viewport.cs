@@ -13,7 +13,7 @@ public partial class Viewport
 
 	public partial void BeginDraw();
 	public partial void EndDraw();
-	public partial void ClearRect(Figure.Rect rect);
+	public partial void Clear(Color color);
 
 	public partial void PushClip(Path path);
 	public partial void PopClip();

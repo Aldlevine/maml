@@ -2,7 +2,7 @@
 
 namespace Maml.Geometry;
 
-public struct Vector2 : IEquatable<Vector2>
+public partial struct Vector2 : IEquatable<Vector2>
 {
 	public double X;
 	public double Y;

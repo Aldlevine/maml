@@ -57,4 +57,4 @@ class Input {
     }
 }
 export const input = new Input();
-//# sourceMappingURL=input.js.map
+//# sourceMappingURL=Input.js.map
