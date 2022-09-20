@@ -4,6 +4,7 @@ AttachConsole
 EnableMouseInPointer
 GetPointerInfo
 MODIFIERKEYS_FLAGS
+SetProcessDpiAwareness
 Windows.Win32.Foundation
 Windows.Win32.UI.WindowsAndMessaging
 WNDPROC

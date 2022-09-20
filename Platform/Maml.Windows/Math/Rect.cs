@@ -4,7 +4,7 @@ using System.Text;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Direct2D.Common;
 
-namespace Maml.Geometry;
+namespace Maml.Math;
 
 public partial struct Rect
 {

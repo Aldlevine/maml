@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Maml.Geometry;
+namespace Maml.Math;
 public partial struct Line
 {
 }

@@ -1,4 +1,4 @@
-﻿using Maml.Math;
+using Maml.Math;
 using Maml.Events;
 using System;
 using System.Collections.Generic;
@@ -25,11 +25,12 @@ public partial class Input
 
 		uint pointerId = (uint)LoWord(wParam);
 		GetPointerInfo(pointerId, out var pointerInfo);
-		double dpiRatio = 96.0 / Program.App.Viewport.Dpi;
+		double dpiRatio = 96 / Program.App.Viewport.Dpi;
 		Program.App.pointerPosition = new Vector2(
-			pointerInfo.ptPixelLocation.X - Program.App.windowPosition.X,
-			pointerInfo.ptPixelLocation.Y - Program.App.windowPosition.Y);
-		Program.App.pointerPosition *= new Vector2(dpiRatio, dpiRatio);
+			// pointerInfo.ptPixelLocation.X - Program.App.windowPosition.X,
+			// pointerInfo.ptPixelLocation.Y - Program.App.windowPosition.Y);
+			(pointerInfo.ptPixelLocation.X * dpiRatio / 2) - (Program.App.windowPosition.X * dpiRatio),
+			(pointerInfo.ptPixelLocation.Y * dpiRatio / 2) - (Program.App.windowPosition.Y * dpiRatio));
 		PointerButton buttonMask = PointerButton.None;
 		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON) > 0) { buttonMask |= PointerButton.Left; }
 		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON) > 0) { buttonMask |= PointerButton.Right; }

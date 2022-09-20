@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Windows.Win32.Graphics.Direct2D;
 
-namespace Maml.Geometry;
+namespace Maml.Math;
 
 public partial struct Ellipse
 {

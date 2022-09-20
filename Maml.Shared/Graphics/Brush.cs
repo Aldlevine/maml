@@ -1,4 +1,19 @@
-﻿using Maml.Geometry;
+﻿using System;
+
+namespace Maml.Graphics;
+
+public abstract partial class Brush : Resource
+{
+
+}
+
+public partial class ColorBrush : Brush
+{
+	public Color Color { get; set; }
+}
+
+/*
+using Maml.Math;
 using System;
 using System.Collections.Generic;
 
@@ -95,4 +110,4 @@ public class ColorStopCollection : SortedList<double, ColorStop>, IEquatable<Col
 
 	public static bool operator !=(ColorStopCollection? left, ColorStopCollection? right) => !(left == right);
 }
-
+*/

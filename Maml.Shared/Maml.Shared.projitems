@@ -12,22 +12,22 @@
     <Compile Include="$(MSBuildThisFileDirectory)Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BoxCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Color.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Ellipse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Line.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Shape.cs" />
-    <Compile Include="..\..\Maml.Shared\Geometry\Shape.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Rect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Graphic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Resource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Ellipse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Line.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Rect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Brush.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Viewport.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Figure.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Path.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserInput\Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\Event.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserInput\PointerButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Transform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Geometry\Vector2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UserInput\VirtualKey.cs" />
   </ItemGroup>
   <ItemGroup>

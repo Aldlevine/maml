@@ -1,5 +1,5 @@
 ﻿using Maml.Events;
-using Maml.Geometry;
+using Maml.Math;
 using System.Runtime.InteropServices.JavaScript;
 
 namespace Maml.Graphics;

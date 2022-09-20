@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Maml.Geometry;
+namespace Maml.Math;
 
 public partial struct Vector2 : IEquatable<Vector2>
 {
-	public double X;
-	public double Y;
+	public double X { get; set; }
+	public double Y { get; set; }
 
 	public readonly static Vector2 Zero = new(0, 0);
 	public readonly static Vector2 One = new(1, 1);
@@ -28,4 +28,10 @@ public partial struct Vector2 : IEquatable<Vector2>
 	public static bool operator !=(Vector2 left, Vector2 right) => !(left == right);
 
 	public override string? ToString() => $"({X},{Y})";
+
+	// Math
+	public static Vector2 operator +(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X + rhs.X, lhs.Y + rhs.Y);
+	public static Vector2 operator -(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X - rhs.X, lhs.Y - rhs.Y);
+	public static Vector2 operator *(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X * rhs.X, lhs.Y * rhs.Y);
+	public static Vector2 operator /(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X / rhs.X, lhs.Y / rhs.Y);
 }

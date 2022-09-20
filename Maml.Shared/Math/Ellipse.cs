@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Maml.Geometry;
+namespace Maml.Math;
 
 public partial struct Ellipse
 {

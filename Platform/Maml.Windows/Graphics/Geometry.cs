@@ -1,41 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 
-namespace Maml.Geometry;
+namespace Maml.Graphics;
 
-unsafe public abstract partial class Shape
+unsafe public abstract partial class Geometry: Resource
 {
 	internal ID2D1Geometry* pResource;
-
-	internal abstract void Realize(ID2D1Factory* pFactory);
-
+	internal abstract void MakeResource(ID2D1Factory* pFactory);
 	internal ID2D1Geometry* GetResource(ID2D1Factory* pFactory, bool noCache = false)
 	{
-		if ((noCache || IsDirty) && pResource != null)
-		{
-			pResource->Release();
-			pResource = null;
-		}
-
 		if (pResource == null)
 		{
-			Realize(pFactory);
+			MakeResource(pFactory);
 		}
-
+		else
+		{
+			if (noCache || IsDirty)
+			{
+				FreeResources();
+				MakeResource(pFactory);
+			}
+		}
 		return pResource;
 	}
-
-	protected virtual partial void FreeResources()
+	protected override void FreeResources()
 	{
 		pResource->Release();
 	}
 }
 
-unsafe public partial class RectShape: Shape
+unsafe public partial class RectGeometry: Geometry
 {
-	internal override void Realize(ID2D1Factory* pFactory)
+	internal override void MakeResource(ID2D1Factory* pFactory)
 	{
 		fixed (ID2D1Geometry** ppResource = &pResource)
 		{
@@ -44,9 +42,9 @@ unsafe public partial class RectShape: Shape
 	}
 }
 
-unsafe public partial class EllipseShape: Shape
+unsafe public partial class EllipseGeometry: Geometry
 {
-	internal override void Realize(ID2D1Factory* pFactory)
+	internal override void MakeResource(ID2D1Factory* pFactory)
 	{
 		fixed (ID2D1Geometry** ppResource = &pResource)
 		{
@@ -55,9 +53,9 @@ unsafe public partial class EllipseShape: Shape
 	}
 }
 
-unsafe public partial class LineShape: Shape
+unsafe public partial class LineGeometry: Geometry
 {
-	internal override unsafe void Realize(ID2D1Factory* pFactory)
+	internal override void MakeResource(ID2D1Factory* pFactory)
 	{
 		fixed (ID2D1Geometry** ppResource = &pResource)
 		{

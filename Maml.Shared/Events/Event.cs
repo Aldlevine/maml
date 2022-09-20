@@ -1,4 +1,4 @@
-﻿using Maml.Geometry;
+﻿using Maml.Math;
 using Maml.UserInput;
 
 namespace Maml.Events;
