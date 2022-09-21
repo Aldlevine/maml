@@ -1,5 +1,5 @@
-﻿using Maml.Math;
-using Maml.Graphics;
+﻿using Maml.Graphics;
+using Maml.Math;
 using Maml.UserInput;
 using System;
 using System.Collections.Generic;
@@ -7,13 +7,10 @@ using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
-using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.System.SystemServices;
-using Windows.Win32.UI.Input.Pointer;
 using Windows.Win32.UI.WindowsAndMessaging;
-using static Windows.Win32.PInvoke;
 using static Maml.Utils.Bits;
+using static Windows.Win32.PInvoke;
 
 [assembly: MetadataUpdateHandler(typeof(Maml.App))]
 
@@ -72,9 +69,6 @@ unsafe internal class App
 	#region private
 
 	private ID2D1Factory* pD2DFactory;
-	// private ID2D1HwndRenderTarget* pRenderTarget;
-	// private ID2D1SolidColorBrush* pLightSlateGrayBrush;
-	// private ID2D1SolidColorBrush* pCornflowerBlueBrush;
 
 	private const string className = "MamlWindow";
 	private const string windowName = "Maml";
@@ -144,8 +138,6 @@ unsafe internal class App
 				pD2DFactory = pD2DFactory,
 			};
 
-			double dpi = Viewport.Dpi;
-
 			SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, ID);
 
 			SetWindowPos(
@@ -153,8 +145,8 @@ unsafe internal class App
 				HWND.Null,
 				0,
 				0,
-				(int)System.Math.Ceiling(640 * dpi / 96),
-				(int)System.Math.Ceiling(480 * dpi / 96),
+				(int)System.Math.Ceiling(640 * Viewport.DpiRatio),
+				(int)System.Math.Ceiling(480 * Viewport.DpiRatio),
 				SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
 			ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
 			UpdateWindow(hWnd);

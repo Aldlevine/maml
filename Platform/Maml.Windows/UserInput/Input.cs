@@ -1,15 +1,8 @@
 ﻿using Maml.Math;
-using Maml.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.Pointer;
-
-using static Windows.Win32.PInvoke;
 using static Maml.Utils.Bits;
+using static Windows.Win32.PInvoke;
 
 namespace Maml.UserInput;
 
@@ -25,7 +18,7 @@ public partial class Input
 
 		uint pointerId = (uint)LoWord(wParam);
 		GetPointerInfo(pointerId, out var pointerInfo);
-		double dpiRatio = 96.0 / Program.App.Viewport.Dpi;
+		double dpiRatio = 1.0 / Program.App.Viewport.DpiRatio;
 		Program.App.pointerPosition = new Vector2(
 			pointerInfo.ptPixelLocation.X - Program.App.windowPosition.X,
 			pointerInfo.ptPixelLocation.Y - Program.App.windowPosition.Y);

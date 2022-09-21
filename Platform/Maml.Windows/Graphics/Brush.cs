@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Win32.Graphics.Direct2D;
+﻿using Windows.Win32.Graphics.Direct2D;
 
 namespace Maml.Graphics;
 
-unsafe public abstract partial class Brush: Resource
+unsafe public abstract partial class Brush : Resource
 {
 	internal ID2D1Brush* pResource;
 	internal abstract void MakeResource(ID2D1RenderTarget* pRenderTarget);
@@ -33,7 +28,7 @@ unsafe public abstract partial class Brush: Resource
 	}
 }
 
-unsafe public partial class ColorBrush: Brush
+unsafe public partial class ColorBrush : Brush
 {
 	internal override void MakeResource(ID2D1RenderTarget* pRenderTarget)
 	{

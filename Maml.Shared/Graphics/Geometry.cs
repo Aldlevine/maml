@@ -1,13 +1,10 @@
 ﻿using Maml.Math;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Maml.Graphics;
 
-public abstract partial class Geometry: Resource { }
+public abstract partial class Geometry : Resource { }
 
-public partial class EllipseGeometry: Geometry
+public partial class EllipseGeometry : Geometry
 {
 	private Ellipse ellipse;
 	public Ellipse Ellipse
@@ -21,7 +18,7 @@ public partial class EllipseGeometry: Geometry
 	}
 }
 
-public partial class LineGeometry: Geometry
+public partial class LineGeometry : Geometry
 {
 	private Line line;
 	public Line Line
@@ -35,7 +32,7 @@ public partial class LineGeometry: Geometry
 	}
 }
 
-public partial class RectGeometry: Geometry
+public partial class RectGeometry : Geometry
 {
 	private Rect rect;
 	public Rect Rect

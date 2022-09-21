@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Direct2D;
+﻿using Windows.Win32.Graphics.Direct2D;
 
 namespace Maml.Graphics;
 
-unsafe public abstract partial class Geometry: Resource
+unsafe public abstract partial class Geometry : Resource
 {
 	internal ID2D1Geometry* pResource;
 	internal abstract void MakeResource(ID2D1Factory* pFactory);
@@ -31,7 +28,7 @@ unsafe public abstract partial class Geometry: Resource
 	}
 }
 
-unsafe public partial class RectGeometry: Geometry
+unsafe public partial class RectGeometry : Geometry
 {
 	internal override void MakeResource(ID2D1Factory* pFactory)
 	{
@@ -42,7 +39,7 @@ unsafe public partial class RectGeometry: Geometry
 	}
 }
 
-unsafe public partial class EllipseGeometry: Geometry
+unsafe public partial class EllipseGeometry : Geometry
 {
 	internal override void MakeResource(ID2D1Factory* pFactory)
 	{
@@ -53,7 +50,7 @@ unsafe public partial class EllipseGeometry: Geometry
 	}
 }
 
-unsafe public partial class LineGeometry: Geometry
+unsafe public partial class LineGeometry : Geometry
 {
 	internal override void MakeResource(ID2D1Factory* pFactory)
 	{

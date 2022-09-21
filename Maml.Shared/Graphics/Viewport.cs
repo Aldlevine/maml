@@ -7,13 +7,18 @@ public partial class Viewport
 {
 	public static readonly Viewport Main = new();
 
-	public double Dpi => GetDpi();
+	public double DpiRatio => GetDpiRatio();
 	public Vector2 Size => GetSize();
 
 	internal partial Vector2 GetSize();
-	internal partial double GetDpi();
+	internal partial double GetDpiRatio();
 
 	public event EventHandler<ResizeEvent>? Resize;
+	public event EventHandler<DrawEvent>? Draw;
+
+	public partial void Clear(Color color);
+	public partial void DrawGraphic(Graphic graphic);
+	public partial void SetTransform(Transform transform);
 
 	// public partial void BeginDraw();
 	// public partial void EndDraw();

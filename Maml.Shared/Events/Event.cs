@@ -1,4 +1,5 @@
-﻿using Maml.Math;
+﻿using Maml.Graphics;
+using Maml.Math;
 using Maml.UserInput;
 
 namespace Maml.Events;
@@ -19,15 +20,16 @@ public record KeyEvent : Event
 
 public record ResizeEvent : Event
 {
-	// public int Width;
-	// public int Height;
 	public Vector2 Size;
+}
+
+public record DrawEvent : Event
+{
+	public Viewport? Viewport;
 }
 
 public record PointerEvent : Event
 {
-	// public int X;
-	// public int Y;
 	public Vector2 Position;
 	public PointerButton Button;
 	public PointerButton ButtonMask;
@@ -35,8 +37,6 @@ public record PointerEvent : Event
 
 public record WheelEvent : PointerEvent
 {
-	// public double DX;
-	// public double DY;
 	public Vector2 Delta;
 }
 

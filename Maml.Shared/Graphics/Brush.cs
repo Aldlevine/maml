@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Maml.Graphics;
+﻿namespace Maml.Graphics;
 
 public abstract partial class Brush : Resource
 {
