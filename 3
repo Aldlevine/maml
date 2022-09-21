@@ -1,46 +1,48 @@
-using Maml.Math;
-using Maml.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Win32.Foundation;
-using Windows.Win32.UI.Input.Pointer;
+using System.Threading;
 
-using static Windows.Win32.PInvoke;
-using static Maml.Utils.Bits;
+namespace Maml.Animation;
 
-namespace Maml.UserInput;
-
-public partial class Input
+public partial class Animator
 {
-	// internal static void HandlePointerMove(int x, int y, int iButtonMask)
-	internal static void HandlePointerMove(WPARAM wParam, LPARAM lParam)
-	{
-		if (Program.App == null)
-		{
-			return;
-		}
 
-		uint pointerId = (uint)LoWord(wParam);
-		GetPointerInfo(pointerId, out var pointerInfo);
-		double dpiRatio = 96 / Program.App.Viewport.Dpi;
-		Program.App.pointerPosition = new Vector2(
-			// pointerInfo.ptPixelLocation.X - Program.App.windowPosition.X,
-			// pointerInfo.ptPixelLocation.Y - Program.App.windowPosition.Y);
-			(pointerInfo.ptPixelLocation.X * dpiRatio / 2) - (Program.App.windowPosition.X * dpiRatio),
-			(pointerInfo.ptPixelLocation.Y * dpiRatio / 2) - (Program.App.windowPosition.Y * dpiRatio));
-		PointerButton buttonMask = PointerButton.None;
-		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON) > 0) { buttonMask |= PointerButton.Left; }
-		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON) > 0) { buttonMask |= PointerButton.Right; }
-		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_THIRDBUTTON) > 0) { buttonMask |= PointerButton.Middle; }
-		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FOURTHBUTTON) > 0) { buttonMask |= PointerButton.Back; }
-		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIFTHBUTTON) > 0) { buttonMask |= PointerButton.Forward; }
-		PointerMove?.Invoke(new Events.PointerEvent
+	private Thread? frameLoopThread;
+	private bool running;
+
+	public void StartFrameLoop()
+	{
+		running = true;
+		frameLoopThread = new(new ThreadStart(FrameLoop));
+		frameLoopThread.Start();
+	}
+
+	public void StopFrameLoop()
+	{
+		running = false;
+	}
+
+	private void FrameLoop()
+	{
+		double lastFrameTime = DateTime.Now.Ticks / 10_000_000.0;
+		while (running)
 		{
-			Position = Program.App.pointerPosition,
-			ButtonMask = buttonMask,
-		});
+			double frameTime = DateTime.Now.Ticks / 10_000_000.0;
+
+			Frame?.Invoke(new()
+			{
+				Delta = frameTime - lastFrameTime,
+			});
+
+			int ftMs = (int)(frameTime * 1000);
+			int lftMs = (int)(lastFrameTime * 1000);
+			int deltaMs = ftMs - lftMs;
+
+			lastFrameTime = frameTime;
+
+			if (deltaMs < 4)
+			{
+				Thread.Sleep(4 - deltaMs);
+			}
+		}
 	}
 }

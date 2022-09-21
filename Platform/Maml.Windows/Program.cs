@@ -31,20 +31,10 @@ internal static class Program
 			}
 		}
 
-		// Input.PointerMove += (PointerEvent evt) =>
-		// {
-		// 	Console.WriteLine(evt);
-		// };
-
 		App = new();
 		App.Viewport.Draw += Draw;
-		// App.Animator.Frame += Frame;
-		Animator anim = new();
-		anim.Frame += Frame;
-
-		anim.StartFrameLoop();
+		App.Animator.Frame += Frame;
 		App.RunMessageLoop();
-		anim.StopFrameLoop();
 
 		return 0;
 	}
@@ -127,9 +117,7 @@ internal static class Program
 	private static double rotation = 0;
 	unsafe private static void Frame(FrameEvent evt)
 	{
-		var delta = evt.Delta;
-		rotation += System.Math.PI * delta;
-		App.Viewport.Redraw();
+		rotation += double.Tau * evt.Delta.TotalSeconds / 10;
 	}
 
 	private static void Draw(DrawEvent evt)

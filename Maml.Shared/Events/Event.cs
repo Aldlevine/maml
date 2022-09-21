@@ -1,4 +1,5 @@
-﻿using Maml.Graphics;
+﻿using System;
+using Maml.Graphics;
 using Maml.Math;
 using Maml.UserInput;
 
@@ -30,7 +31,7 @@ public record DrawEvent : Event
 
 public record FrameEvent : Event
 {
-	public double Delta;
+	public TimeSpan Delta;
 }
 
 public record PointerEvent : Event

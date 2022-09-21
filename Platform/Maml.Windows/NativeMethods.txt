@@ -1,6 +1,10 @@
 ﻿AllocConsole
 AttachConsole
 
+CreateWaitableTimerW
+CreateWaitableTimerExW
+SetWaitableTimer
+
 EnableMouseInPointer
 GetPointerInfo
 MODIFIERKEYS_FLAGS

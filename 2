@@ -1,4 +1,4 @@
-﻿using Maml.Animation;
+using Maml.Animation;
 using Maml.Graphics;
 using Maml.Math;
 using Maml.UserInput;
@@ -240,7 +240,6 @@ unsafe internal class App
 				{
 					case WM_SIZE:
 					case WM_SIZING:
-					case WM_DPICHANGED:
 						{
 							app.Viewport.HandleResize();
 						}

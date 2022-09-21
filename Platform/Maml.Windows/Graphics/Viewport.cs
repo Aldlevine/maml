@@ -74,18 +74,11 @@ public unsafe partial class Viewport
 
 	internal void Redraw()
 	{
-		drawMutex.WaitOne();
-		pRenderTarget->Flush();
-		drawMutex.ReleaseMutex();
 		InvalidateRect(hWnd, (RECT?)null, false);
-
-		// UpdateWindow(hWnd);
 	}
 
 	internal void HandleDraw()
 	{
-		// if (isDrawing) { return; }
-		// isDrawing = true;
 		drawMutex.WaitOne();
 
 		CreateDeviceResources();
@@ -103,20 +96,14 @@ public unsafe partial class Viewport
 			hr.ThrowOnFailure();
 		}
 
-		// isDrawing = false;
 		drawMutex.ReleaseMutex();
 	}
 
-	internal void HandleResize(int width, int height)
+	internal void HandleResize()
 	{
 		if (pRenderTarget != null)
 		{
-			var size = new D2D_SIZE_U
-			{
-				width = (uint)width,
-				height = (uint)height,
-			};
-			pRenderTarget->Resize(in size);
+			pRenderTarget->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
 		}
 		Resize?.Invoke(new Events.ResizeEvent { Size = Size });
 	}

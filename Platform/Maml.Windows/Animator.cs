@@ -1,48 +1,42 @@
 ﻿using System;
-using System.Threading;
+using System.Timers;
 
 namespace Maml.Animation;
 
 public partial class Animator
 {
+	private DateTime lastTick = DateTime.Now;
 
-	private Thread? frameLoopThread;
-	private bool running;
+	private Timer timer = new()
+	{
+		Interval = double.Epsilon,
+		AutoReset = true,
+		Enabled = true,
+	};
+
+	internal bool ticking = false;
+	internal void Tick()
+	{
+		if (ticking) { return;  }
+		ticking = true;
+		var tick = DateTime.Now;
+		Frame?.Invoke(new() { Delta = tick - lastTick });
+		lastTick = tick;
+		ticking = false;
+	}
 
 	public void StartFrameLoop()
 	{
-		running = true;
-		frameLoopThread = new(new ThreadStart(FrameLoop));
-		frameLoopThread.Start();
+		lastTick = DateTime.Now;
+		timer.Elapsed += (s, e) =>
+		{
+			Frame?.Invoke(new() { Delta = e.SignalTime - lastTick });
+			lastTick = e.SignalTime;
+		};
 	}
 
 	public void StopFrameLoop()
 	{
-		running = false;
-	}
-
-	private void FrameLoop()
-	{
-		double lastFrameTime = DateTime.Now.Ticks / 10_000_000.0;
-		while (running)
-		{
-			double frameTime = DateTime.Now.Ticks / 10_000_000.0;
-
-			Frame?.Invoke(new()
-			{
-				Delta = frameTime - lastFrameTime,
-			});
-
-			int ftMs = (int)(frameTime * 1000);
-			int lftMs = (int)(lastFrameTime * 1000);
-			int deltaMs = ftMs - lftMs;
-
-			lastFrameTime = frameTime;
-
-			if (deltaMs < 12)
-			{
-				Thread.Sleep(12 - deltaMs);
-			}
-		}
+		timer.Stop();
 	}
 }

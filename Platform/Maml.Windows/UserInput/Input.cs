@@ -22,7 +22,7 @@ public partial class Input
 		Program.App.pointerPosition = new Vector2(
 			pointerInfo.ptPixelLocation.X - Program.App.windowPosition.X,
 			pointerInfo.ptPixelLocation.Y - Program.App.windowPosition.Y);
-		Program.App.pointerPosition *= new Vector2(dpiRatio, dpiRatio);
+		// Program.App.pointerPosition *= new Vector2(dpiRatio, dpiRatio);
 		PointerButton buttonMask = PointerButton.None;
 		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON) > 0) { buttonMask |= PointerButton.Left; }
 		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON) > 0) { buttonMask |= PointerButton.Right; }

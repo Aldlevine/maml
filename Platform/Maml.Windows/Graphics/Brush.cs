@@ -4,6 +4,7 @@ namespace Maml.Graphics;
 
 unsafe public abstract partial class Brush : Resource
 {
+	internal ID2D1RenderTarget* pLastRenderTarget;
 	internal ID2D1Brush* pResource;
 	internal abstract void MakeResource(ID2D1RenderTarget* pRenderTarget);
 	internal ID2D1Brush* GetResource(ID2D1RenderTarget* pRenderTarget, bool noCache = false)
@@ -14,12 +15,13 @@ unsafe public abstract partial class Brush : Resource
 		}
 		else
 		{
-			if (noCache || IsDirty)
+			if (noCache || IsDirty || pLastRenderTarget != pRenderTarget)
 			{
 				FreeResources();
 				MakeResource(pRenderTarget);
 			}
 		}
+		pLastRenderTarget = pRenderTarget;
 		return pResource;
 	}
 	protected override void FreeResources()
