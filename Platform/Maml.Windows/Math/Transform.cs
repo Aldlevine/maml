@@ -6,17 +6,22 @@ public partial struct Transform
 {
 	unsafe internal D2D_MATRIX_3X2_F ToD2DMatrix3X2F()
 	{
-		var asFloat = new float[] { (float)X.X, (float)X.Y, (float)Y.X, (float)Y.Y, (float)Origin.X, (float)Origin.Y };
-		fixed (void* pAsFloat = asFloat)
+		// var asFloat = new float[] { (float)X.X, (float)X.Y, (float)Y.X, (float)Y.Y, (float)Origin.X, (float)Origin.Y };
+		// fixed (void* pAsFloat = asFloat)
+		// {
+		// 	return *(D2D_MATRIX_3X2_F*)pAsFloat;
+		// }
+		fixed (void* pMatrix = &matrix)
 		{
-			return *(D2D_MATRIX_3X2_F*)pAsFloat;
+			return *(D2D_MATRIX_3X2_F*)pMatrix;
 		}
 	}
 
-	internal Transform(D2D_MATRIX_3X2_F d2DMatrix3X2F)
+	unsafe internal Transform(D2D_MATRIX_3X2_F d2DMatrix3X2F)
 	{
-		X = new(d2DMatrix3X2F.Anonymous.m._0, d2DMatrix3X2F.Anonymous.m._1);
-		Y = new(d2DMatrix3X2F.Anonymous.m._2, d2DMatrix3X2F.Anonymous.m._3);
-		Origin = new(d2DMatrix3X2F.Anonymous.m._4, d2DMatrix3X2F.Anonymous.m._5);
+		// X = new(d2DMatrix3X2F.Anonymous.m._0, d2DMatrix3X2F.Anonymous.m._1);
+		// Y = new(d2DMatrix3X2F.Anonymous.m._2, d2DMatrix3X2F.Anonymous.m._3);
+		// Origin = new(d2DMatrix3X2F.Anonymous.m._4, d2DMatrix3X2F.Anonymous.m._5);
+		matrix = *(System.Numerics.Matrix3x2*)&d2DMatrix3X2F;
 	}
 }

@@ -28,6 +28,11 @@ public record DrawEvent : Event
 	public Viewport? Viewport;
 }
 
+public record FrameEvent : Event
+{
+	public double Delta;
+}
+
 public record PointerEvent : Event
 {
 	public Vector2 Position;

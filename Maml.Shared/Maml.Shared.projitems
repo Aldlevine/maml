@@ -9,6 +9,7 @@
     <Import_RootNamespace>Maml.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Animator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BoxCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Color.cs" />

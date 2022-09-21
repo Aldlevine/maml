@@ -1,4 +1,5 @@
 ﻿using Maml.Math;
+using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Direct2D.Common;
@@ -69,8 +70,24 @@ public unsafe partial class Viewport
 	public partial void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
 	public partial void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
 
+	private Mutex drawMutex = new();
+
+	internal void Redraw()
+	{
+		drawMutex.WaitOne();
+		pRenderTarget->Flush();
+		drawMutex.ReleaseMutex();
+		InvalidateRect(hWnd, (RECT?)null, false);
+
+		// UpdateWindow(hWnd);
+	}
+
 	internal void HandleDraw()
 	{
+		// if (isDrawing) { return; }
+		// isDrawing = true;
+		drawMutex.WaitOne();
+
 		CreateDeviceResources();
 		pRenderTarget->BeginDraw();
 
@@ -85,6 +102,9 @@ public unsafe partial class Viewport
 		{
 			hr.ThrowOnFailure();
 		}
+
+		// isDrawing = false;
+		drawMutex.ReleaseMutex();
 	}
 
 	internal void HandleResize(int width, int height)

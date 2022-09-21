@@ -155,7 +155,7 @@ unsafe internal class App
 	}
 	private void CreateDeviceIndependentResources()
 	{
-		D2D1CreateFactory(D2D1_FACTORY_TYPE.D2D1_FACTORY_TYPE_SINGLE_THREADED, Marshal.GenerateGuidForType(typeof(ID2D1Factory)), null, out var obj).ThrowOnFailure();
+		D2D1CreateFactory(D2D1_FACTORY_TYPE.D2D1_FACTORY_TYPE_MULTI_THREADED, Marshal.GenerateGuidForType(typeof(ID2D1Factory)), null, out var obj).ThrowOnFailure();
 		pD2DFactory = (ID2D1Factory*)obj;
 	}
 
@@ -263,7 +263,7 @@ unsafe internal class App
 					case WM_POINTERUPDATE:
 						{
 							Input.HandlePointerMove(wParam, lParam);
-							InvalidateRect(hWnd, (RECT?)null, false);
+							app.Viewport.Redraw();
 						}
 						result = new(0);
 						wasHandled = true;

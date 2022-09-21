@@ -1,4 +1,5 @@
-﻿using Maml.Events;
+﻿using Maml.Animation;
+using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
 using System;
@@ -38,7 +39,12 @@ internal static class Program
 		App = new();
 		App.Viewport.Draw += Draw;
 		// App.Animator.Frame += Frame;
+		Animator anim = new();
+		anim.Frame += Frame;
+
+		anim.StartFrameLoop();
 		App.RunMessageLoop();
+		anim.StopFrameLoop();
 
 		return 0;
 	}
@@ -118,6 +124,14 @@ internal static class Program
 		},
 	};
 
+	private static double rotation = 0;
+	unsafe private static void Frame(FrameEvent evt)
+	{
+		var delta = evt.Delta;
+		rotation += System.Math.PI * delta;
+		App.Viewport.Redraw();
+	}
+
 	private static void Draw(DrawEvent evt)
 	{
 		var vp = evt.Viewport!;
@@ -160,9 +174,9 @@ internal static class Program
 		// Transform Graphics
 		if (Program.App != null)
 		{
-			rectGfx.Transform = Transform.Identity.Translated(App.pointerPosition);
-			ellipseGfx.Transform = Transform.Identity.Translated(App.pointerPosition);
-			lineGfx.Transform = Transform.Identity.Translated(App.pointerPosition);
+			rectGfx.Transform = Transform.Identity.Rotated(rotation).Translated(App.pointerPosition);
+			ellipseGfx.Transform = Transform.Identity.Rotated(rotation).Translated(App.pointerPosition);
+			lineGfx.Transform = Transform.Identity.Rotated(rotation).Translated(App.pointerPosition);
 		}
 
 		// Populate Array of Graphics
