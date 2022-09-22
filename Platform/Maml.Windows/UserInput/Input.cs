@@ -19,10 +19,10 @@ public partial class Input
 		uint pointerId = (uint)LoWord(wParam);
 		GetPointerInfo(pointerId, out var pointerInfo);
 		double dpiRatio = 1.0 / Program.App.Viewport.DpiRatio;
-		Program.App.pointerPosition = new Vector2(
+		var pointerPosition = new Vector2(
 			pointerInfo.ptPixelLocation.X - Program.App.windowPosition.X,
 			pointerInfo.ptPixelLocation.Y - Program.App.windowPosition.Y);
-		// Program.App.pointerPosition *= new Vector2(dpiRatio, dpiRatio);
+		pointerPosition *= new Vector2(dpiRatio, dpiRatio);
 		PointerButton buttonMask = PointerButton.None;
 		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON) > 0) { buttonMask |= PointerButton.Left; }
 		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON) > 0) { buttonMask |= PointerButton.Right; }
@@ -31,7 +31,7 @@ public partial class Input
 		if ((pointerInfo.pointerFlags & POINTER_FLAGS.POINTER_FLAG_FIFTHBUTTON) > 0) { buttonMask |= PointerButton.Forward; }
 		PointerMove?.Invoke(new Events.PointerEvent
 		{
-			Position = Program.App.pointerPosition,
+			Position = pointerPosition,
 			ButtonMask = buttonMask,
 		});
 	}

@@ -47,34 +47,34 @@ unsafe internal class App
 
 	public void RunMessageLoop()
 	{
-		// BOOL result;
-		// while (result = GetMessage(out MSG msg, default, 0, 0))
-		// {
-		// 	if (result == -1)
-		// 	{
-		// 		throw new Exception("GetMessage Failed " + Marshal.GetLastWin32Error());
-		// 	}
-		// 	else
-		// 	{
-		// 		TranslateMessage(in msg);
-		// 		DispatchMessage(in msg);
-		// 	}
-		// }
-		MSG msg = default;
-		Animator.Frame += (e) => Viewport.Redraw();
-		Animator.StartFrameLoop();
+		SetTimer(hWnd, 0, 8, null);
 
-		while(msg.message != WM_QUIT)
+		Animator.Frame += (e) => Viewport.Redraw(false);
+
+		MSG msg;
+		BOOL valid = true;
+		while (valid)
 		{
-			Animator.Tick();
-			if (PeekMessage(out msg, default, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE | PEEK_MESSAGE_REMOVE_TYPE.PM_NOYIELD))
+			// We do this so animation frames don't get blocked
+			if (PeekMessage(out msg, default, WM_TIMER, WM_TIMER, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE))
 			{
 				TranslateMessage(in msg);
 				DispatchMessage(in msg);
-				continue;
+			}
+			else
+			{
+				while (valid = GetMessage(out msg, default, 0, 0))
+				{
+					TranslateMessage(in msg);
+					DispatchMessage(in msg);
+					Animator.Tick();
+					if (!valid)
+					{
+						break;
+					}
+				}
 			}
 		}
-		Animator.StopFrameLoop();
 	}
 
 	public void UpdateApplication()
@@ -112,7 +112,6 @@ unsafe internal class App
 			WNDCLASSEXW wcex = new()
 			{
 				style = WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW,
-				// lpfnWndProc = &WndProcDelegate,
 				lpfnWndProc = (delegate* unmanaged[Stdcall]<HWND, uint, WPARAM, LPARAM, LRESULT>)Marshal.GetFunctionPointerForDelegate(WndProcDelegate),
 				cbClsExtra = 0,
 				cbSize = (uint)Marshal.SizeOf<WNDCLASSEXW>(),
@@ -150,7 +149,6 @@ unsafe internal class App
 				throw new Exception("CreateWindow Failed " + err);
 			}
 
-
 			Viewport = new()
 			{
 				hWnd = hWnd,
@@ -178,10 +176,74 @@ unsafe internal class App
 		pD2DFactory = (ID2D1Factory*)obj;
 	}
 
-	private void OnMove(int x, int y)
+
+	private ( LRESULT result, bool wasHandled ) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
 	{
-		windowPosition = new(x, y);
+		(LRESULT result, bool wasHandled) res = (new(0), false);
+		switch (msg)
+		{
+			case WM_TIMER:
+				{
+					Animator.Tick();
+				}
+				res.wasHandled = true;
+				break;
+
+			case WM_SIZE:
+			case WM_SIZING:
+			case WM_DPICHANGED:
+				{
+					Viewport.HandleResize();
+				}
+				res.wasHandled = true;
+				break;
+
+			case WM_MOVE:
+				{
+					int x = LoWord(lParam);
+					int y = HiWord(lParam);
+					windowPosition = new(x, y);
+				}
+				res.wasHandled = true;
+				break;
+
+			case WM_DISPLAYCHANGE:
+				{
+					InvalidateRect(hWnd, (RECT?)null, false);
+				}
+				res.wasHandled = true;
+				break;
+
+			case WM_PAINT:
+				{
+					Viewport.HandleDraw();
+					ValidateRect(hWnd, (RECT?)null);
+				}
+				res.wasHandled = true;
+				break;
+
+			case WM_DESTROY:
+				{
+					PostQuitMessage(0);
+				}
+				res.result = new(1);
+				res.wasHandled = true;
+				break;
+
+			case WM_POINTERUPDATE:
+				{
+					Viewport.ImmediateMode = true;
+					Input.HandlePointerMove(wParam, lParam);
+					Viewport.Redraw(true);
+					Viewport.ImmediateMode = false;
+				}
+				res.wasHandled = true;
+				break;
+		}
+
+		return res;
 	}
+
 
 	#endregion private
 	#region private static
@@ -213,94 +275,25 @@ unsafe internal class App
 		throw new Exception("GetApp Failed");
 	}
 
-	internal Vector2 pointerPosition = new Vector2();
-
 	private static LRESULT WndProc(
 		HWND hWnd,
 		uint msg,
 		WPARAM wParam,
 		LPARAM lParam)
 	{
-		LRESULT result = new(0);
-
 		if (msg == WM_CREATE)
 		{
-			result = new(1);
+			return new(1);
 		}
-		else
+
+		var appId = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA);
+		var app = GetApp(appId);
+
+		(LRESULT result, bool wasHandled) = app?.HandleMessage(hWnd, msg, wParam, lParam) ?? (new(0), false);
+
+		if (!wasHandled)
 		{
-			var appId = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA);
-			var app = GetApp(appId);
-
-			bool wasHandled = false;
-
-			if (app != null)
-			{
-				switch (msg)
-				{
-					case WM_SIZE:
-					case WM_SIZING:
-					case WM_DPICHANGED:
-						{
-							app.Viewport.HandleResize();
-						}
-						wasHandled = true;
-						break;
-
-					case WM_MOVE:
-						{
-							int x = LoWord(lParam);
-							int y = HiWord(lParam);
-							app.OnMove(x, y);
-						}
-						wasHandled = true;
-						break;
-
-					case WM_DISPLAYCHANGE:
-						{
-							InvalidateRect(hWnd, (RECT?)null, false);
-						}
-						wasHandled = true;
-						break;
-
-					case WM_PAINT:
-						{
-							app.Viewport.HandleDraw();
-							ValidateRect(hWnd, (RECT?)null);
-						}
-						wasHandled = true;
-						break;
-
-					case WM_DESTROY:
-						{
-							PostQuitMessage(0);
-						}
-						result = new(1);
-						wasHandled = true;
-						break;
-
-					case WM_POINTERUPDATE:
-						{
-							Input.HandlePointerMove(wParam, lParam);
-							app.Viewport.Redraw();
-						}
-						result = new(0);
-						wasHandled = true;
-						break;
-					case 0xbeef:
-						{
-							InvalidateRect(hWnd, (RECT?)null, false);
-						}
-						result = new(0);
-						wasHandled = true;
-						break;
-				}
-			}
-
-			if (!wasHandled)
-			{
-				result = DefWindowProc(hWnd, msg, wParam, lParam);
-			}
+			result = DefWindowProc(hWnd, msg, wParam, lParam);
 		}
 
 		return result;

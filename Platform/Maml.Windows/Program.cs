@@ -2,6 +2,7 @@
 using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
+using Maml.UserInput;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
@@ -14,6 +15,8 @@ namespace Maml;
 internal static class Program
 {
 	public static App? App;
+
+	private static Vector2 pointerPosition;
 
 	private static int Main(string[] args)
 	{
@@ -34,6 +37,7 @@ internal static class Program
 		App = new();
 		App.Viewport.Draw += Draw;
 		App.Animator.Frame += Frame;
+		Input.PointerMove += (e) => pointerPosition = e.Position;
 		App.RunMessageLoop();
 
 		return 0;
@@ -117,7 +121,7 @@ internal static class Program
 	private static double rotation = 0;
 	unsafe private static void Frame(FrameEvent evt)
 	{
-		rotation += double.Tau * evt.Delta.TotalSeconds / 10;
+		rotation += double.Tau * evt.Delta.TotalSeconds / 2;
 	}
 
 	private static void Draw(DrawEvent evt)
@@ -125,7 +129,7 @@ internal static class Program
 		var vp = evt.Viewport!;
 
 		vp.Clear(Colors.DarkSlateGray);
-		vp.SetTransform(Transform.PixelIdentity.Scaled(new Vector2(vp.DpiRatio, vp.DpiRatio)));
+		vp.SetTransform(Transform.PixelIdentity);
 
 		// Draw Vertical Lines
 		((LineGeometry)lineGfxX.Geometry!).Line = new Line { Start = new(0, 0), End = new(0, vp.Size.Y) };
@@ -162,9 +166,9 @@ internal static class Program
 		// Transform Graphics
 		if (Program.App != null)
 		{
-			rectGfx.Transform = Transform.Identity.Rotated(rotation).Translated(App.pointerPosition);
-			ellipseGfx.Transform = Transform.Identity.Rotated(rotation).Translated(App.pointerPosition);
-			lineGfx.Transform = Transform.Identity.Rotated(rotation).Translated(App.pointerPosition);
+			rectGfx.Transform = Transform.Identity.Rotated(rotation).Translated(pointerPosition);
+			ellipseGfx.Transform = Transform.Identity.Rotated(rotation).Translated(pointerPosition);
+			lineGfx.Transform = Transform.Identity.Rotated(rotation).Translated(pointerPosition);
 		}
 
 		// Populate Array of Graphics

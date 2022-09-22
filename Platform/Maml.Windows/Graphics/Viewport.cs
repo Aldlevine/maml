@@ -9,10 +9,15 @@ namespace Maml.Graphics;
 
 public unsafe partial class Viewport
 {
-	private const int stdDpi = 96;
 	internal HWND hWnd;
 	internal ID2D1Factory* pD2DFactory;
-	internal ID2D1HwndRenderTarget* pRenderTarget;
+
+	internal bool ImmediateMode = false;
+	internal ID2D1HwndRenderTarget* pRenderTarget => ImmediateMode ? pImmediateRenderTarget : pSyncRenderTarget;
+	private ID2D1HwndRenderTarget* pImmediateRenderTarget;
+	private ID2D1HwndRenderTarget* pSyncRenderTarget;
+
+	private const int stdDpi = 96;
 
 	~Viewport()
 	{
@@ -29,7 +34,7 @@ public unsafe partial class Viewport
 
 	private void CreateDeviceResources()
 	{
-		if (pRenderTarget == null)
+		if (pImmediateRenderTarget == null)
 		{
 			D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new()
 			{
@@ -44,7 +49,31 @@ public unsafe partial class Viewport
 				presentOptions = D2D1_PRESENT_OPTIONS.D2D1_PRESENT_OPTIONS_IMMEDIATELY,
 			};
 
-			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pRenderTarget)
+			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pImmediateRenderTarget)
+			{
+				pD2DFactory->CreateHwndRenderTarget(
+					in renderTargetProps,
+					in hWndRenderTargetProps,
+					ppRenderTarget).ThrowOnFailure();
+			}
+		}
+
+		if (pSyncRenderTarget == null)
+		{
+			D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new()
+			{
+				dpiX = stdDpi,
+				dpiY = stdDpi,
+			};
+
+			D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
+			{
+				hwnd = hWnd,
+				pixelSize = Size.ToD2DSizeU(),
+				presentOptions = D2D1_PRESENT_OPTIONS.D2D1_PRESENT_OPTIONS_NONE,
+			};
+
+			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pSyncRenderTarget)
 			{
 				pD2DFactory->CreateHwndRenderTarget(
 					in renderTargetProps,
@@ -56,15 +85,19 @@ public unsafe partial class Viewport
 
 	private void DiscardDeviceResources()
 	{
-		if (pRenderTarget != null)
+		if (pImmediateRenderTarget != null)
 		{
-			pRenderTarget->Release();
-			pRenderTarget = null;
+			pImmediateRenderTarget->Release();
+			pImmediateRenderTarget = null;
+		}
+		if (pSyncRenderTarget != null)
+		{
+			pSyncRenderTarget->Release();
+			pSyncRenderTarget = null;
 		}
 
 		// Somehow need to notify Geometries and Brushes to release their stuff...
 	}
-
 
 	public partial void DrawGraphic(Graphic graphic) => graphic.Draw((ID2D1RenderTarget*)pRenderTarget);
 	public partial void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
@@ -72,9 +105,13 @@ public unsafe partial class Viewport
 
 	private Mutex drawMutex = new();
 
-	internal void Redraw()
+	internal void Redraw(bool forceUpdate)
 	{
 		InvalidateRect(hWnd, (RECT?)null, false);
+		if (forceUpdate)
+		{
+			UpdateWindow(hWnd);
+		}
 	}
 
 	internal void HandleDraw()
@@ -103,7 +140,11 @@ public unsafe partial class Viewport
 	{
 		if (pRenderTarget != null)
 		{
-			pRenderTarget->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
+			pImmediateRenderTarget->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
+			pSyncRenderTarget->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
+			float dpi = GetDpiForWindow(hWnd);
+			pImmediateRenderTarget->SetDpi(dpi, dpi);
+			pSyncRenderTarget->SetDpi(dpi, dpi);
 		}
 		Resize?.Invoke(new Events.ResizeEvent { Size = Size });
 	}
