@@ -17,7 +17,7 @@ public partial class Viewport
 	public event EventHandler<DrawEvent>? Draw;
 
 	public partial void Clear(Color color);
-	public partial void DrawGraphic(Graphic graphic);
+	public partial void DrawGraphic(Graphic graphic, Transform transform);
 	public partial void SetTransform(Transform transform);
 
 	// public partial void BeginDraw();

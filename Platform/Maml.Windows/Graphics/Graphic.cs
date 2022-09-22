@@ -6,16 +6,16 @@ namespace Maml.Graphics;
 
 unsafe public abstract partial class Graphic
 {
-	internal abstract void Draw(ID2D1RenderTarget* pRenderTarget);
+	internal abstract void Draw(ID2D1RenderTarget* pRenderTarget, Transform transform);
 }
 
 public partial class GeometryGraphic
 {
-	unsafe override internal void Draw(ID2D1RenderTarget* pRenderTarget)
+	unsafe override internal void Draw(ID2D1RenderTarget* pRenderTarget, Transform transform)
 	{
 		pRenderTarget->GetTransform(out var curD2DXform);
 		Transform curXform = new(curD2DXform);
-		pRenderTarget->SetTransform(curXform.Transformed(Transform).ToD2DMatrix3X2F());
+		pRenderTarget->SetTransform(curXform.Transformed(transform).ToD2DMatrix3X2F());
 
 		foreach (var layer in DrawLayers)
 		{

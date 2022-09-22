@@ -1,4 +1,4 @@
-﻿namespace Maml.UserInput;
+﻿namespace Maml.Events;
 
 internal static class InputHelpers
 {

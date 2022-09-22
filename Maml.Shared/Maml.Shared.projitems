@@ -22,14 +22,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Rect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Brush.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Viewport.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UserInput\Input.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\Event.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UserInput\PointerButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\PointerButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Units.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene\SceneTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UserInput\VirtualKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\VirtualKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Test.maml" />

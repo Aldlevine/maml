@@ -1,7 +1,7 @@
 ﻿using System;
 using Maml.Graphics;
 using Maml.Math;
-using Maml.UserInput;
+using Maml.Events;
 
 namespace Maml.Events;
 

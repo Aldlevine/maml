@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maml.UserInput;
+namespace Maml.Events;
 
 [Flags]
 public enum PointerButton

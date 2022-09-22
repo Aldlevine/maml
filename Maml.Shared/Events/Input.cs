@@ -1,6 +1,6 @@
 ﻿using Maml.Events;
 
-namespace Maml.UserInput;
+namespace Maml.Events;
 
 public static partial class Input
 {

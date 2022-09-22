@@ -1,7 +1,7 @@
 using Maml.Graphics;
 using Maml.Events;
 using Maml.Math;
-using Maml.UserInput;
+using Maml.Events;
 
 namespace Maml.WasmBrowser;
 

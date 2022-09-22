@@ -4,11 +4,10 @@ using Windows.Win32.UI.Input.Pointer;
 using static Maml.Utils.Bits;
 using static Windows.Win32.PInvoke;
 
-namespace Maml.UserInput;
+namespace Maml.Events;
 
 public partial class Input
 {
-	// internal static void HandlePointerMove(int x, int y, int iButtonMask)
 	internal static void HandlePointerMove(WPARAM wParam, LPARAM lParam)
 	{
 		if (Program.App == null)

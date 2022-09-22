@@ -3,10 +3,7 @@ using System.Collections.Generic;
 
 namespace Maml.Graphics;
 
-public abstract partial class Graphic
-{
-	public Transform Transform { get; set; } = Transform.Identity;
-}
+public abstract partial class Graphic { }
 
 public partial class GeometryGraphic : Graphic
 {

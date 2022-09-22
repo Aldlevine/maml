@@ -18,13 +18,14 @@ public unsafe partial class Viewport
 	private ID2D1HwndRenderTarget* pSyncRenderTarget;
 
 	private const int stdDpi = 96;
+	private const double stdDpiInv = 1.0 / (double)stdDpi;
 
 	~Viewport()
 	{
 		DiscardDeviceResources();
 	}
 
-	internal partial double GetDpiRatio() => GetDpiForWindow(hWnd) / (double)stdDpi;
+	internal partial double GetDpiRatio() => GetDpiForWindow(hWnd) * stdDpiInv;
 
 	internal partial Vector2 GetSize()
 	{
@@ -99,7 +100,7 @@ public unsafe partial class Viewport
 		// Somehow need to notify Geometries and Brushes to release their stuff...
 	}
 
-	public partial void DrawGraphic(Graphic graphic) => graphic.Draw((ID2D1RenderTarget*)pRenderTarget);
+	public partial void DrawGraphic(Graphic graphic, Transform transform) => graphic.Draw((ID2D1RenderTarget*)pRenderTarget, transform);
 	public partial void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
 	public partial void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
 

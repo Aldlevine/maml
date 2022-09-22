@@ -1,7 +1,7 @@
 ﻿using Maml.Animation;
 using Maml.Graphics;
 using Maml.Math;
-using Maml.UserInput;
+using Maml.Events;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
@@ -50,6 +50,8 @@ unsafe internal class App
 		SetTimer(hWnd, 0, 8, null);
 
 		Animator.Frame += (e) => Viewport.Redraw(false);
+
+		Viewport.HandleResize();
 
 		MSG msg;
 		BOOL valid = true;
