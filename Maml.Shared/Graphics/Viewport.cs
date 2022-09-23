@@ -1,5 +1,6 @@
 ﻿using Maml.Events;
 using Maml.Math;
+using Maml.Scene;
 
 namespace Maml.Graphics;
 
@@ -19,6 +20,20 @@ public partial class Viewport
 	public partial void Clear(Color color);
 	public partial void DrawGraphic(Graphic graphic, Transform transform);
 	public partial void SetTransform(Transform transform);
+
+	public void DrawScene(SceneTree sceneTree)
+	{
+		foreach (var node in sceneTree.Nodes)
+		{
+			foreach (var n in node.Graphics)
+			{
+				var g = n.Graphic;
+				var gxform = n.Transform;
+				gxform = gxform.Transformed(node.Transform);
+				DrawGraphic(n.Graphic, gxform);
+			}
+		}
+	}
 
 	// public partial void BeginDraw();
 	// public partial void EndDraw();

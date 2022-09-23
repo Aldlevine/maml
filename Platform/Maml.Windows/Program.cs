@@ -15,7 +15,8 @@ internal static class Program
 {
 	public static App? App;
 
-	// Resources
+	#region Resources
+
 	private static List<DrawLayer> pointerDrawLayers = new()
 	{
 		new Fill(new ColorBrush { Color = Colors.RebeccaPurple with { A = 0.25f } }),
@@ -68,6 +69,10 @@ internal static class Program
 		DrawLayers = lineDrawLayersMajor,
 	};
 
+	#endregion
+
+	#region Nodes
+
 	private static Node pointerNode = new Node
 	{
 		Name = "PointerNode",
@@ -82,17 +87,27 @@ internal static class Program
 				Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
 				DrawLayers = pointerDrawLayers,
 			},
+			new (new GeometryGraphic
+			{
+				Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
+				DrawLayers = pointerDrawLayers,
+			}, Transform.Identity.Translated(new(0, -50))),
+			new (new GeometryGraphic
+			{
+				Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
+				DrawLayers = pointerDrawLayers,
+			}, Transform.Identity.Translated(new(-50, 0))),
 			new GeometryGraphic
 			{
 				Geometry = new LineGeometry { Line = new() { Start = new(-25, -25), End = new(31.5, 31.5) }, },
 				DrawLayers = pointerDrawLayers,
-			}
+			},
 		},
 	};
 
 	private static Node gridNode = new Node
 	{
-		Name = "GridNode",
+		Name = "Grid",
 		Graphics = new() { }
 	};
 
@@ -105,6 +120,63 @@ internal static class Program
 		}
 	};
 
+	#endregion
+
+	#region Events
+
+	private static void Resize(ResizeEvent evt)
+	{
+		// keep the grid up to date with the window size
+		gridNode.Graphics.RemoveRange(0, gridNode.Graphics.Count);
+
+		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, evt.Size.Y), };
+		for (int x = 0; x < evt.Size.X; x += 20)
+		{
+			var lineGfx = (x % 100) switch
+			{
+				0 => lineGfxMajorX,
+				_ => lineGfxMinorX,
+			};
+			gridNode.Graphics.Add(new(lineGfx, Transform.Identity.Translated(new(x, 0))));
+		}
+
+		lineGeoY.Line = new Line { Start = new(0, 0), End = new(evt.Size.X, 0), };
+		for (int y = 0; y < evt.Size.Y; y += 20)
+		{
+			var lineGfx = (y % 100) switch
+			{
+				0 => lineGfxMajorY,
+				_ => lineGfxMinorY,
+			};
+			gridNode.Graphics.Add(new(lineGfx, Transform.Identity.Translated(new(0, y))));
+		}
+	}
+
+	private static void Frame(FrameEvent evt)
+	{
+		// animate the pointer node transform
+		pointerNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds).Transformed(pointerNode.Transform);
+	}
+
+	private static void PointerMove(PointerEvent evt)
+	{
+		// move the pointer node to the pointer position
+		pointerNode.Transform = pointerNode.Transform with { Origin = evt.Position };
+	}
+
+	private static void Draw(DrawEvent evt)
+	{
+		// draw the scene tree to the viewport
+		var vp = evt.Viewport;
+		if (vp == null) { return; }
+		vp.Clear(new Color(0x333333ff));
+		vp.SetTransform(Transform.PixelIdentity);
+		vp.DrawScene(sceneTree);
+	}
+
+	#endregion
+
+	// Main
 	private static int Main(string[] args)
 	{
 		// Because we only care about pointer events
@@ -131,73 +203,10 @@ internal static class Program
 		App.Viewport.Resize += Resize;
 		Input.PointerMove += PointerMove;
 
+		// RUN!
 		App.RunMessageLoop();
 
 		return 0;
 	}
 
-	// This code keeps the grid up to date with the window size
-	private static void Resize(ResizeEvent evt)
-	{
-		gridNode.Graphics.RemoveRange(0, gridNode.Graphics.Count);
-
-		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, evt.Size.Y), };
-		for (int x = 0; x < evt.Size.X; x += 20)
-		{
-			var lineGfx = (x % 100) switch
-			{
-				0 => lineGfxMajorX,
-				_ => lineGfxMinorX,
-			};
-			gridNode.Graphics.Add(new(lineGfx) { Transform = Transform.Identity.Translated(new(x, 0)) });
-		}
-
-		lineGeoY.Line = new Line { Start = new(0, 0), End = new(evt.Size.X, 0), };
-		for (int y = 0; y < evt.Size.Y; y += 20)
-		{
-			var lineGfx = (y % 100) switch
-			{
-				0 => lineGfxMajorY,
-				_ => lineGfxMinorY,
-			};
-			gridNode.Graphics.Add(new(lineGfx) { Transform = Transform.Identity.Translated(new(0, y)) });
-		}
-	}
-
-	// This code animates the pointer node transform
-	private static void Frame(FrameEvent evt)
-	{
-		pointerNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds).Transformed(pointerNode.Transform);
-	}
-
-	// This code moves the pointer node to the pointer position
-	private static void PointerMove(PointerEvent evt)
-	{
-		pointerNode.Transform = pointerNode.Transform with { Origin = evt.Position };
-	}
-
-	// This code draws the scene tree to the viewport
-	private static void Draw(DrawEvent evt)
-	{
-		var vp = evt.Viewport;
-
-		if (vp == null)
-		{
-			return;
-		}
-
-		vp.Clear(new Color(0x333333ff));
-		vp.SetTransform(Transform.PixelIdentity);
-
-		foreach (var node in sceneTree.Nodes)
-		{
-			foreach (var n in node.Graphics)
-			{
-				var g = n.Graphic;
-				var gxform = n.Transform;
-				gxform = node.Transform.Transformed(gxform);
-				vp.DrawGraphic(n.Graphic, gxform);
-			}
-		}
-	}
 }

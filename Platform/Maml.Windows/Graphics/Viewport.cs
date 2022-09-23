@@ -117,24 +117,23 @@ public unsafe partial class Viewport
 
 	internal void HandleDraw()
 	{
-		drawMutex.WaitOne();
-
-		CreateDeviceResources();
-		pRenderTarget->BeginDraw();
-
-		Draw?.Invoke(new() { Viewport = this });
-
-		var hr = pRenderTarget->EndDraw();
-		if (hr == HRESULT.D2DERR_RECREATE_TARGET)
+		lock (drawMutex)
 		{
-			DiscardDeviceResources();
-		}
-		else
-		{
-			hr.ThrowOnFailure();
-		}
+			CreateDeviceResources();
+			pRenderTarget->BeginDraw();
 
-		drawMutex.ReleaseMutex();
+			Draw?.Invoke(new() { Viewport = this });
+
+			var hr = pRenderTarget->EndDraw();
+			if (hr == HRESULT.D2DERR_RECREATE_TARGET)
+			{
+				DiscardDeviceResources();
+			}
+			else
+			{
+				hr.ThrowOnFailure();
+			}
+		}
 	}
 
 	internal void HandleResize()

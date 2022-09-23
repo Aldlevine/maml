@@ -26,11 +26,13 @@ unsafe internal class App
 	public int ID;
 	public HWND hWnd;
 	public Animator Animator = new();
+	public Viewport Viewport { get; private set; }
 
 	public App()
 	{
 		ID = RegisterApp(this);
-		Init();
+		Viewport = InitViewport();
+		ShowViewport();
 	}
 
 	~App()
@@ -53,29 +55,10 @@ unsafe internal class App
 
 		Viewport.HandleResize();
 
-		MSG msg;
-		BOOL valid = true;
-		while (valid)
+		while (GetMessage(out MSG msg, default, 0, 0))
 		{
-			// We do this so animation frames don't get blocked
-			if (PeekMessage(out msg, default, WM_TIMER, WM_TIMER, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE))
-			{
-				TranslateMessage(in msg);
-				DispatchMessage(in msg);
-			}
-			else
-			{
-				while (valid = GetMessage(out msg, default, 0, 0))
-				{
-					TranslateMessage(in msg);
-					DispatchMessage(in msg);
-					Animator.Tick();
-					if (!valid)
-					{
-						break;
-					}
-				}
-			}
+			TranslateMessage(in msg);
+			DispatchMessage(in msg);
 		}
 	}
 
@@ -89,15 +72,14 @@ unsafe internal class App
 
 	#region private
 
-	private ID2D1Factory* pD2DFactory;
-
 	private const string className = "MamlWindow";
 	private const string windowName = "Maml";
 
-	internal Vector2 windowPosition = Vector2.Zero;
-	public Viewport Viewport { get; private set; }
+	private ID2D1Factory* pD2DFactory;
 
-	private void Init()
+	internal Vector2 windowPosition = Vector2.Zero;
+
+	private Viewport InitViewport()
 	{
 		CreateDeviceIndependentResources();
 		int err = 0;
@@ -151,7 +133,7 @@ unsafe internal class App
 				throw new Exception("CreateWindow Failed " + err);
 			}
 
-			Viewport = new()
+			Viewport viewport = new()
 			{
 				hWnd = hWnd,
 				pD2DFactory = pD2DFactory,
@@ -159,19 +141,25 @@ unsafe internal class App
 
 			SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, ID);
 
-			SetWindowPos(
-				hWnd,
-				HWND.Null,
-				0,
-				0,
-				(int)System.Math.Ceiling(640 * Viewport.DpiRatio),
-				(int)System.Math.Ceiling(480 * Viewport.DpiRatio),
-				SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
-			ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
-			UpdateWindow(hWnd);
+			return viewport;
 		}
 
 	}
+
+	private void ShowViewport()
+	{
+		SetWindowPos(
+			hWnd,
+			HWND.Null,
+			0,
+			0,
+			(int)System.Math.Ceiling(640 * Viewport.DpiRatio),
+			(int)System.Math.Ceiling(480 * Viewport.DpiRatio),
+			SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
+		ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
+		UpdateWindow(hWnd);
+	}
+
 	private void CreateDeviceIndependentResources()
 	{
 		D2D1CreateFactory(D2D1_FACTORY_TYPE.D2D1_FACTORY_TYPE_MULTI_THREADED, Marshal.GenerateGuidForType(typeof(ID2D1Factory)), null, out var obj).ThrowOnFailure();
@@ -181,23 +169,29 @@ unsafe internal class App
 
 	private ( LRESULT result, bool wasHandled ) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
 	{
-		(LRESULT result, bool wasHandled) res = (new(0), false);
+		LRESULT result = new(0);
+		bool wasHandled = false;
+
 		switch (msg)
 		{
 			case WM_TIMER:
 				{
 					Animator.Tick();
 				}
-				res.wasHandled = true;
+				wasHandled = true;
 				break;
 
 			case WM_SIZE:
 			case WM_SIZING:
 			case WM_DPICHANGED:
 				{
+					Viewport.ImmediateMode = true;
 					Viewport.HandleResize();
+					Animator.Tick();
+					Viewport.Redraw(true);
+					Viewport.ImmediateMode = false;
 				}
-				res.wasHandled = true;
+				wasHandled = true;
 				break;
 
 			case WM_MOVE:
@@ -205,15 +199,18 @@ unsafe internal class App
 					int x = LoWord(lParam);
 					int y = HiWord(lParam);
 					windowPosition = new(x, y);
+					Viewport.ImmediateMode = true;
+					Viewport.Redraw(true);
+					Viewport.ImmediateMode = false;
 				}
-				res.wasHandled = true;
+				wasHandled = true;
 				break;
 
 			case WM_DISPLAYCHANGE:
 				{
 					InvalidateRect(hWnd, (RECT?)null, false);
 				}
-				res.wasHandled = true;
+				wasHandled = true;
 				break;
 
 			case WM_PAINT:
@@ -221,15 +218,15 @@ unsafe internal class App
 					Viewport.HandleDraw();
 					ValidateRect(hWnd, (RECT?)null);
 				}
-				res.wasHandled = true;
+				wasHandled = true;
 				break;
 
 			case WM_DESTROY:
 				{
 					PostQuitMessage(0);
 				}
-				res.result = new(1);
-				res.wasHandled = true;
+				result = new(1);
+				wasHandled = true;
 				break;
 
 			case WM_POINTERUPDATE:
@@ -239,15 +236,16 @@ unsafe internal class App
 					Viewport.Redraw(true);
 					Viewport.ImmediateMode = false;
 				}
-				res.wasHandled = true;
+				wasHandled = true;
 				break;
 		}
 
-		return res;
+		return (result, wasHandled);
 	}
 
 
 	#endregion private
+
 	#region private static
 
 	private delegate LRESULT WNDPROC(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam);

@@ -42,11 +42,9 @@ public class SceneTree
 	}
 }
 
-public record struct NodeGraphic(Graphic Graphic)
+public record struct GraphicInstance(Graphic Graphic, Transform Transform)
 {
-	public Transform Transform { get; init; } = Transform.Identity;
-
-	public static implicit operator NodeGraphic(Graphic graphic) => new(graphic);
+	public static implicit operator GraphicInstance(Graphic graphic) => new(graphic, Transform.Identity);
 }
 
 public class Node
@@ -58,18 +56,10 @@ public class Node
 	public virtual int ZIndex { get; set; } = 0;
 
 	// TODO: Make dirty when this changes
-	public List<NodeGraphic> Graphics { get; init; } = new();
+	public List<GraphicInstance> Graphics { get; init; } = new();
 
 	// TODO: Notify tree when child is added
 	public List<Node> Children { get; init; } = new();
 
 	public override string? ToString() => $"{GetType().Name}#{Name}";
 }
-
-// public class NodeGraphicCollection : List<NodeGraphic>
-// {
-// 	public void Add(Graphic graphic)
-// 	{
-// 		Add(new NodeGraphic(graphic));
-// 	}
-// }

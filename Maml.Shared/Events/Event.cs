@@ -7,10 +7,7 @@ namespace Maml.Events;
 
 public delegate void EventHandler<T>(T evt) where T : Event;
 
-public record Event
-{
-
-}
+public record Event {  }
 
 public record KeyEvent : Event
 {
