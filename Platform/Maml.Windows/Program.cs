@@ -26,13 +26,13 @@ internal static class Program
 
 	private static List<DrawLayer> lineDrawLayersMinor = new()
 	{
-		new Stroke(new ColorBrush { Color = Colors.DarkSlateBlue with { A = 0.125f } }, 3),
+		// new Stroke(new ColorBrush { Color = Colors.DarkSlateBlue with { A = 0.125f } }, 3),
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.25f } }, 1),
 	};
 
 	private static List<DrawLayer> lineDrawLayersMajor = new()
 	{
-		new Stroke(new ColorBrush { Color = Colors.DarkSlateBlue with { A = 0.25f } }, 5),
+		// new Stroke(new ColorBrush { Color = Colors.DarkSlateBlue with { A = 0.25f } }, 5),
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.5f } }, 1),
 	};
 
@@ -105,6 +105,25 @@ internal static class Program
 		},
 	};
 
+	private static Node twirlyNode = new Node
+	{
+		Name = "TwirlyNode",
+		Transform = Transform.Identity.Translated(new(100, 100)),
+		Graphics = new()
+		{
+			new (new GeometryGraphic
+			{
+				Geometry = new EllipseGeometry { Ellipse = new() { Radius = new(10, 10) }, },
+				DrawLayers = pointerDrawLayers,
+			}, Transform.Identity.Translated(new(-15, 0))),
+			new (new GeometryGraphic
+			{
+				Geometry = new EllipseGeometry { Ellipse = new() { Radius = new(10, 10) }, },
+				DrawLayers = pointerDrawLayers,
+			}, Transform.Identity.Translated(new(15, 0))),
+		}
+	};
+
 	private static Node gridNode = new Node
 	{
 		Name = "Grid",
@@ -116,7 +135,7 @@ internal static class Program
 		Root = new Node
 		{
 			Name = "Root",
-			Children = new() { gridNode, pointerNode, }
+			Children = new() { gridNode, pointerNode, twirlyNode }
 		}
 	};
 
@@ -154,13 +173,22 @@ internal static class Program
 
 	private static void Frame(FrameEvent evt)
 	{
-		// animate the pointer node transform
+		// animate
 		pointerNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds).Transformed(pointerNode.Transform);
+		twirlyNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds * 10).Transformed(twirlyNode.Transform);
 	}
 
 	private static void PointerMove(PointerEvent evt)
 	{
-		// move the pointer node to the pointer position
+		// move the twirly node by pointer delta
+		if ((evt.ButtonMask & PointerButton.Left) > 0)
+		{
+			twirlyNode.Transform = twirlyNode.Transform.Translated(evt.Delta);
+		}
+	}
+
+	private static void PointerDown(PointerEvent evt)
+	{
 		pointerNode.Transform = pointerNode.Transform with { Origin = evt.Position };
 	}
 
@@ -202,6 +230,7 @@ internal static class Program
 		App.Animator.Frame += Frame;
 		App.Viewport.Resize += Resize;
 		Input.PointerMove += PointerMove;
+		Input.PointerDown += PointerDown;
 
 		// RUN!
 		App.RunMessageLoop();

@@ -103,7 +103,7 @@ unsafe internal class App
 				hInstance = GetModuleHandle(szNull),
 				hbrBackground = new HBRUSH(new IntPtr(6)),
 				lpszMenuName = szNull,
-				hCursor = LoadCursor(GetModuleHandle(szNull), IDI_APPLICATION),
+				// hCursor = LoadCursor(GetModuleHandle(szNull), IDI_APPLICATION),
 				lpszClassName = szClassName,
 			};
 
@@ -181,6 +181,17 @@ unsafe internal class App
 				wasHandled = true;
 				break;
 
+			case WM_SETCURSOR:
+				{
+					if (LoWord(lParam) == HTCLIENT)
+					{
+						SetCursor(LoadCursor(default, IDI_APPLICATION));
+						// SetCursor(LoadCursor(default(HINSTANCE), default));
+						wasHandled = true;
+					}
+				}
+				break;
+
 			case WM_SIZE:
 			case WM_SIZING:
 			case WM_DPICHANGED:
@@ -233,6 +244,16 @@ unsafe internal class App
 				{
 					Viewport.ImmediateMode = true;
 					Input.HandlePointerMove(wParam, lParam);
+					Viewport.Redraw(true);
+					Viewport.ImmediateMode = false;
+				}
+				wasHandled = true;
+				break;
+
+			case WM_POINTERDOWN:
+				{
+					Viewport.ImmediateMode = true;
+					Input.HandlePointerDown(wParam, lParam);
 					Viewport.Redraw(true);
 					Viewport.ImmediateMode = false;
 				}

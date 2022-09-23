@@ -2,6 +2,7 @@
 using Maml.Graphics;
 using Maml.Math;
 using Maml.Events;
+using System.Runtime.Intrinsics;
 
 namespace Maml.Events;
 
@@ -34,6 +35,7 @@ public record FrameEvent : Event
 public record PointerEvent : Event
 {
 	public Vector2 Position;
+	public Vector2 Delta;
 	public PointerButton Button;
 	public PointerButton ButtonMask;
 }
