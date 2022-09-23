@@ -6,6 +6,9 @@ namespace Maml.Animation;
 
 public partial class Animator
 {
+	private static Animator singleton = new();
+	public static Animator Singleton => singleton ??= new();
+
 	public event Maml.Events.EventHandler<FrameEvent>? Frame;
 
 	private DateTime lastTick = DateTime.Now;

@@ -25,13 +25,20 @@ public partial class Viewport
 	{
 		foreach (var node in sceneTree.Nodes)
 		{
-			foreach (var n in node.Graphics)
+			foreach (var c in node.Graphics)
 			{
-				var g = n.Graphic;
-				var gxform = n.Transform;
-				gxform = gxform.Transformed(node.Transform);
-				DrawGraphic(n.Graphic, gxform);
+				if (c is GraphicComponent g && g.Graphic != null)
+				{
+					DrawGraphic(g.Graphic, g.Transform.Transformed(node.Transform));
+				}
 			}
+			// foreach (var n in node.Graphics)
+			// {
+			// 	var g = n.Graphic;
+			// 	var gxform = n.Transform;
+			// 	gxform = gxform.Transformed(node.Transform);
+			// 	DrawGraphic(n.Graphic, gxform);
+			// }
 		}
 	}
 

@@ -1,4 +1,4 @@
-using Maml.Events;
+﻿using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
 using System;
@@ -8,20 +8,12 @@ using System.Threading;
 
 namespace Maml.Scene;
 
-public interface IComponent
-{
-	public Events.EventHandler<InitEvent>? Initialize { get; set; }
-}
+public interface IComponent { }
 
 public class GraphicComponent : IComponent
 {
-	public Events.EventHandler<InitEvent>? Initialize { get; set; } = default;
 	public Transform Transform { get; set; } = Transform.Identity;
 	public Graphic? Graphic { get; set; } = default;
-	public GraphicComponent()
-	{
-		Initialize?.Invoke(new());
-	}
 
 	public static implicit operator GraphicComponent(Graphic graphic) => new GraphicComponent { Graphic = graphic, };
 }
@@ -32,7 +24,6 @@ public class InputComponent : IComponent
 	// public event Events.EventHandler<PointerEvent>? PointerUp = default;
 	// public event Events.EventHandler<PointerEvent>? PointerDown = default;
 	// public event Events.EventHandler<PointerEvent>? PointerMove = default;
-	public Events.EventHandler<InitEvent>? Initialize { get; set; } = default;
 
 	private Mutex pointerUpLock = new();
 	private event Events.EventHandler<PointerEvent>? pointerUp = default;
@@ -60,30 +51,73 @@ public class InputComponent : IComponent
 		}
 	}
 
+	private Mutex pointerDownLock = new();
+	private event Events.EventHandler<PointerEvent>? pointerDown = default;
+	public event Events.EventHandler<PointerEvent>? PointerDown
+	{
+		add
+		{
+			lock(pointerDownLock)
+			{
+				pointerDown += value;
+				Input.PointerDown -= OnPointerDown;
+				Input.PointerDown += OnPointerDown;
+			}
+		}
+		remove
+		{
+			lock(pointerDownLock)
+			{
+				pointerDown -= value;
+				if (pointerDown?.GetInvocationList().Length == 0)
+				{
+					Input.PointerDown -= OnPointerDown;
+				}
+			}
+		}
+	}
+
+	private Mutex pointerMoveLock = new();
+	private event Events.EventHandler<PointerEvent>? pointerMove = default;
+	public event Events.EventHandler<PointerEvent>? PointerMove
+	{
+		add
+		{
+			lock(pointerMoveLock)
+			{
+				pointerMove += value;
+				Input.PointerMove -= OnPointerMove;
+				Input.PointerMove += OnPointerMove;
+			}
+		}
+		remove
+		{
+			lock(pointerMoveLock)
+			{
+				pointerMove -= value;
+				if (pointerMove?.GetInvocationList().Length == 0)
+				{
+					Input.PointerMove -= OnPointerMove;
+				}
+			}
+		}
+	}
+
 	public Transform Transform { get; set; } = Transform.Identity;
 	public Rect HitRect { get; set; } = default;
-	public InputComponent()
-	{
-		// Initialize?.Invoke(new());
-		Events.EventHandler<FrameEvent> init = null;
-		init = (FrameEvent e) =>
-		{
-			Initialize?.Invoke(new());
-			Program.App.Animator.Frame -= init;
-		};
-		Program.App.Animator.Frame += init;
-	}
 
 	private void OnPointerMove(PointerEvent evt)
 	{
-		Console.WriteLine(evt);
+		pointerMove?.Invoke(evt);
 	}
 
 	private void OnPointerDown(PointerEvent evt)
 	{
+		pointerDown?.Invoke(evt);
 	}
 
 	private void OnPointerUp(PointerEvent evt)
 	{
+		pointerUp?.Invoke(evt);
 	}
 }

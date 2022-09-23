@@ -42,6 +42,23 @@ public partial struct Transform
 		}
 	}
 
+	public Vector2 Scale
+	{
+		get
+		{
+			double detSign = System.Math.Sign(matrix.GetDeterminant());
+			return new(X.Length(), detSign * Y.Length());
+		}
+		set
+		{
+			X = X.Normalized();
+			Y = Y.Normalized();
+			X *= new Vector2(value.X, value.X);
+			Y *= new Vector2(value.Y, value.Y);
+		}
+	}
+
+
 	private Matrix3x2 matrix;
 
 	public Transform(Vector2 x, Vector2 y, Vector2 origin)

@@ -11,7 +11,7 @@ using static Windows.Win32.PInvoke;
 
 namespace Maml;
 
-internal static class Program
+internal static partial class Program
 {
 	public static App? App;
 
@@ -77,27 +77,35 @@ internal static class Program
 	{
 		Name = "PointerNode",
 		Graphics = new() {
-			new GeometryGraphic
+			(GraphicComponent)new GeometryGraphic
 			{
 				Geometry = new RectGeometry { Rect = new() { Position = new(-75, -75), Size = new(50, 50) }, },
 				DrawLayers = pointerDrawLayers,
 			},
-			new GeometryGraphic
+			(GraphicComponent)new GeometryGraphic
 			{
 				Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
 				DrawLayers = pointerDrawLayers,
 			},
-			new (new GeometryGraphic
+			new GraphicComponent
 			{
-				Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
-				DrawLayers = pointerDrawLayers,
-			}, Transform.Identity.Translated(new(0, -50))),
-			new (new GeometryGraphic
+				Graphic = new GeometryGraphic
+				{
+					Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
+					DrawLayers = pointerDrawLayers,
+				},
+				Transform = Transform.Identity.Translated(new(0, -50)),
+			},
+			new GraphicComponent
 			{
-				Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
-				DrawLayers = pointerDrawLayers,
-			}, Transform.Identity.Translated(new(-50, 0))),
-			new GeometryGraphic
+				Graphic = new GeometryGraphic
+				{
+					Geometry = new EllipseGeometry { Ellipse = new() { Center = new(50, 50), Radius = new(25, 25) }, },
+					DrawLayers = pointerDrawLayers,
+				},
+				Transform = Transform.Identity.Translated(new(-50, 0)),
+			},
+			(GraphicComponent)new GeometryGraphic
 			{
 				Geometry = new LineGeometry { Line = new() { Start = new(-25, -25), End = new(31.5, 31.5) }, },
 				DrawLayers = pointerDrawLayers,
@@ -105,29 +113,11 @@ internal static class Program
 		},
 	};
 
-	private static Node twirlyNode = new Node
-	{
-		Name = "TwirlyNode",
-		Transform = Transform.Identity.Translated(new(100, 100)),
-		Graphics = new()
-		{
-			new (new GeometryGraphic
-			{
-				Geometry = new EllipseGeometry { Ellipse = new() { Radius = new(10, 10) }, },
-				DrawLayers = pointerDrawLayers,
-			}, Transform.Identity.Translated(new(-15, 0))),
-			new (new GeometryGraphic
-			{
-				Geometry = new EllipseGeometry { Ellipse = new() { Radius = new(10, 10) }, },
-				DrawLayers = pointerDrawLayers,
-			}, Transform.Identity.Translated(new(15, 0))),
-		}
-	};
+	// private static TwirlyNode twirlyNode = new();
 
 	private static Node gridNode = new Node
 	{
 		Name = "Grid",
-		Graphics = new() { }
 	};
 
 	private static SceneTree sceneTree = new SceneTree
@@ -135,7 +125,7 @@ internal static class Program
 		Root = new Node
 		{
 			Name = "Root",
-			Children = new() { gridNode, pointerNode, twirlyNode }
+			Children = new() { gridNode, pointerNode, new TwirlyNode() }
 		}
 	};
 
@@ -156,7 +146,12 @@ internal static class Program
 				0 => lineGfxMajorX,
 				_ => lineGfxMinorX,
 			};
-			gridNode.Graphics.Add(new(lineGfx, Transform.Identity.Translated(new(x, 0))));
+
+			gridNode.Graphics.Add(new GraphicComponent
+			{
+				Graphic = lineGfx,
+				Transform = Transform.Identity.Translated(new(x, 0))
+			});
 		}
 
 		lineGeoY.Line = new Line { Start = new(0, 0), End = new(evt.Size.X, 0), };
@@ -167,7 +162,12 @@ internal static class Program
 				0 => lineGfxMajorY,
 				_ => lineGfxMinorY,
 			};
-			gridNode.Graphics.Add(new(lineGfx, Transform.Identity.Translated(new(0, y))));
+
+			gridNode.Graphics.Add(new GraphicComponent
+			{
+				Graphic = lineGfx,
+				Transform = Transform.Identity.Translated(new(0, y))
+			});
 		}
 	}
 
@@ -175,21 +175,37 @@ internal static class Program
 	{
 		// animate
 		pointerNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds).Transformed(pointerNode.Transform);
-		twirlyNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds * 10).Transformed(twirlyNode.Transform);
+		// twirlyNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds * 10).Transformed(twirlyNode.Transform);
 	}
 
 	private static void PointerMove(PointerEvent evt)
 	{
 		// move the twirly node by pointer delta
-		if ((evt.ButtonMask & PointerButton.Left) > 0)
-		{
-			twirlyNode.Transform = twirlyNode.Transform.Translated(evt.Delta);
-		}
+		// twirlyNode.Transform = twirlyNode.Transform.Translated(evt.Delta);
 	}
 
 	private static void PointerDown(PointerEvent evt)
 	{
-		pointerNode.Transform = pointerNode.Transform with { Origin = evt.Position };
+		// move pointer node to pointer down position
+		if (evt.Button == PointerButton.Right)
+		{
+			pointerNode.Transform = pointerNode.Transform with { Origin = evt.Position };
+		}
+
+		// start the move event
+		// if (evt.Button == PointerButton.Left)
+		// {
+		// 	Input.PointerMove += PointerMove;
+		// }
+	}
+
+	private static void PointerUp(PointerEvent evt)
+	{
+		// stop the move event
+		// if (evt.Button == PointerButton.Left)
+		// {
+		// 	Input.PointerMove -= PointerMove;
+		// }
 	}
 
 	private static void Draw(DrawEvent evt)
@@ -229,8 +245,11 @@ internal static class Program
 		App.Viewport.Draw += Draw;
 		App.Animator.Frame += Frame;
 		App.Viewport.Resize += Resize;
-		Input.PointerMove += PointerMove;
+		// Input.PointerMove += PointerMove;
 		Input.PointerDown += PointerDown;
+		Input.PointerUp += PointerUp;
+
+		// sceneTree.Initialize();
 
 		// RUN!
 		App.RunMessageLoop();

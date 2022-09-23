@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Devices.WiFiDirect;
 
 namespace Maml.Math;
 
@@ -34,4 +35,12 @@ public partial struct Vector2 : IEquatable<Vector2>
 	public static Vector2 operator -(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X - rhs.X, lhs.Y - rhs.Y);
 	public static Vector2 operator *(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X * rhs.X, lhs.Y * rhs.Y);
 	public static Vector2 operator /(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X / rhs.X, lhs.Y / rhs.Y);
+
+	public double LengthSq() => X * X + Y * Y;
+	public double Length() => System.Math.Sqrt(LengthSq());
+	public Vector2 Normalized()
+	{
+		var len = Length();
+		return new(X / len, Y / len);
+	}
 }

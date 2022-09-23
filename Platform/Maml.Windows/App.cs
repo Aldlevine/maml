@@ -25,7 +25,7 @@ unsafe internal class App
 
 	public int ID;
 	public HWND hWnd;
-	public Animator Animator = new();
+	public Animator Animator = Animator.Singleton;
 	public Viewport Viewport { get; private set; }
 
 	public App()
@@ -241,24 +241,46 @@ unsafe internal class App
 				break;
 
 			case WM_POINTERUPDATE:
+			case WM_POINTERDOWN:
+			case WM_POINTERUP:
 				{
 					Viewport.ImmediateMode = true;
-					Input.HandlePointerMove(wParam, lParam);
+					Input.HandlePointer(wParam, lParam);
 					Viewport.Redraw(true);
 					Viewport.ImmediateMode = false;
 				}
 				wasHandled = true;
 				break;
 
-			case WM_POINTERDOWN:
-				{
-					Viewport.ImmediateMode = true;
-					Input.HandlePointerDown(wParam, lParam);
-					Viewport.Redraw(true);
-					Viewport.ImmediateMode = false;
-				}
-				wasHandled = true;
-				break;
+			// case WM_POINTERUPDATE:
+			// 	{
+			// 		Viewport.ImmediateMode = true;
+			// 		Input.HandlePointerMove(wParam, lParam);
+			// 		Viewport.Redraw(true);
+			// 		Viewport.ImmediateMode = false;
+			// 	}
+			// 	wasHandled = true;
+			// 	break;
+
+			// case WM_POINTERDOWN:
+			// 	{
+			// 		Viewport.ImmediateMode = true;
+			// 		Input.HandlePointerDown(wParam, lParam);
+			// 		Viewport.Redraw(true);
+			// 		Viewport.ImmediateMode = false;
+			// 	}
+			// 	wasHandled = true;
+			// 	break;
+
+			// case WM_POINTERUP:
+			// 	{
+			// 		Viewport.ImmediateMode = true;
+			// 		Input.HandlePointerUp(wParam, lParam);
+			// 		Viewport.Redraw(true);
+			// 		Viewport.ImmediateMode = false;
+			// 	}
+			// 	wasHandled = true;
+			// 	break;
 		}
 
 		return (result, wasHandled);
