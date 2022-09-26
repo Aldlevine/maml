@@ -1,5 +1,6 @@
 ﻿using Maml.Events;
 using Maml.Math;
+using System;
 using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
@@ -8,7 +9,7 @@ using static Windows.Win32.PInvoke;
 
 namespace Maml.Graphics;
 
-public unsafe partial class Viewport
+public unsafe class Viewport : ViewportBase
 {
 	internal HWND hWnd;
 	internal ID2D1Factory* pD2DFactory;
@@ -21,14 +22,17 @@ public unsafe partial class Viewport
 	private const int stdDpi = 96;
 	private const double stdDpiInv = 1.0 / (double)stdDpi;
 
+	public override event EventHandler<ResizeEvent>? Resize;
+	public override event EventHandler<DrawEvent>? Draw;
+
 	~Viewport()
 	{
 		DiscardDeviceResources();
 	}
 
-	internal partial double GetDpiRatio() => GetDpiForWindow(hWnd) * stdDpiInv;
+	protected override double GetDpiRatio() => GetDpiForWindow(hWnd) * stdDpiInv;
 
-	internal partial Vector2 GetSize()
+	protected override Vector2 GetSize()
 	{
 		GetClientRect(hWnd, out var rc);
 		return new(rc.right - rc.left, rc.bottom - rc.top);
@@ -101,9 +105,45 @@ public unsafe partial class Viewport
 		// Somehow need to notify Geometries and Brushes to release their stuff...
 	}
 
-	public partial void DrawGraphic(Graphic graphic, Transform transform) => graphic.Draw((ID2D1RenderTarget*)pRenderTarget, transform);
-	public partial void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
-	public partial void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
+	public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
+	public override Transform GetTransform()
+	{
+		pRenderTarget->GetTransform(out var matrix);
+		return new(matrix);
+	}
+	public override void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
+
+	public override void DrawGeometry(Geometry geometry, Fill fill)
+	{
+		switch (geometry)
+		{
+			case RectGeometry g:
+				pRenderTarget->FillRectangle(g.Rect.ToD2DRectF(), fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
+				break;
+			case EllipseGeometry g:
+				pRenderTarget->FillEllipse(g.Ellipse.ToD2DEllipse(), fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
+				break;
+			case LineGeometry g:
+				// We can't fill line geometry
+				break;
+		}
+	}
+
+	public override void DrawGeometry(Geometry geometry, Stroke stroke)
+	{
+		switch (geometry)
+		{
+			case RectGeometry g:
+				pRenderTarget->DrawRectangle(g.Rect.ToD2DRectF(), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				break;
+			case EllipseGeometry g:
+				pRenderTarget->DrawEllipse(g.Ellipse.ToD2DEllipse(), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				break;
+			case LineGeometry g:
+				pRenderTarget->DrawLine(g.Line.Start.ToD2DPoint2F(), g.Line.End.ToD2DPoint2F(), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				break;
+		}
+	}
 
 	private Mutex drawMutex = new();
 

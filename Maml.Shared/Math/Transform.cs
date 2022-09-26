@@ -3,7 +3,6 @@ using System.Numerics;
 
 namespace Maml.Math;
 
-
 public partial struct Transform
 {
 	public Vector2 X

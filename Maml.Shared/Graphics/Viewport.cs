@@ -1,4 +1,5 @@
 ﻿using Maml.Events;
+using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
 using System;
@@ -6,23 +7,22 @@ using System.Threading.Tasks;
 
 namespace Maml.Graphics;
 
-public partial class Viewport
+public abstract class ViewportBase
 {
-	public static readonly Viewport Main = new();
-
 	public double DpiRatio => GetDpiRatio();
 	public Vector2 Size => GetSize();
 
-	internal partial Vector2 GetSize();
-	internal partial double GetDpiRatio();
+	public abstract event EventHandler<ResizeEvent>? Resize;
+	public abstract event EventHandler<DrawEvent>? Draw;
 
-	public event EventHandler<ResizeEvent>? Resize;
-	public event EventHandler<DrawEvent>? Draw;
+	protected abstract Vector2 GetSize();
+	protected abstract double GetDpiRatio();
 
-	public partial void Clear(Color color);
-	public partial void DrawGraphic(Graphic graphic, Transform transform);
-	public partial void SetTransform(Transform transform);
+	public abstract void Clear(Color color);
+	public abstract Transform GetTransform();
+	public abstract void SetTransform(Transform transform);
 
+	// public void DrawGraphic(Graphic graphic, Transform transform) => graphic.Draw(this, transform);
 	public void DrawScene(SceneTree sceneTree)
 	{
 		foreach (var node in sceneTree.Nodes)
@@ -31,22 +31,21 @@ public partial class Viewport
 			{
 				if (c is GraphicComponent g && g.Graphic != null)
 				{
-					DrawGraphic(g.Graphic, node.GlobalTransform * g.Transform);
+					// DrawGraphic(g.Graphic, node.GlobalTransform * g.Transform);
+					g.Graphic.Draw(this, node.GlobalTransform * g.Transform);
 				}
 			}
 		}
 	}
 
-	// public partial void BeginDraw();
-	// public partial void EndDraw();
-	// public partial void Clear(Color color);
-
-	// public partial void PushClip(Path path);
-	// public partial void PopClip();
-
-	// public partial void SetTransform(Transform transform);
-	// public partial void FillPath(Path path);
-	// public partial void StrokePath(Path path);
-	// public partial void SetFillBrush(Brush brush);
-	// public partial void SetStrokeBrush(Brush brush);
+	public void DrawGeometry(Geometry geometry, DrawLayer drawLayer)
+	{
+		switch (drawLayer)
+		{
+			case Fill l: DrawGeometry(geometry, l); break;
+			case Stroke l: DrawGeometry(geometry, l); break;
+		}
+	}
+	public abstract void DrawGeometry(Geometry geometry, Fill fill);
+	public abstract void DrawGeometry(Geometry geometry, Stroke stroke);
 }

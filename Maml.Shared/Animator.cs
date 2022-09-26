@@ -19,7 +19,7 @@ public record FrameEvent : Event
 	public TimeSpan Delta;
 }
 
-public partial class Animator
+public class Animator
 {
 	private static Animator singleton = new();
 	public static Animator Singleton => singleton ??= new();

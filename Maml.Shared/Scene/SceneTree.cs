@@ -15,16 +15,6 @@ public class SceneTree
 
 	public Node? Root { get; set; } = new() { Name = "Root" };
 
-	// public void Initialize()
-	// {
-	// 	foreach (var node in Nodes)
-	// 	{
-	// 		Initialized += node.Initialize;
-	// 	}
-
-	// 	Initialized?.Invoke(new());
-	// }
-
 	/// <summary>
 	/// Returns nodes flattened in tree order
 	/// </summary>

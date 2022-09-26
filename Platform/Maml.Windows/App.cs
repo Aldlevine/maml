@@ -1,13 +1,11 @@
 ﻿using Maml.Animation;
+using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
-using Maml.Events;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Gdi;
@@ -174,7 +172,7 @@ unsafe internal class App
 	}
 
 
-	private ( LRESULT result, bool wasHandled ) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
+	private (LRESULT result, bool wasHandled) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
 	{
 		LRESULT result = new(0);
 		bool wasHandled = false;
