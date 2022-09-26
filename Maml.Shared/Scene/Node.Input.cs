@@ -86,7 +86,7 @@ public partial class Node
 
 	private void HandlePointerUp(object? sender, PointerEvent evt)
 	{
-		if (HitRect.HasPoint(GlobalTransform.Inverse() * evt.Position))
+		if (HitShape.HasPoint(GlobalTransform.Inverse() * evt.Position))
 		{
 			pointerUp?.Invoke(this, evt);
 		}
@@ -94,7 +94,7 @@ public partial class Node
 
 	private void HandlePointerDown(object? sender, PointerEvent evt)
 	{
-		if (HitRect.HasPoint(GlobalTransform.Inverse() * evt.Position))
+		if (HitShape.HasPoint(GlobalTransform.Inverse() * evt.Position))
 		{
 			pointerDown?.Invoke(this, evt);
 		}
@@ -102,7 +102,7 @@ public partial class Node
 
 	private void HandlePointerMove(object? sender, PointerEvent evt)
 	{
-		if (HitRect.HasPoint(GlobalTransform.Inverse() * evt.Position))
+		if (HitShape.HasPoint(GlobalTransform.Inverse() * evt.Position))
 		{
 			pointerMove?.Invoke(this, evt);
 		}

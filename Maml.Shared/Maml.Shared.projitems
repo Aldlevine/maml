@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Resource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Ellipse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\IShape.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Rect.cs" />

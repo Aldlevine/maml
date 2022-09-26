@@ -7,7 +7,19 @@ public abstract partial class Brush : Resource
 
 public partial class ColorBrush : Brush
 {
-	public Color Color { get; set; }
+	private Color _Color;
+	public Color Color
+	{
+		get => _Color;
+		set
+		{
+			if (_Color != value)
+			{
+				_Color = value;
+				IsDirty = true;
+			}
+		}
+	}
 
 	public ColorBrush() : base() { }
 

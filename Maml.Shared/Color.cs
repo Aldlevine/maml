@@ -1,9 +1,11 @@
-﻿using System.Runtime.InteropServices;
+﻿using Maml.Math;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Maml;
 
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Color
+public partial struct Color : IEquatable<Color>
 {
 	public float R;
 	public float G;
@@ -26,6 +28,20 @@ public partial struct Color
 		uint a = (uint)(A * 0xff);
 		return r << 24 | g << 16 | b << 8 | a;
 	}
+
+	public static Color Lerp(in Color lhs, in Color rhs, in double t) => new()
+	{
+		R = (float)Unit.Lerp(lhs.R, rhs.R, t),
+		G = (float)Unit.Lerp(lhs.G, rhs.G, t),
+		B = (float)Unit.Lerp(lhs.B, rhs.B, t),
+		A = (float)Unit.Lerp(lhs.A, rhs.A, t),
+	};
+	public override bool Equals(object? obj) => obj is Color color && Equals(color);
+	public bool Equals(Color other) => R == other.R && G == other.G && B == other.B && A == other.A;
+	public override int GetHashCode() => HashCode.Combine(R, G, B, A);
+
+	public static bool operator ==(Color left, Color right) => left.Equals(right);
+	public static bool operator !=(Color left, Color right) => !(left == right);
 }
 
 public static class Colors

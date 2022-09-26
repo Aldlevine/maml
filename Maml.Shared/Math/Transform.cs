@@ -92,7 +92,7 @@ public partial struct Transform
 	public static readonly Transform PixelIdentity = new(
 		new(1, 0),
 		new(0, 1),
-		new(-0.5f, -0.5f));
+		new(0.5f, 0.5f));
 
 	public Transform Translated(Vector2 offset) => this with { Origin = Origin + offset, };
 
@@ -110,14 +110,6 @@ public partial struct Transform
 		{
 			matrix = newMatrix,
 		};
-		// var det = matrix.GetDeterminant();
-		// if (det == 0) { throw new ArithmeticException(); }
-		// var idet = 1 / det;
-		// var result = this;
-		// result.X = new(Y.Y * idet, X.Y * -idet);
-		// result.Y = new(Y.X * -idet, X.X * idet);
-		// result.Origin = (this with { Origin = Vector2.Zero, }) * -Origin;
-		// return result;
 	}
 
 	public static Transform operator *(Transform lhs, Transform rhs)
