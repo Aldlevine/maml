@@ -1,4 +1,5 @@
-﻿using Maml.Math;
+﻿using Maml.Events;
+using Maml.Math;
 using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
@@ -122,7 +123,7 @@ public unsafe partial class Viewport
 			CreateDeviceResources();
 			pRenderTarget->BeginDraw();
 
-			Draw?.Invoke(new() { Viewport = this });
+			Draw?.Invoke(this, new() { Viewport = this });
 
 			var hr = pRenderTarget->EndDraw();
 			if (hr == HRESULT.D2DERR_RECREATE_TARGET)
@@ -146,6 +147,6 @@ public unsafe partial class Viewport
 			pImmediateRenderTarget->SetDpi(dpi, dpi);
 			pSyncRenderTarget->SetDpi(dpi, dpi);
 		}
-		Resize?.Invoke(new Events.ResizeEvent { Size = Size });
+		Resize?.Invoke(this, new ResizeEvent { Size = Size });
 	}
 }

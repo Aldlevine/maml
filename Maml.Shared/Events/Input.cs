@@ -1,4 +1,4 @@
-﻿using Maml.Events;
+﻿using System;
 
 namespace Maml.Events;
 
@@ -18,28 +18,28 @@ public static partial class Input
 		switch (name)
 		{
 			case nameof(PointerMove):
-				PointerMove?.Invoke((PointerEvent)evt);
+				PointerMove?.Invoke(null, (PointerEvent)evt);
 				break;
 			case nameof(PointerDown):
-				PointerDown?.Invoke((PointerEvent)evt);
+				PointerDown?.Invoke(null, (PointerEvent)evt);
 				break;
 			case nameof(PointerUp):
-				PointerUp?.Invoke((PointerEvent)evt);
+				PointerUp?.Invoke(null, (PointerEvent)evt);
 				break;
 			case nameof(Wheel):
-				Wheel?.Invoke((WheelEvent)evt);
+				Wheel?.Invoke(null, (WheelEvent)evt);
 				break;
 			case nameof(KeyDown):
-				KeyDown?.Invoke((KeyEvent)evt);
+				KeyDown?.Invoke(null, (KeyEvent)evt);
 				break;
 			case nameof(KeyUp):
-				KeyUp?.Invoke((KeyEvent)evt);
+				KeyUp?.Invoke(null, (KeyEvent)evt);
 				break;
 			case nameof(Focus):
-				Focus?.Invoke((FocusEvent)evt);
+				Focus?.Invoke(null, (FocusEvent)evt);
 				break;
 			case nameof(Blur):
-				Blur?.Invoke((FocusEvent)evt);
+				Blur?.Invoke(null, (FocusEvent)evt);
 				break;
 		}
 	}

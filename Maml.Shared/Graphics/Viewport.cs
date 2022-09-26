@@ -1,6 +1,8 @@
 ﻿using Maml.Events;
 using Maml.Math;
 using Maml.Scene;
+using System;
+using System.Threading.Tasks;
 
 namespace Maml.Graphics;
 
@@ -29,16 +31,9 @@ public partial class Viewport
 			{
 				if (c is GraphicComponent g && g.Graphic != null)
 				{
-					DrawGraphic(g.Graphic, g.Transform.Transformed(node.Transform));
+					DrawGraphic(g.Graphic, node.GlobalTransform * g.Transform);
 				}
 			}
-			// foreach (var n in node.Graphics)
-			// {
-			// 	var g = n.Graphic;
-			// 	var gxform = n.Transform;
-			// 	gxform = gxform.Transformed(node.Transform);
-			// 	DrawGraphic(n.Graphic, gxform);
-			// }
 		}
 	}
 

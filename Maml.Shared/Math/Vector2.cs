@@ -36,11 +36,23 @@ public partial struct Vector2 : IEquatable<Vector2>
 	public static Vector2 operator *(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X * rhs.X, lhs.Y * rhs.Y);
 	public static Vector2 operator /(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X / rhs.X, lhs.Y / rhs.Y);
 
+	public static Vector2 operator +(Vector2 lhs, double rhs) => new Vector2(lhs.X + rhs, lhs.Y + rhs);
+	public static Vector2 operator -(Vector2 lhs, double rhs) => new Vector2(lhs.X - rhs, lhs.Y - rhs);
+	public static Vector2 operator *(Vector2 lhs, double rhs) => new Vector2(lhs.X * rhs, lhs.Y * rhs);
+	public static Vector2 operator /(Vector2 lhs, double rhs) => new Vector2(lhs.X / rhs, lhs.Y / rhs);
+
+	public static Vector2 operator -(Vector2 v) => new Vector2(-v.X, -v.Y);
+
 	public double LengthSq() => X * X + Y * Y;
 	public double Length() => System.Math.Sqrt(LengthSq());
 	public Vector2 Normalized()
 	{
 		var len = Length();
 		return new(X / len, Y / len);
+	}
+
+	public static Vector2 Lerp(Vector2 from, Vector2 to, double t)
+	{
+		return new(Unit.Lerp(from.X, to.X, t), Unit.Lerp(from.Y, to.Y, t));
 	}
 }

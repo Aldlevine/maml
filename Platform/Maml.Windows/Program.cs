@@ -1,4 +1,5 @@
-﻿using Maml.Events;
+﻿using Maml.Animation;
+using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
@@ -125,7 +126,23 @@ internal static partial class Program
 		Root = new Node
 		{
 			Name = "Root",
-			Children = new() { gridNode, pointerNode, new TwirlyNode() }
+			Children = new() {
+				gridNode,
+				pointerNode,
+				new TwirlyNode(),
+				new TwirlyNode
+				{
+					Transform = new Transform { Origin = new(100, 100), },
+				},
+				new TwirlyNode
+				{
+					Transform = new Transform { Origin = new(200, 200), },
+				},
+				new TwirlyNode
+				{
+					Transform = new Transform { Origin = new(300, 300), },
+				},
+			}
 		}
 	};
 
@@ -133,7 +150,7 @@ internal static partial class Program
 
 	#region Events
 
-	private static void Resize(ResizeEvent evt)
+	private static void Resize(object? sender, ResizeEvent evt)
 	{
 		// keep the grid up to date with the window size
 		gridNode.Graphics.RemoveRange(0, gridNode.Graphics.Count);
@@ -171,44 +188,23 @@ internal static partial class Program
 		}
 	}
 
-	private static void Frame(FrameEvent evt)
+	private static void Frame(object? sender, FrameEvent evt)
 	{
 		// animate
-		pointerNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds).Transformed(pointerNode.Transform);
-		// twirlyNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds * 10).Transformed(twirlyNode.Transform);
+		// pointerNode.Transform = Transform.Identity.Rotated(evt.Delta.TotalSeconds).Transformed(pointerNode.Transform);
+		pointerNode.Transform = pointerNode.Transform.Rotated(evt.Delta.TotalSeconds);
 	}
 
-	private static void PointerMove(PointerEvent evt)
-	{
-		// move the twirly node by pointer delta
-		// twirlyNode.Transform = twirlyNode.Transform.Translated(evt.Delta);
-	}
-
-	private static void PointerDown(PointerEvent evt)
+	private static void PointerDown(object? sender, PointerEvent evt)
 	{
 		// move pointer node to pointer down position
 		if (evt.Button == PointerButton.Right)
 		{
 			pointerNode.Transform = pointerNode.Transform with { Origin = evt.Position };
 		}
-
-		// start the move event
-		// if (evt.Button == PointerButton.Left)
-		// {
-		// 	Input.PointerMove += PointerMove;
-		// }
 	}
 
-	private static void PointerUp(PointerEvent evt)
-	{
-		// stop the move event
-		// if (evt.Button == PointerButton.Left)
-		// {
-		// 	Input.PointerMove -= PointerMove;
-		// }
-	}
-
-	private static void Draw(DrawEvent evt)
+	private static void Draw(object? sender, DrawEvent evt)
 	{
 		// draw the scene tree to the viewport
 		var vp = evt.Viewport;
@@ -245,11 +241,15 @@ internal static partial class Program
 		App.Viewport.Draw += Draw;
 		App.Animator.Frame += Frame;
 		App.Viewport.Resize += Resize;
-		// Input.PointerMove += PointerMove;
 		Input.PointerDown += PointerDown;
-		Input.PointerUp += PointerUp;
 
-		// sceneTree.Initialize();
+		for (int i = 0; i < 200; i++)
+		{
+			sceneTree.Root?.Children.Add(new TwirlyNode
+			{
+				Transform = new Transform { Origin = new(Random.Shared.Next((int)App.Viewport.Size.X), Random.Shared.Next((int)App.Viewport.Size.Y)), },
+			});
+		}
 
 		// RUN!
 		App.RunMessageLoop();

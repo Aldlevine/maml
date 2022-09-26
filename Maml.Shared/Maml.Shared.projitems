@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Units.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Component.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\SceneTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />

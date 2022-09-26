@@ -5,11 +5,11 @@ public abstract partial class Resource : IDisposable
 {
 	public bool IsDirty { get; internal set; }
 
-	private bool disposedValue;
+	private bool isDisposed;
 	protected abstract void FreeResources();
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!disposedValue)
+		if (!isDisposed)
 		{
 			if (disposing)
 			{
@@ -19,16 +19,16 @@ public abstract partial class Resource : IDisposable
 			// free unmanaged resources (unmanaged objects) and override finalizer
 			FreeResources();
 			// TODO: set large fields to null
-			disposedValue = true;
+			isDisposed = true;
 		}
 	}
 
-	// // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-	// ~Resource()
-	// {
-	//     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-	//     Dispose(disposing: false);
-	// }
+	// override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+	~Resource()
+	{
+	    // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+	    Dispose(disposing: false);
+	}
 
 	public void Dispose()
 	{

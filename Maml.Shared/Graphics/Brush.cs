@@ -8,6 +8,13 @@ public abstract partial class Brush : Resource
 public partial class ColorBrush : Brush
 {
 	public Color Color { get; set; }
+
+	public ColorBrush() : base() { }
+
+	public ColorBrush(ColorBrush colorBrush)
+	{
+		Color = colorBrush.Color;
+	}
 }
 
 /*

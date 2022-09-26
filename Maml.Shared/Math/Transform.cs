@@ -1,17 +1,11 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Maml.Math;
 
 
 public partial struct Transform
 {
-	// public Vector2 X { get; set; } = Vector2.Right;
-	// public Vector2 Y { get; set; } = Vector2.Down;
-	// public Vector2 Origin { get; set; } = Vector2.Zero;
-
-	// public Vector2 X => new Vector2(matrix.M11, matrix.M12);
-	// public Vector2 Y => new Vector2(matrix.M21, matrix.M22);
-	// public Vector2 Origin => new Vector2(matrix.M31, matrix.M32);
 	public Vector2 X
 	{
 		get => new Vector2(matrix.M11, matrix.M12);
@@ -46,7 +40,12 @@ public partial struct Transform
 	{
 		get
 		{
-			double detSign = System.Math.Sign(matrix.GetDeterminant());
+			double det = matrix.GetDeterminant();
+			double detSign = double.IsNaN(det) switch
+			{
+				true => 1,
+				false => System.Math.Sign(matrix.GetDeterminant()),
+			};
 			return new(X.Length(), detSign * Y.Length());
 		}
 		set
@@ -58,14 +57,30 @@ public partial struct Transform
 		}
 	}
 
+	public double Rotation
+	{
+		get => double.Atan2(X.Y, X.X);
+		set
+		{
+			var scale = Scale;
+			var cr = double.Cos(value);
+			var sr = double.Sin(value);
+			X = new(cr, sr);
+			Y = new(-sr, cr);
+			Scale = scale;
+		}
+	}
 
-	private Matrix3x2 matrix;
+
+	private Matrix3x2 matrix = Matrix3x2.Identity;
+
+	public Transform()
+	{
+		matrix = Matrix3x2.Identity;
+	}
 
 	public Transform(Vector2 x, Vector2 y, Vector2 origin)
 	{
-		// X = x;
-		// Y = y;
-		// Origin = origin;
 		matrix = new((float)x.X, (float)x.Y, (float)y.X, (float)y.Y, (float)origin.X, (float)origin.Y);
 	}
 
@@ -79,48 +94,63 @@ public partial struct Transform
 		new(0, 1),
 		new(-0.5f, -0.5f));
 
-	public Transform Translated(Vector2 offset) => new Transform(X, Y, Origin + offset);
+	public Transform Translated(Vector2 offset) => this with { Origin = Origin + offset, };
 
-	public Transform Transformed(Transform other)
+	public Transform Scaled(Vector2 scale) => this with { Scale = Scale * scale, };
+
+	public Transform Rotated(double rotation) => this with { Rotation = Rotation + rotation, };
+
+	public Transform Inverse()
 	{
+		if (!Matrix3x2.Invert(matrix, out var newMatrix))
+		{
+			throw new ArithmeticException();
+		}
+		return new Transform
+		{
+			matrix = newMatrix,
+		};
+		// var det = matrix.GetDeterminant();
+		// if (det == 0) { throw new ArithmeticException(); }
+		// var idet = 1 / det;
 		// var result = this;
-		// result.Origin = result.xform(other.Origin);
-		// result.X = new(result.tdotx(other.X), result.tdoty(other.X));
-		// result.Y = new(result.tdotx(other.Y), result.tdoty(other.Y));
+		// result.X = new(Y.Y * idet, X.Y * -idet);
+		// result.Y = new(Y.X * -idet, X.X * idet);
+		// result.Origin = (this with { Origin = Vector2.Zero, }) * -Origin;
 		// return result;
-		var result = this;
-		result.matrix = matrix * other.matrix;
-		return result;
 	}
 
-	public Transform Scaled(Vector2 scale)
+	public static Transform operator *(Transform lhs, Transform rhs)
 	{
-		// X = new(X.X * scale.X, X.Y * scale.Y),
-		// Y = new(Y.X * scale.X, Y.Y * scale.Y),
-		// Origin = new Vector2(Origin.X, Origin.Y) * scale,
-		var result = this;
-		result.matrix = matrix * Matrix3x2.CreateScale((float)scale.X, (float)scale.Y);
-		return result;
+		double x0 = lhs.tdotx(rhs.X);
+		double x1 = lhs.tdoty(rhs.X);
+		double y0 = lhs.tdotx(rhs.Y);
+		double y1 = lhs.tdoty(rhs.Y);
+
+		return new()
+		{
+			X = new(x0, x1),
+			Y = new(y0, y1),
+			Origin = lhs * rhs.Origin,
+		};
 	}
 
-	public Transform Rotated(double rotation)
+	public static Vector2 operator *(Transform lhs, Vector2 rhs) => new Vector2(lhs.tdotx(rhs), lhs.tdoty(rhs)) + lhs.Origin;
+
+	public static Rect operator *(Transform lhs, Rect rhs)
 	{
-		// var rads = System.Math.IEEERemainder(rotation, double.Tau);
-		// var cr = System.Math.Cos(rads);
-		// var sr = System.Math.Sin(rads);
-		// return this.Transformed(new()
-		// {
-		// 	X = new(cr, -sr),
-		// 	Y = new(sr, cr),
-		// 	Origin = Vector2.Zero,
-		// });
-		var result = this;
-		result.matrix = matrix * Matrix3x2.CreateRotation((float)rotation);
-		return result;
+		Vector2 x = lhs.X * rhs.Size.X;
+		Vector2 y = lhs.Y * rhs.Size.Y;
+		Vector2 pos = lhs * rhs.Position;
+
+		Rect rect = default;
+		rect.Position = pos;
+		rect = rect.ExpandedTo(pos + x);
+		rect = rect.ExpandedTo(pos + y);
+		rect = rect.ExpandedTo(pos + x + y);
+		return rect;
 	}
 
-	// ooooh
-	private double tdotx(Vector2 v) => X.X * v.X + Y.X * v.Y;
-	private double tdoty(Vector2 v) => X.Y * v.X + Y.Y * v.Y;
-	private Vector2 xform(Vector2 v) => new Vector2(tdotx(v), tdoty(v)) + Origin;
+	private double tdotx(in Vector2 v) => X.X * v.X + Y.X * v.Y;
+	private double tdoty(in Vector2 v) => X.Y * v.X + Y.Y * v.Y;
 }

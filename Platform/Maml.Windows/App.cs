@@ -44,14 +44,11 @@ unsafe internal class App
 			pD2DFactory->Release();
 			pD2DFactory = null;
 		}
-
 	}
 
 	public void RunMessageLoop()
 	{
-		SetTimer(hWnd, 0, 8, null);
-
-		Animator.Frame += (e) => Viewport.Redraw(false);
+		Animator.Frame += (s, e) => Viewport.Redraw(false);
 
 		Viewport.HandleResize();
 
@@ -59,7 +56,10 @@ unsafe internal class App
 		{
 			TranslateMessage(in msg);
 			DispatchMessage(in msg);
+			Animator.Tick();
 		}
+
+		Animator.Dispose();
 	}
 
 	public void UpdateApplication()
@@ -127,6 +127,13 @@ unsafe internal class App
 				default,
 				null);
 
+			// BOOL dm = true;
+			// DwmSetWindowAttribute(hWnd, Windows.Win32.Graphics.Dwm.DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, &dm, (uint)sizeof(BOOL));
+			// COLORREF borderColor = new(0xffffffff);
+			// DwmSetWindowAttribute(hWnd, Windows.Win32.Graphics.Dwm.DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR, &borderColor, (uint)sizeof(COLORREF));
+			// uint borderThickness = 2;
+			// DwmSetWindowAttribute(hWnd, Windows.Win32.Graphics.Dwm.DWMWINDOWATTRIBUTE.DWMWA_VISIBLE_FRAME_BORDER_THICKNESS, &borderThickness, (uint)sizeof(uint));
+
 			if (hWnd == HWND.Null)
 			{
 				err = Marshal.GetLastWin32Error();
@@ -153,8 +160,8 @@ unsafe internal class App
 			HWND.Null,
 			0,
 			0,
-			(int)System.Math.Ceiling(640 * Viewport.DpiRatio),
-			(int)System.Math.Ceiling(480 * Viewport.DpiRatio),
+			(int)System.Math.Ceiling(1440 * Viewport.DpiRatio),
+			(int)System.Math.Ceiling(810 * Viewport.DpiRatio),
 			SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
 		ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
 		UpdateWindow(hWnd);
@@ -174,13 +181,6 @@ unsafe internal class App
 
 		switch (msg)
 		{
-			case WM_TIMER:
-				{
-					Animator.Tick();
-				}
-				wasHandled = true;
-				break;
-
 			case WM_SETCURSOR:
 				{
 					if (LoWord(lParam) == HTCLIENT)
@@ -192,27 +192,35 @@ unsafe internal class App
 				}
 				break;
 
-			case WM_SIZE:
-			case WM_SIZING:
 			case WM_DPICHANGED:
 				{
-					Viewport.ImmediateMode = true;
 					Viewport.HandleResize();
-					Animator.Tick();
-					Viewport.Redraw(true);
-					Viewport.ImmediateMode = false;
 				}
 				wasHandled = true;
 				break;
 
-			case WM_MOVE:
+			case WM_WINDOWPOSCHANGED:
 				{
-					int x = LoWord(lParam);
-					int y = HiWord(lParam);
-					windowPosition = new(x, y);
-					Viewport.ImmediateMode = true;
-					Viewport.Redraw(true);
-					Viewport.ImmediateMode = false;
+					WINDOWINFO pwi = default;
+					if (GetWindowInfo(hWnd, ref pwi))
+					{
+						windowPosition = new(pwi.rcClient.left, pwi.rcClient.top);
+					}
+					Viewport.HandleResize();
+				}
+				wasHandled = true;
+				break;
+
+			case WM_ENTERSIZEMOVE:
+				{
+					Animator.StartTicker();
+				}
+				wasHandled = true;
+				break;
+
+			case WM_EXITSIZEMOVE:
+				{
+					Animator.StopTicker();
 				}
 				wasHandled = true;
 				break;
@@ -222,6 +230,11 @@ unsafe internal class App
 					InvalidateRect(hWnd, (RECT?)null, false);
 				}
 				wasHandled = true;
+				break;
+
+			case WM_ERASEBKGND:
+				wasHandled = true;
+				result = new(1);
 				break;
 
 			case WM_PAINT:
@@ -251,36 +264,6 @@ unsafe internal class App
 				}
 				wasHandled = true;
 				break;
-
-			// case WM_POINTERUPDATE:
-			// 	{
-			// 		Viewport.ImmediateMode = true;
-			// 		Input.HandlePointerMove(wParam, lParam);
-			// 		Viewport.Redraw(true);
-			// 		Viewport.ImmediateMode = false;
-			// 	}
-			// 	wasHandled = true;
-			// 	break;
-
-			// case WM_POINTERDOWN:
-			// 	{
-			// 		Viewport.ImmediateMode = true;
-			// 		Input.HandlePointerDown(wParam, lParam);
-			// 		Viewport.Redraw(true);
-			// 		Viewport.ImmediateMode = false;
-			// 	}
-			// 	wasHandled = true;
-			// 	break;
-
-			// case WM_POINTERUP:
-			// 	{
-			// 		Viewport.ImmediateMode = true;
-			// 		Input.HandlePointerUp(wParam, lParam);
-			// 		Viewport.Redraw(true);
-			// 		Viewport.ImmediateMode = false;
-			// 	}
-			// 	wasHandled = true;
-			// 	break;
 		}
 
 		return (result, wasHandled);

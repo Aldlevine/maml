@@ -42,7 +42,7 @@ public partial class Input
 		{
 			if ((buttonMask & button) > 0 && (previousButtonState & button) == 0)
 			{
-				PointerDown?.Invoke(new Events.PointerEvent
+				PointerDown?.Invoke(null, new PointerEvent
 				{
 					Position = pointerPosition,
 					Button = button,
@@ -51,7 +51,7 @@ public partial class Input
 			}
 			else if ((buttonMask & button) == 0 && (previousButtonState & button) > 0)
 			{
-				PointerUp?.Invoke(new Events.PointerEvent
+				PointerUp?.Invoke(null, new PointerEvent
 				{
 					Position = pointerPosition,
 					Button = button,
@@ -62,7 +62,7 @@ public partial class Input
 
 		if (pointerPosition != previousPointerPosition || !hasButtonChange)
 		{
-			PointerMove?.Invoke(new Events.PointerEvent
+			PointerMove?.Invoke(null, new PointerEvent
 			{
 				Position = pointerPosition,
 				Delta = pointerPosition - previousPointerPosition,

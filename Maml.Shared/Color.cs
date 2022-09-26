@@ -172,7 +172,7 @@ public static class Colors
 	public static readonly Color Tan = new(0xd2b48cff);
 	public static readonly Color Thistle = new(0xd8bfd8ff);
 	public static readonly Color Tomato = new(0xff6347ff);
-	public static readonly Color Transparent = new(0x000000ff);
+	public static readonly Color Transparent = new(0x00000000);
 	public static readonly Color Turquoise = new(0x40e0d0ff);
 	public static readonly Color Violet = new(0xee82eeff);
 	public static readonly Color Wheat = new(0xf5deb3ff);

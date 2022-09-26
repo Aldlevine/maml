@@ -16,6 +16,13 @@ public partial class EllipseGeometry : Geometry
 			IsDirty = true;
 		}
 	}
+
+	public EllipseGeometry() : base() { }
+
+	public EllipseGeometry(EllipseGeometry ellipseGeometry)
+	{
+		Ellipse = ellipseGeometry.Ellipse;
+	}
 }
 
 public partial class LineGeometry : Geometry
@@ -30,6 +37,13 @@ public partial class LineGeometry : Geometry
 			IsDirty = true;
 		}
 	}
+
+	public LineGeometry() : base() { }
+
+	public LineGeometry(LineGeometry lineGeometry)
+	{
+		Line = lineGeometry.Line;
+	}
 }
 
 public partial class RectGeometry : Geometry
@@ -43,5 +57,12 @@ public partial class RectGeometry : Geometry
 			rect = value;
 			IsDirty = true;
 		}
+	}
+
+	public RectGeometry() : base() { }
+
+	public RectGeometry(RectGeometry rectGeometry)
+	{
+		Rect = rectGeometry.Rect;
 	}
 }

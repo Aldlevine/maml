@@ -12,12 +12,14 @@ SetProcessDpiAwareness
 Windows.Win32.Foundation
 Windows.Win32.UI.WindowsAndMessaging
 WNDPROC
+DwmSetWindowAttribute
 
 // Windows.Win32.Graphics.Direct2D
 D2D1CreateFactory
 ID2D1Factory
 ID2D1HwndRenderTarget
 ID2D1SolidColorBrush
+ID2D1GeometryRealization
 
 GetDpiForWindow
 GetModuleHandle

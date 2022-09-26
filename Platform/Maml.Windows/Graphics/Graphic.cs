@@ -1,5 +1,5 @@
 ﻿using Maml.Math;
-
+using System.Collections.Generic;
 using Windows.Win32.Graphics.Direct2D;
 
 namespace Maml.Graphics;
@@ -11,11 +11,14 @@ unsafe public abstract partial class Graphic
 
 public partial class GeometryGraphic
 {
+	private List<ID2D1GeometryRealization> realizations = new();
+
 	unsafe override internal void Draw(ID2D1RenderTarget* pRenderTarget, Transform transform)
 	{
 		pRenderTarget->GetTransform(out var curD2DXform);
 		Transform curXform = new(curD2DXform);
-		pRenderTarget->SetTransform(curXform.Transformed(transform).ToD2DMatrix3X2F());
+		// pRenderTarget->SetTransform(curXform.Transformed(transform).ToD2DMatrix3X2F());
+		pRenderTarget->SetTransform((curXform * transform).ToD2DMatrix3X2F());
 
 		foreach (var layer in DrawLayers)
 		{

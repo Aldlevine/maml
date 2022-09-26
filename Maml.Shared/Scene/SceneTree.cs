@@ -11,7 +11,7 @@ namespace Maml.Scene;
 
 public class SceneTree
 {
-	public event Events.EventHandler<InitEvent>? Initialized;
+	public event EventHandler<InitEvent>? Initialized;
 
 	public Node? Root { get; set; } = new() { Name = "Root" };
 

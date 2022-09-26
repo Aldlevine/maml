@@ -6,7 +6,6 @@ using System.Runtime.Intrinsics;
 
 namespace Maml.Events;
 
-public delegate void EventHandler<T>(T evt) where T : Event;
 
 public record Event { }
 
@@ -27,11 +26,6 @@ public record ResizeEvent : Event
 public record DrawEvent : Event
 {
 	public Viewport? Viewport;
-}
-
-public record FrameEvent : Event
-{
-	public TimeSpan Delta;
 }
 
 public record PointerEvent : Event
