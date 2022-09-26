@@ -11,6 +11,14 @@ public record struct Unit(double Value)
 		if (t == 1) { return to; }
 		return from + (t * (to - from));
 	}
+
+	public static double Triangle(double t)
+	{
+		// t = t % double.Tau;
+		// if (t < double.Pi) { return t / double.Pi; }
+		// return 2 - (t / double.Pi);
+		return (2 / double.Pi) * double.Asin(double.Sin(t));
+	}
 }
 
 // public record PP(double Value) : Unit

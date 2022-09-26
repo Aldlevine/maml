@@ -76,6 +76,64 @@ public partial class Node
 			lock(pointerMoveLock)
 			{
 				pointerMove -= value;
+				if (pointerExit?.GetInvocationList().Length == 0)
+				if (pointerEnter?.GetInvocationList().Length == 0)
+				if (pointerMove?.GetInvocationList().Length == 0)
+				{
+					Input.PointerMove -= HandlePointerMove;
+				}
+			}
+		}
+	}
+
+	private Mutex pointerEnterLock = new();
+	private event EventHandler<PointerEvent>? pointerEnter = default;
+	public event EventHandler<PointerEvent>? PointerEnter
+	{
+		add
+		{
+			lock(pointerEnterLock)
+			{
+				pointerEnter += value;
+				Input.PointerMove -= HandlePointerMove;
+				Input.PointerMove += HandlePointerMove;
+			}
+		}
+		remove
+		{
+			lock(pointerEnterLock)
+			{
+				pointerEnter -= value;
+				if (pointerExit?.GetInvocationList().Length == 0)
+				if (pointerEnter?.GetInvocationList().Length == 0)
+				if (pointerMove?.GetInvocationList().Length == 0)
+				{
+					Input.PointerMove -= HandlePointerMove;
+				}
+			}
+		}
+	}
+
+	private Mutex pointerExitLock = new();
+	private event EventHandler<PointerEvent>? pointerExit = default;
+	public event EventHandler<PointerEvent>? PointerExit
+	{
+		add
+		{
+			lock(pointerExitLock)
+			{
+				pointerExit += value;
+				Input.PointerMove -= HandlePointerMove;
+				Input.PointerMove += HandlePointerMove;
+			}
+		}
+		remove
+		{
+			lock(pointerExitLock)
+			{
+				pointerExit -= value;
+				if (pointerExit?.GetInvocationList().Length == 0)
+				if (pointerEnter?.GetInvocationList().Length == 0)
 				if (pointerMove?.GetInvocationList().Length == 0)
 				{
 					Input.PointerMove -= HandlePointerMove;
@@ -100,11 +158,22 @@ public partial class Node
 		}
 	}
 
+	private bool hasPointer = false;
 	private void HandlePointerMove(object? sender, PointerEvent evt)
 	{
 		if (HitShape.HasPoint(GlobalTransform.Inverse() * evt.Position))
 		{
 			pointerMove?.Invoke(this, evt);
+			if (!hasPointer)
+			{
+				hasPointer = true;
+				pointerEnter?.Invoke(this, evt);
+			}
+		}
+		else if (hasPointer)
+		{
+			hasPointer = false;
+			pointerExit?.Invoke(this, evt);
 		}
 	}
 }

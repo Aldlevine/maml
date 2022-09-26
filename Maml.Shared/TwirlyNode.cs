@@ -22,6 +22,8 @@ public class TwirlyNode : Node
 		};
 
 		PointerDown += OnPointerDown;
+		PointerEnter += OnPointerEnter;
+		PointerExit += OnPointerExit;
 
 		HitShape = new Ellipse()
 		{
@@ -100,23 +102,25 @@ public class TwirlyNode : Node
 	#region Resources
 	private static List<DrawLayer> defaultDrawLayers = new()
 	{
-		new Fill(new ColorBrush { Color = Colors.RebeccaPurple with { A = 0.125f } }),
-		new Stroke(new ColorBrush { Color = Colors.HotPink with { A = 0.5f } }, 7),
-		new Stroke(new ColorBrush { Color = Colors.DarkMagenta with { A = 0.5f} }, 3),
+		// new Fill(new ColorBrush { Color = Colors.RebeccaPurple with { A = 0.125f } }),
+		// new Stroke(new ColorBrush { Color = Colors.HotPink with { A = 0.5f } }, 7),
+		// new Stroke(new ColorBrush { Color = Colors.DarkMagenta with { A = 0.5f} }, 3),
+		new Stroke(new ColorBrush { Color = Colors.DarkOrange }, 7),
+		new Stroke(new ColorBrush { Color = Colors.HotPink }, 3),
 	};
 
 	private static List<DrawLayer> selectedDrawLayers = new()
 	{
-		new Fill(new ColorBrush { Color = Colors.RebeccaPurple with { A = 0.25f } }),
-		new Stroke(new ColorBrush { Color = Colors.Cyan }, 7),
-		new Stroke(new ColorBrush { Color = Colors.DarkBlue }, 3),
+		// new Fill(new ColorBrush { Color = Colors.RebeccaPurple with { A = 0.25f } }),
+		new Stroke(new ColorBrush { Color = Colors.PaleGreen }, 7),
+		new Stroke(new ColorBrush { Color = Colors.DarkGoldenrod }, 3),
 	};
 
 	private List<DrawLayer> animatedDrawLayers = new()
 	{
 		defaultDrawLayers[0] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[0].Brush)},
-		defaultDrawLayers[1] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[0].Brush)},
-		defaultDrawLayers[2] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[0].Brush)},
+		defaultDrawLayers[1] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[1].Brush)},
+		// defaultDrawLayers[2] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[2].Brush)},
 	};
 
 	private static EllipseGeometry ellipseGeo = new()
@@ -125,8 +129,10 @@ public class TwirlyNode : Node
 	};
 
 	private GeometryGraphic hitRectGfx;
-	private List<DrawLayer> hitRectVisible = new() { new Stroke(new ColorBrush { Color = Colors.RoyalBlue }, 1), };
-	private List<DrawLayer> hitRectHidden = new() { new Stroke(new ColorBrush { Color = Colors.RoyalBlue with { A = 0.5f } }, 1), };
+	// private List<DrawLayer> hitRectVisible = new() { new Stroke(new ColorBrush { Color = Colors.RoyalBlue }, 1), };
+	private List<DrawLayer> hitRectVisible = new() { };
+	// private List<DrawLayer> hitRectHidden = new() { new Stroke(new ColorBrush { Color = Colors.RoyalBlue with { A = 0.5f } }, 1), };
+	private List<DrawLayer> hitRectHidden = new() { };
 
 	private GeometryGraphic ellipseGfx = new()
 	{
@@ -135,7 +141,7 @@ public class TwirlyNode : Node
 		{
 			defaultDrawLayers[0],
 			defaultDrawLayers[1],
-			defaultDrawLayers[2]
+			// defaultDrawLayers[2]
 		},
 	};
 
@@ -190,7 +196,8 @@ public class TwirlyNode : Node
 
 			case FrameState.Play:
 				{
-					var t = double.Sin((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
+					// var t = double.Sin((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
+					var t = Unit.Triangle((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
 					var targetScale = Vector2.Lerp(minScale, maxScale, t);
 					var scale = Vector2.Lerp(Transform.Scale, targetScale, evt.Delta.TotalSeconds * 10);
 					Transform = Transform with { Scale = scale, };
@@ -253,7 +260,7 @@ public class TwirlyNode : Node
 						if (animatedDrawLayers[i].Brush is not ColorBrush animatedBrush) { continue; }
 						if (defaultDrawLayers[i].Brush is not ColorBrush defaultBrush) { continue; }
 						if (selectedDrawLayers[i].Brush is not ColorBrush selectedBrush) { continue; }
-						animatedBrush.Color = Color.Lerp(animatedBrush.Color, selectedBrush.Color, evt.Delta.TotalSeconds * 5);
+						animatedBrush.Color = Color.Lerp(animatedBrush.Color, selectedBrush.Color, evt.Delta.TotalSeconds * 7.5);
 					}
 				}
 				break;
@@ -300,11 +307,16 @@ public class TwirlyNode : Node
 		{
 			Input.PointerUp += OnPointerUp;
 			Input.PointerMove += OnPointerMove;
-			Animator.Singleton.Frame += Spin;
+
+			// Remove animations
 			Animator.Singleton.Frame -= Pulse;
-			Animator.Singleton.Frame += ResetScale;
 			Animator.Singleton.Frame -= HideSelect;
+
+			// Add animations
+			Animator.Singleton.Frame += Spin;
+			Animator.Singleton.Frame += ResetScale;
 			Animator.Singleton.Frame += ShowSelect;
+
 			Parent?.Children.Add(this);
 		}
 	}
@@ -320,12 +332,32 @@ public class TwirlyNode : Node
 		{
 			Input.PointerUp -= OnPointerUp;
 			Input.PointerMove -= OnPointerMove;
+
+			// Remove animations
 			Animator.Singleton.Frame -= Spin;
-			Animator.Singleton.Frame += Pulse;
 			Animator.Singleton.Frame -= ResetScale;
 			Animator.Singleton.Frame -= ShowSelect;
+
+			// Add animations
+			Animator.Singleton.Frame += Pulse;
 			Animator.Singleton.Frame += HideSelect;
+
 		}
+	}
+
+	private void OnPointerEnter(object? sender, PointerEvent evt)
+	{
+		if ((evt.ButtonMask & PointerButton.Left) > 0)
+		{
+			Animator.Singleton.Frame -= HideSelect;
+			Animator.Singleton.Frame += ShowSelect;
+		}
+	}
+
+	private void OnPointerExit(object? sender, PointerEvent evt)
+	{
+		Animator.Singleton.Frame -= ShowSelect;
+		Animator.Singleton.Frame += HideSelect;
 	}
 	#endregion
 }
