@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BoxCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Color.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Engine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Graphic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Resource.cs" />
@@ -37,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)VBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\VirtualKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Test.maml" />

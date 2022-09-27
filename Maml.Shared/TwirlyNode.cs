@@ -5,8 +5,6 @@ using Maml.Math;
 using Maml.Scene;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Windows.UI.Composition;
 
 namespace Maml;
 
@@ -102,16 +100,12 @@ public class TwirlyNode : Node
 	#region Resources
 	private static List<DrawLayer> defaultDrawLayers = new()
 	{
-		// new Fill(new ColorBrush { Color = Colors.RebeccaPurple with { A = 0.125f } }),
-		// new Stroke(new ColorBrush { Color = Colors.HotPink with { A = 0.5f } }, 7),
-		// new Stroke(new ColorBrush { Color = Colors.DarkMagenta with { A = 0.5f} }, 3),
 		new Stroke(new ColorBrush { Color = Colors.DarkOrange }, 7),
 		new Stroke(new ColorBrush { Color = Colors.HotPink }, 3),
 	};
 
 	private static List<DrawLayer> selectedDrawLayers = new()
 	{
-		// new Fill(new ColorBrush { Color = Colors.RebeccaPurple with { A = 0.25f } }),
 		new Stroke(new ColorBrush { Color = Colors.PaleGreen }, 7),
 		new Stroke(new ColorBrush { Color = Colors.DarkGoldenrod }, 3),
 	};
@@ -120,7 +114,6 @@ public class TwirlyNode : Node
 	{
 		defaultDrawLayers[0] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[0].Brush)},
 		defaultDrawLayers[1] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[1].Brush)},
-		// defaultDrawLayers[2] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[2].Brush)},
 	};
 
 	private static EllipseGeometry ellipseGeo = new()
@@ -129,9 +122,7 @@ public class TwirlyNode : Node
 	};
 
 	private GeometryGraphic hitRectGfx;
-	// private List<DrawLayer> hitRectVisible = new() { new Stroke(new ColorBrush { Color = Colors.RoyalBlue }, 1), };
 	private List<DrawLayer> hitRectVisible = new() { };
-	// private List<DrawLayer> hitRectHidden = new() { new Stroke(new ColorBrush { Color = Colors.RoyalBlue with { A = 0.5f } }, 1), };
 	private List<DrawLayer> hitRectHidden = new() { };
 
 	private GeometryGraphic ellipseGfx = new()
@@ -141,7 +132,6 @@ public class TwirlyNode : Node
 		{
 			defaultDrawLayers[0],
 			defaultDrawLayers[1],
-			// defaultDrawLayers[2]
 		},
 	};
 
