@@ -65,6 +65,5 @@ unsafe public partial class LineGeometry : Geometry
 		pSink->EndFigure(Windows.Win32.Graphics.Direct2D.Common.D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);
 		pSink->Close().ThrowOnFailure();
 		pSink->Release();
-
 	}
 }

@@ -40,6 +40,8 @@ public partial struct Rect: IShape
 		return true;
 	}
 
+	public Rect GetBoundingRect(in Transform transform) => transform * this;
+
 	public override string? ToString() => $"Rect({Position}, {Size})";
 }
 

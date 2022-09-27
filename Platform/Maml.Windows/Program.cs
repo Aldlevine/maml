@@ -243,11 +243,16 @@ internal static partial class Program
 		App.Viewport.Resize += Resize;
 		Input.PointerDown += PointerDown;
 
-		for (int i = 0; i < 200; i++)
+		for (int i = 0; i < 300; i++)
 		{
 			sceneTree.Root?.Children.Add(new TwirlyNode
 			{
-				Transform = new Transform { Origin = new(Random.Shared.Next((int)App.Viewport.Size.X), Random.Shared.Next((int)App.Viewport.Size.Y)), },
+				Transform = new()
+				{
+					Origin = new(
+						Random.Shared.Next((int)App.Viewport.Size.X),
+						Random.Shared.Next((int)App.Viewport.Size.Y)),
+				},
 			});
 		}
 

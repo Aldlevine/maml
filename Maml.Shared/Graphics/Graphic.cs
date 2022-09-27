@@ -6,6 +6,8 @@ namespace Maml.Graphics;
 public abstract partial class Graphic
 {
 	public abstract void Draw(ViewportBase viewport, Transform transform);
+
+	// public abstract Rect GetBoundingRect(Transform transform);
 }
 
 public partial class GeometryGraphic : Graphic
@@ -20,6 +22,7 @@ public partial class GeometryGraphic : Graphic
 		Geometry = geometryGraphic.Geometry;
 		DrawLayers = geometryGraphic.DrawLayers;
 	}
+	
 	public override void Draw(ViewportBase vp, Transform transform)
 	{
 		if (Geometry == null) { return; }
@@ -31,18 +34,6 @@ public partial class GeometryGraphic : Graphic
 		{
 			vp.DrawGeometry(Geometry, layer);
 		}
-		// foreach (var layer in DrawLayers)
-		// {
-		// 	switch (layer)
-		// 	{
-		// 		case Fill l:
-		// 			DrawLayer(vp, l);
-		// 			break;
-		// 		case Stroke l:
-		// 			DrawLayer(vp, l);
-		// 			break;
-		// 	}
-		// }
 		vp.SetTransform(curXform);
 	}
 }

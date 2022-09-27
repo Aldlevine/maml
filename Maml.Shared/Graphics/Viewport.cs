@@ -9,20 +9,19 @@ namespace Maml.Graphics;
 
 public abstract class ViewportBase
 {
-	public double DpiRatio => GetDpiRatio();
-	public Vector2 Size => GetSize();
-
 	public abstract event EventHandler<ResizeEvent>? Resize;
 	public abstract event EventHandler<DrawEvent>? Draw;
 
-	protected abstract Vector2 GetSize();
-	protected abstract double GetDpiRatio();
+	public abstract Vector2 Size { get; }
+	public abstract double DpiRatio { get; }
 
-	public abstract void Clear(Color color);
 	public abstract Transform GetTransform();
 	public abstract void SetTransform(Transform transform);
 
-	// public void DrawGraphic(Graphic graphic, Transform transform) => graphic.Draw(this, transform);
+	public abstract void Clear(Color color);
+	public abstract void DrawGeometry(Geometry geometry, Fill fill);
+	public abstract void DrawGeometry(Geometry geometry, Stroke stroke);
+
 	public void DrawScene(SceneTree sceneTree)
 	{
 		foreach (var node in sceneTree.Nodes)
@@ -31,7 +30,6 @@ public abstract class ViewportBase
 			{
 				if (c is GraphicComponent g && g.Graphic != null)
 				{
-					// DrawGraphic(g.Graphic, node.GlobalTransform * g.Transform);
 					g.Graphic.Draw(this, node.GlobalTransform * g.Transform);
 				}
 			}
@@ -46,6 +44,4 @@ public abstract class ViewportBase
 			case Stroke l: DrawGeometry(geometry, l); break;
 		}
 	}
-	public abstract void DrawGeometry(Geometry geometry, Fill fill);
-	public abstract void DrawGeometry(Geometry geometry, Stroke stroke);
 }

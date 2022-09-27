@@ -15,4 +15,6 @@ public partial struct Ellipse: IShape
 		var p = ((x * x) / (rx * rx)) + ((y * y) / (ry * ry));
 		return p <= 1;
 	}
+
+	public Rect GetBoundingRect(in Transform transform) => transform * new Rect { Position = Center - Radius, Size = Radius * 2 };
 }

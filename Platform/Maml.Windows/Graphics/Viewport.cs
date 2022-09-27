@@ -11,107 +11,30 @@ namespace Maml.Graphics;
 
 public unsafe class Viewport : ViewportBase
 {
-	internal HWND hWnd;
-	internal ID2D1Factory* pD2DFactory;
-
-	internal bool ImmediateMode = false;
-	internal ID2D1HwndRenderTarget* pRenderTarget => ImmediateMode ? pImmediateRenderTarget : pSyncRenderTarget;
-	private ID2D1HwndRenderTarget* pImmediateRenderTarget;
-	private ID2D1HwndRenderTarget* pSyncRenderTarget;
-
-	private const int stdDpi = 96;
-	private const double stdDpiInv = 1.0 / (double)stdDpi;
+	#region Abstract
 
 	public override event EventHandler<ResizeEvent>? Resize;
 	public override event EventHandler<DrawEvent>? Draw;
 
-	~Viewport()
+	public override Vector2 Size
 	{
-		DiscardDeviceResources();
-	}
-
-	protected override double GetDpiRatio() => GetDpiForWindow(hWnd) * stdDpiInv;
-
-	protected override Vector2 GetSize()
-	{
-		GetClientRect(hWnd, out var rc);
-		return new(rc.right - rc.left, rc.bottom - rc.top);
-	}
-
-	private void CreateDeviceResources()
-	{
-		if (pImmediateRenderTarget == null)
+		get
 		{
-			D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new()
-			{
-				dpiX = stdDpi,
-				dpiY = stdDpi,
-			};
-
-			D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
-			{
-				hwnd = hWnd,
-				pixelSize = Size.ToD2DSizeU(),
-				presentOptions = D2D1_PRESENT_OPTIONS.D2D1_PRESENT_OPTIONS_IMMEDIATELY,
-			};
-
-			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pImmediateRenderTarget)
-			{
-				pD2DFactory->CreateHwndRenderTarget(
-					in renderTargetProps,
-					in hWndRenderTargetProps,
-					ppRenderTarget).ThrowOnFailure();
-			}
-		}
-
-		if (pSyncRenderTarget == null)
-		{
-			D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new()
-			{
-				dpiX = stdDpi,
-				dpiY = stdDpi,
-			};
-
-			D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
-			{
-				hwnd = hWnd,
-				pixelSize = Size.ToD2DSizeU(),
-				presentOptions = D2D1_PRESENT_OPTIONS.D2D1_PRESENT_OPTIONS_NONE,
-			};
-
-			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pSyncRenderTarget)
-			{
-				pD2DFactory->CreateHwndRenderTarget(
-					in renderTargetProps,
-					in hWndRenderTargetProps,
-					ppRenderTarget).ThrowOnFailure();
-			}
+			GetClientRect(hWnd, out var rc);
+			return new(rc.right - rc.left, rc.bottom - rc.top);
 		}
 	}
 
-	private void DiscardDeviceResources()
-	{
-		if (pImmediateRenderTarget != null)
-		{
-			pImmediateRenderTarget->Release();
-			pImmediateRenderTarget = null;
-		}
-		if (pSyncRenderTarget != null)
-		{
-			pSyncRenderTarget->Release();
-			pSyncRenderTarget = null;
-		}
+	public override double DpiRatio => GetDpiForWindow(hWnd) * stdDpiInv;
 
-		// Somehow need to notify Geometries and Brushes to release their stuff...
-	}
-
-	public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
 	public override Transform GetTransform()
 	{
 		pRenderTarget->GetTransform(out var matrix);
 		return new(matrix);
 	}
 	public override void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
+
+	public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
 
 	public override void DrawGeometry(Geometry geometry, Fill fill)
 	{
@@ -145,7 +68,78 @@ public unsafe class Viewport : ViewportBase
 		}
 	}
 
-	private Mutex drawMutex = new();
+	#endregion
+
+	private const int stdDpi = 96;
+	private const double stdDpiInv = 1.0 / (double)stdDpi;
+
+	internal HWND hWnd;
+	internal ID2D1Factory* pD2DFactory;
+	internal bool ImmediateMode = false;
+	internal ID2D1HwndRenderTarget* pRenderTarget => ImmediateMode ? pImmediateRenderTarget : pSyncRenderTarget;
+	private ID2D1HwndRenderTarget* pImmediateRenderTarget;
+	private ID2D1HwndRenderTarget* pSyncRenderTarget;
+
+	~Viewport()
+	{
+		DiscardDeviceResources();
+	}
+
+	private void CreateRenderTarget(ID2D1HwndRenderTarget** ppRenderTarget, D2D1_PRESENT_OPTIONS presentMode)
+	{
+		D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new()
+		{
+			dpiX = stdDpi,
+			dpiY = stdDpi,
+		};
+
+		D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
+		{
+			hwnd = hWnd,
+			pixelSize = Size.ToD2DSizeU(),
+			presentOptions = presentMode,
+		};
+
+		pD2DFactory->CreateHwndRenderTarget(
+			in renderTargetProps,
+			in hWndRenderTargetProps,
+			ppRenderTarget).ThrowOnFailure();
+	}
+
+	private void CreateDeviceResources()
+	{
+		if (pImmediateRenderTarget == null)
+		{
+			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pImmediateRenderTarget)
+			{
+				CreateRenderTarget(ppRenderTarget, D2D1_PRESENT_OPTIONS.D2D1_PRESENT_OPTIONS_IMMEDIATELY);
+			}
+		}
+
+		if (pSyncRenderTarget == null)
+		{
+			fixed (ID2D1HwndRenderTarget** ppRenderTarget = &pSyncRenderTarget)
+			{
+				CreateRenderTarget(ppRenderTarget, D2D1_PRESENT_OPTIONS.D2D1_PRESENT_OPTIONS_NONE);
+			}
+		}
+	}
+
+	private void DiscardDeviceResources()
+	{
+		if (pImmediateRenderTarget != null)
+		{
+			pImmediateRenderTarget->Release();
+			pImmediateRenderTarget = null;
+		}
+		if (pSyncRenderTarget != null)
+		{
+			pSyncRenderTarget->Release();
+			pSyncRenderTarget = null;
+		}
+
+		// Somehow need to notify Geometries and Brushes to release their stuff...
+	}
 
 	internal void Redraw(bool forceUpdate)
 	{
@@ -156,6 +150,7 @@ public unsafe class Viewport : ViewportBase
 		}
 	}
 
+	private Mutex drawMutex = new();
 	internal void HandleDraw()
 	{
 		lock (drawMutex)
