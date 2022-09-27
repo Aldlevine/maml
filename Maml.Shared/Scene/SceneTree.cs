@@ -1,18 +1,10 @@
-﻿using Maml.Events;
-using Maml.Graphics;
-using Maml.Math;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace Maml.Scene;
 
 public class SceneTree
 {
-	public event EventHandler<InitEvent>? Initialized;
-
 	public Node? Root { get; set; } = new() { Name = "Root" };
 
 	/// <summary>

@@ -1,6 +1,6 @@
 ﻿namespace Maml.Math;
 
-public partial struct Ellipse: IShape
+public partial struct Ellipse : IShape
 {
 	public Vector2 Center { get; set; } = Vector2.Zero;
 	public Vector2 Radius { get; set; } = Vector2.Zero;

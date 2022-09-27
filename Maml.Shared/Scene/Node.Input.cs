@@ -12,21 +12,21 @@ public partial class Node
 	{
 		add
 		{
-			lock(pointerUpLock)
+			lock (pointerUpLock)
 			{
 				pointerUp += value;
-				Input.PointerUp -= HandlePointerUp;
-				Input.PointerUp += HandlePointerUp;
+				Engine.Singleton.Window.PointerUp -= HandlePointerUp;
+				Engine.Singleton.Window.PointerUp += HandlePointerUp;
 			}
 		}
 		remove
 		{
-			lock(pointerUpLock)
+			lock (pointerUpLock)
 			{
 				pointerUp -= value;
 				if (pointerUp?.GetInvocationList().Length == 0)
 				{
-					Input.PointerUp -= HandlePointerUp;
+					Engine.Singleton.Window.PointerUp -= HandlePointerUp;
 				}
 			}
 		}
@@ -38,21 +38,21 @@ public partial class Node
 	{
 		add
 		{
-			lock(pointerDownLock)
+			lock (pointerDownLock)
 			{
 				pointerDown += value;
-				Input.PointerDown -= HandlePointerDown;
-				Input.PointerDown += HandlePointerDown;
+				Engine.Singleton.Window.PointerDown -= HandlePointerDown;
+				Engine.Singleton.Window.PointerDown += HandlePointerDown;
 			}
 		}
 		remove
 		{
-			lock(pointerDownLock)
+			lock (pointerDownLock)
 			{
 				pointerDown -= value;
 				if (pointerDown?.GetInvocationList().Length == 0)
 				{
-					Input.PointerDown -= HandlePointerDown;
+					Engine.Singleton.Window.PointerDown -= HandlePointerDown;
 				}
 			}
 		}
@@ -64,24 +64,24 @@ public partial class Node
 	{
 		add
 		{
-			lock(pointerMoveLock)
+			lock (pointerMoveLock)
 			{
 				pointerMove += value;
-				Input.PointerMove -= HandlePointerMove;
-				Input.PointerMove += HandlePointerMove;
+				Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+				Engine.Singleton.Window.PointerMove += HandlePointerMove;
 			}
 		}
 		remove
 		{
-			lock(pointerMoveLock)
+			lock (pointerMoveLock)
 			{
 				pointerMove -= value;
 				if (pointerExit?.GetInvocationList().Length == 0)
-				if (pointerEnter?.GetInvocationList().Length == 0)
-				if (pointerMove?.GetInvocationList().Length == 0)
-				{
-					Input.PointerMove -= HandlePointerMove;
-				}
+					if (pointerEnter?.GetInvocationList().Length == 0)
+						if (pointerMove?.GetInvocationList().Length == 0)
+						{
+							Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+						}
 			}
 		}
 	}
@@ -92,24 +92,24 @@ public partial class Node
 	{
 		add
 		{
-			lock(pointerEnterLock)
+			lock (pointerEnterLock)
 			{
 				pointerEnter += value;
-				Input.PointerMove -= HandlePointerMove;
-				Input.PointerMove += HandlePointerMove;
+				Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+				Engine.Singleton.Window.PointerMove += HandlePointerMove;
 			}
 		}
 		remove
 		{
-			lock(pointerEnterLock)
+			lock (pointerEnterLock)
 			{
 				pointerEnter -= value;
 				if (pointerExit?.GetInvocationList().Length == 0)
-				if (pointerEnter?.GetInvocationList().Length == 0)
-				if (pointerMove?.GetInvocationList().Length == 0)
-				{
-					Input.PointerMove -= HandlePointerMove;
-				}
+					if (pointerEnter?.GetInvocationList().Length == 0)
+						if (pointerMove?.GetInvocationList().Length == 0)
+						{
+							Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+						}
 			}
 		}
 	}
@@ -120,31 +120,31 @@ public partial class Node
 	{
 		add
 		{
-			lock(pointerExitLock)
+			lock (pointerExitLock)
 			{
 				pointerExit += value;
-				Input.PointerMove -= HandlePointerMove;
-				Input.PointerMove += HandlePointerMove;
+				Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+				Engine.Singleton.Window.PointerMove += HandlePointerMove;
 			}
 		}
 		remove
 		{
-			lock(pointerExitLock)
+			lock (pointerExitLock)
 			{
 				pointerExit -= value;
 				if (pointerExit?.GetInvocationList().Length == 0)
-				if (pointerEnter?.GetInvocationList().Length == 0)
-				if (pointerMove?.GetInvocationList().Length == 0)
-				{
-					Input.PointerMove -= HandlePointerMove;
-				}
+					if (pointerEnter?.GetInvocationList().Length == 0)
+						if (pointerMove?.GetInvocationList().Length == 0)
+						{
+							Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+						}
 			}
 		}
 	}
 
 	private void HandlePointerUp(object? sender, PointerEvent evt)
 	{
-		if (HitShape.HasPoint(GlobalTransform.Inverse() * evt.Position))
+		if (HitShape?.HasPoint(GlobalTransform.Inverse() * evt.Position) ?? false)
 		{
 			pointerUp?.Invoke(this, evt);
 		}
@@ -152,7 +152,7 @@ public partial class Node
 
 	private void HandlePointerDown(object? sender, PointerEvent evt)
 	{
-		if (HitShape.HasPoint(GlobalTransform.Inverse() * evt.Position))
+		if (HitShape?.HasPoint(GlobalTransform.Inverse() * evt.Position) ?? false)
 		{
 			pointerDown?.Invoke(this, evt);
 		}
@@ -161,7 +161,7 @@ public partial class Node
 	private bool hasPointer = false;
 	private void HandlePointerMove(object? sender, PointerEvent evt)
 	{
-		if (HitShape.HasPoint(GlobalTransform.Inverse() * evt.Position))
+		if (HitShape?.HasPoint(GlobalTransform.Inverse() * evt.Position) ?? false)
 		{
 			pointerMove?.Invoke(this, evt);
 			if (!hasPointer)

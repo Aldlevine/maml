@@ -1,6 +1,6 @@
 ﻿using Windows.Win32.Graphics.Direct2D.Common;
 
-namespace Maml;
+namespace Maml.Graphics;
 
 public partial struct Color
 {

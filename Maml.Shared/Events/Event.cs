@@ -1,8 +1,4 @@
-﻿using System;
-using Maml.Graphics;
-using Maml.Math;
-using Maml.Events;
-using System.Runtime.Intrinsics;
+﻿using Maml.Math;
 
 namespace Maml.Events;
 
@@ -25,20 +21,20 @@ public record ResizeEvent : Event
 
 public record DrawEvent : Event
 {
-	public Viewport? Viewport;
+	public RenderTargetBase? RenderTarget;
 }
 
 public record PointerEvent : Event
 {
 	public Vector2 Position;
-	public Vector2 Delta;
+	public Vector2 PositionDelta;
 	public PointerButton Button;
 	public PointerButton ButtonMask;
 }
 
 public record WheelEvent : PointerEvent
 {
-	public Vector2 Delta;
+	public Vector2 WheelDelta;
 }
 
 public record FocusEvent : Event

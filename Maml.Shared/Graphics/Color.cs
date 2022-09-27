@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Maml;
+namespace Maml.Graphics;
 
 [StructLayout(LayoutKind.Sequential)]
 public partial struct Color : IEquatable<Color>

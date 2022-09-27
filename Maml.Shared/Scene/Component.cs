@@ -1,7 +1,5 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Maml.Scene;
 

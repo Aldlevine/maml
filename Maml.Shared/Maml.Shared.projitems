@@ -9,41 +9,36 @@
     <Import_RootNamespace>Maml.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Animator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Box.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BoxCollection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Color.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Engine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\Animator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Color.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\EngineBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RenderTargetBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Graphic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Resource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LineGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Ellipse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\IShape.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Rect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Brush.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Viewport.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\Event.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\PointerButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Units.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Component.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\SceneTree.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TextBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TwirlyNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\VirtualKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Window.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Test.maml" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\WindowBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Events\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Animation\" />
   </ItemGroup>
 </Project>

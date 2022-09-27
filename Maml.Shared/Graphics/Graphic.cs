@@ -5,7 +5,8 @@ namespace Maml.Graphics;
 
 public abstract partial class Graphic
 {
-	public abstract void Draw(ViewportBase viewport, Transform transform);
+	// public abstract void Draw(ViewportBase viewport, Transform transform);
+	public abstract void Draw(RenderTargetBase renderTarget, Transform transform);
 
 	// public abstract Rect GetBoundingRect(Transform transform);
 }
@@ -22,18 +23,19 @@ public partial class GeometryGraphic : Graphic
 		Geometry = geometryGraphic.Geometry;
 		DrawLayers = geometryGraphic.DrawLayers;
 	}
-	
-	public override void Draw(ViewportBase vp, Transform transform)
+
+	// public override void Draw(ViewportBase vp, Transform transform)
+	public override void Draw(RenderTargetBase rt, Transform transform)
 	{
 		if (Geometry == null) { return; }
 
-		Transform curXform = vp.GetTransform();
-		vp.SetTransform(curXform * transform);
+		Transform curXform = rt.GetTransform();
+		rt.SetTransform(curXform * transform);
 
 		foreach (var layer in DrawLayers)
 		{
-			vp.DrawGeometry(Geometry, layer);
+			rt.DrawGeometry(Geometry, layer);
 		}
-		vp.SetTransform(curXform);
+		rt.SetTransform(curXform);
 	}
 }

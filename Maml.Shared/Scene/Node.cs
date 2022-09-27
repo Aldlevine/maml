@@ -1,5 +1,4 @@
-﻿using Maml.Events;
-using Maml.Math;
+﻿using Maml.Math;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,7 +20,7 @@ public partial class Node
 	public int ZIndex { get; set; } = 0;
 	public List<GraphicComponent> Graphics { get; init; } = new();
 
-	public IShape HitShape { get; set; } = default;
+	public IShape? HitShape { get; set; } = default;
 	// public InputComponent Input { get; init; } = new();
 
 	// TODO: Notify tree when child is added

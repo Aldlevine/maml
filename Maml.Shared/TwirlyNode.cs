@@ -94,7 +94,7 @@ public class TwirlyNode : Node
 			}),
 		};
 
-		Animator.Singleton.Frame += Pulse;
+		Engine.Singleton.Animator.Frame += Pulse;
 	}
 
 	#region Resources
@@ -212,7 +212,7 @@ public class TwirlyNode : Node
 					if (double.Abs(scale.X - 1) < 0.01 && double.Abs(scale.Y - 1) < 0.01)
 					{
 						scale = Vector2.One;
-						Animator.Singleton.Frame -= ResetScale;
+						Engine.Singleton.Animator.Frame -= ResetScale;
 					}
 					else
 					{
@@ -295,17 +295,17 @@ public class TwirlyNode : Node
 	{
 		if (evt.Button == PointerButton.Left)
 		{
-			Input.PointerUp += OnPointerUp;
-			Input.PointerMove += OnPointerMove;
+			Engine.Singleton.Window.PointerUp += OnPointerUp;
+			Engine.Singleton.Window.PointerMove += OnPointerMove;
 
 			// Remove animations
-			Animator.Singleton.Frame -= Pulse;
-			Animator.Singleton.Frame -= HideSelect;
+			Engine.Singleton.Animator.Frame -= Pulse;
+			Engine.Singleton.Animator.Frame -= HideSelect;
 
 			// Add animations
-			Animator.Singleton.Frame += Spin;
-			Animator.Singleton.Frame += ResetScale;
-			Animator.Singleton.Frame += ShowSelect;
+			Engine.Singleton.Animator.Frame += Spin;
+			Engine.Singleton.Animator.Frame += ResetScale;
+			Engine.Singleton.Animator.Frame += ShowSelect;
 
 			Parent?.Children.Add(this);
 		}
@@ -313,24 +313,24 @@ public class TwirlyNode : Node
 
 	private void OnPointerMove(object? sender, PointerEvent evt)
 	{
-		Transform = Transform.Translated(evt.Delta);
+		Transform = Transform.Translated(evt.PositionDelta);
 	}
 
 	private void OnPointerUp(object? sender, PointerEvent evt)
 	{
 		if (evt.Button == PointerButton.Left)
 		{
-			Input.PointerUp -= OnPointerUp;
-			Input.PointerMove -= OnPointerMove;
+			Engine.Singleton.Window.PointerUp -= OnPointerUp;
+			Engine.Singleton.Window.PointerMove -= OnPointerMove;
 
 			// Remove animations
-			Animator.Singleton.Frame -= Spin;
-			Animator.Singleton.Frame -= ResetScale;
-			Animator.Singleton.Frame -= ShowSelect;
+			Engine.Singleton.Animator.Frame -= Spin;
+			Engine.Singleton.Animator.Frame -= ResetScale;
+			Engine.Singleton.Animator.Frame -= ShowSelect;
 
 			// Add animations
-			Animator.Singleton.Frame += Pulse;
-			Animator.Singleton.Frame += HideSelect;
+			Engine.Singleton.Animator.Frame += Pulse;
+			Engine.Singleton.Animator.Frame += HideSelect;
 
 		}
 	}
@@ -339,15 +339,15 @@ public class TwirlyNode : Node
 	{
 		if ((evt.ButtonMask & PointerButton.Left) > 0)
 		{
-			Animator.Singleton.Frame -= HideSelect;
-			Animator.Singleton.Frame += ShowSelect;
+			Engine.Singleton.Animator.Frame -= HideSelect;
+			Engine.Singleton.Animator.Frame += ShowSelect;
 		}
 	}
 
 	private void OnPointerExit(object? sender, PointerEvent evt)
 	{
-		Animator.Singleton.Frame -= ShowSelect;
-		Animator.Singleton.Frame += HideSelect;
+		Engine.Singleton.Animator.Frame -= ShowSelect;
+		Engine.Singleton.Animator.Frame += HideSelect;
 	}
 	#endregion
 }

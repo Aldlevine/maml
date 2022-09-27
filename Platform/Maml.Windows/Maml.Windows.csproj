@@ -11,7 +11,7 @@
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <StartupObject>Maml.Program</StartupObject>
+    <StartupObject>Maml.Program2</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

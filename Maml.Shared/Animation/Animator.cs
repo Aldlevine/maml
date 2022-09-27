@@ -51,7 +51,7 @@ public class Animator
 		{
 			lock (frameMutex)
 			{
-				if (Array.IndexOf(frame.GetInvocationList(), value) > -1)
+				if (frame != null && Array.IndexOf(frame.GetInvocationList(), value) > -1)
 				{
 					frame -= value;
 					value?.Invoke(this, new()

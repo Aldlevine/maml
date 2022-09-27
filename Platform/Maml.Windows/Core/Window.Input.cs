@@ -1,32 +1,27 @@
-﻿using Maml.Math;
+﻿using Maml.Events;
+using Maml.Math;
 using System;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.Pointer;
+
 using static Maml.Utils.Bits;
 using static Windows.Win32.PInvoke;
 
-namespace Maml.Events;
-
-public partial class Input
+namespace Maml;
+partial class Window
 {
-	private static PointerButton previousButtonState = PointerButton.None;
-	private static Vector2 previousPointerPosition = Vector2.Zero;
-
-	internal static void HandlePointer(WPARAM wParam, LPARAM lParam)
+	private PointerButton previousButtonState = PointerButton.None;
+	private Vector2 previousPointerPosition = Vector2.Zero;
+	internal void HandlePointer(WPARAM wParam, LPARAM lParam)
 	{
-		if (Program.App == null)
-		{
-			return;
-		}
-
 		uint pointerId = (uint)LoWord(wParam);
 		GetPointerInfo(pointerId, out var pointerInfo);
 
-		double dpiRatio = 1.0 / Program.App.Viewport.DpiRatio;
+		double dpiRatio = 1.0 / DpiRatio;
 
 		var pointerPosition = new Vector2(
-			pointerInfo.ptPixelLocation.X - Program.App.windowPosition.X,
-			pointerInfo.ptPixelLocation.Y - Program.App.windowPosition.Y);
+			pointerInfo.ptPixelLocation.X - clientRect.Position.X,
+			pointerInfo.ptPixelLocation.Y - clientRect.Position.Y);
 
 		pointerPosition *= new Vector2(dpiRatio, dpiRatio);
 		PointerButton buttonMask = PointerButton.None;
@@ -65,7 +60,7 @@ public partial class Input
 			PointerMove?.Invoke(null, new PointerEvent
 			{
 				Position = pointerPosition,
-				Delta = pointerPosition - previousPointerPosition,
+				PositionDelta = pointerPosition - previousPointerPosition,
 				ButtonMask = buttonMask,
 			});
 		}
@@ -74,3 +69,4 @@ public partial class Input
 		previousPointerPosition = pointerPosition;
 	}
 }
+
