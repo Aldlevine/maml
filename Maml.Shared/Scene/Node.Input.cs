@@ -15,8 +15,8 @@ public partial class Node
 			lock (pointerUpLock)
 			{
 				pointerUp += value;
-				Engine.Singleton.Window.PointerUp -= HandlePointerUp;
-				Engine.Singleton.Window.PointerUp += HandlePointerUp;
+				Window.PointerUp -= HandlePointerUp;
+				Window.PointerUp += HandlePointerUp;
 			}
 		}
 		remove
@@ -26,7 +26,7 @@ public partial class Node
 				pointerUp -= value;
 				if (pointerUp?.GetInvocationList().Length == 0)
 				{
-					Engine.Singleton.Window.PointerUp -= HandlePointerUp;
+					Window.PointerUp -= HandlePointerUp;
 				}
 			}
 		}
@@ -41,8 +41,8 @@ public partial class Node
 			lock (pointerDownLock)
 			{
 				pointerDown += value;
-				Engine.Singleton.Window.PointerDown -= HandlePointerDown;
-				Engine.Singleton.Window.PointerDown += HandlePointerDown;
+				Window.PointerDown -= HandlePointerDown;
+				Window.PointerDown += HandlePointerDown;
 			}
 		}
 		remove
@@ -52,7 +52,7 @@ public partial class Node
 				pointerDown -= value;
 				if (pointerDown?.GetInvocationList().Length == 0)
 				{
-					Engine.Singleton.Window.PointerDown -= HandlePointerDown;
+					Window.PointerDown -= HandlePointerDown;
 				}
 			}
 		}
@@ -67,8 +67,8 @@ public partial class Node
 			lock (pointerMoveLock)
 			{
 				pointerMove += value;
-				Engine.Singleton.Window.PointerMove -= HandlePointerMove;
-				Engine.Singleton.Window.PointerMove += HandlePointerMove;
+				Window.PointerMove -= HandlePointerMove;
+				Window.PointerMove += HandlePointerMove;
 			}
 		}
 		remove
@@ -80,7 +80,7 @@ public partial class Node
 					if (pointerEnter?.GetInvocationList().Length == 0)
 						if (pointerMove?.GetInvocationList().Length == 0)
 						{
-							Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+							Window.PointerMove -= HandlePointerMove;
 						}
 			}
 		}
@@ -95,8 +95,8 @@ public partial class Node
 			lock (pointerEnterLock)
 			{
 				pointerEnter += value;
-				Engine.Singleton.Window.PointerMove -= HandlePointerMove;
-				Engine.Singleton.Window.PointerMove += HandlePointerMove;
+				Window.PointerMove -= HandlePointerMove;
+				Window.PointerMove += HandlePointerMove;
 			}
 		}
 		remove
@@ -108,7 +108,7 @@ public partial class Node
 					if (pointerEnter?.GetInvocationList().Length == 0)
 						if (pointerMove?.GetInvocationList().Length == 0)
 						{
-							Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+							Window.PointerMove -= HandlePointerMove;
 						}
 			}
 		}
@@ -123,8 +123,8 @@ public partial class Node
 			lock (pointerExitLock)
 			{
 				pointerExit += value;
-				Engine.Singleton.Window.PointerMove -= HandlePointerMove;
-				Engine.Singleton.Window.PointerMove += HandlePointerMove;
+				Window.PointerMove -= HandlePointerMove;
+				Window.PointerMove += HandlePointerMove;
 			}
 		}
 		remove
@@ -136,7 +136,7 @@ public partial class Node
 					if (pointerEnter?.GetInvocationList().Length == 0)
 						if (pointerMove?.GetInvocationList().Length == 0)
 						{
-							Engine.Singleton.Window.PointerMove -= HandlePointerMove;
+							Window.PointerMove -= HandlePointerMove;
 						}
 			}
 		}

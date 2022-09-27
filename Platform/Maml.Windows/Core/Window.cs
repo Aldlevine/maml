@@ -222,7 +222,9 @@ public partial class Window : WindowBase<RenderTarget>
 
 			RenderTarget!.pRenderTarget->BeginDraw();
 
-			Draw?.Invoke(this, new() { RenderTarget = RenderTarget });
+			RenderTarget.Clear(new Graphics.Color(0x333333ff));
+			RenderTarget.DrawScene(SceneTree);
+			// Draw?.Invoke(this, new() { RenderTarget = RenderTarget });
 
 			var hr = RenderTarget!.pRenderTarget->EndDraw();
 			if (hr == HRESULT.D2DERR_RECREATE_TARGET)

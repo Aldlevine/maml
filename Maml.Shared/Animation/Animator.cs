@@ -21,9 +21,6 @@ public record FrameEvent : Event
 
 public class Animator
 {
-	private static Animator singleton = new();
-	public static Animator Singleton => singleton ??= new();
-
 	private Mutex frameMutex = new();
 	private event EventHandler<FrameEvent>? frame;
 	public event EventHandler<FrameEvent>? Frame
@@ -65,6 +62,7 @@ public class Animator
 		}
 	}
 
+	public event EventHandler<FrameEvent>? NextFrame;
 
 	private static readonly TimeSpan minDelta = TimeSpan.FromMilliseconds(4);
 	private static readonly TimeSpan maxDelta = TimeSpan.FromMilliseconds(256);
@@ -82,15 +80,20 @@ public class Animator
 			tick = DateTime.Now;
 			delta = tick - lastTick;
 
+			FrameEvent evt = new()
+			{
+				FrameState = FrameState.Play,
+				Tick = tick,
+				Delta = delta,
+			};
+
 			Parallel.ForEach(frame.GetInvocationList(), (inv, state) =>
 			{
-				((EventHandler<FrameEvent>)inv).Invoke(this, new()
-				{
-					FrameState = FrameState.Play,
-					Tick = tick,
-					Delta = delta,
-				});
+				((EventHandler<FrameEvent>)inv).Invoke(this, evt);
 			});
+
+			NextFrame?.Invoke(this, evt);
+			NextFrame = null;
 
 			lastTick = tick;
 		}

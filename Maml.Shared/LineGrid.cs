@@ -1,18 +1,25 @@
-﻿using Maml.Events;
+﻿using Maml.Animation;
+using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
+using System;
 using System.Collections.Generic;
+using Windows.Graphics.Holographic;
 
 namespace Maml;
 
 public class LineGrid : Node
 {
-	public LineGrid()
-	{
-		Engine.Singleton.Window.Resize += HandleResize;
-		UpdateSize(Engine.Singleton.Window.Size);
-	}
+	#region Configuration
+	public Vector2 MinorSpacing { get; set; } = new(20, 20);
+	public Vector2 MajorInterval { get; set; } = new(5, 5);
+	public Vector2 Size { get; set; }
+	#endregion
+
+	#region Resources
+	public List<DrawLayer> LineDrawLayersMinor = lineDrawLayersMinor;
+	public List<DrawLayer> LineDrawLayersMajor = lineDrawLayersMajor;
 
 	private static List<DrawLayer> lineDrawLayersMinor = new()
 	{
@@ -33,38 +40,61 @@ public class LineGrid : Node
 		Line = new() { Start = new(0, 0), End = new(0, 0) },
 	};
 
-	private static GeometryGraphic lineGfxMinorX = new()
+	private GeometryGraphic lineGfxMinorX = new()
 	{
 		Geometry = lineGeoX,
 		DrawLayers = lineDrawLayersMinor,
 	};
 
-	private static GeometryGraphic lineGfxMinorY = new()
+	private GeometryGraphic lineGfxMinorY = new()
 	{
 		Geometry = lineGeoY,
 		DrawLayers = lineDrawLayersMinor,
 	};
 
-	private static GeometryGraphic lineGfxMajorX = new()
+	private GeometryGraphic lineGfxMajorX = new()
 	{
 		Geometry = lineGeoX,
 		DrawLayers = lineDrawLayersMajor,
 	};
 
-	private static GeometryGraphic lineGfxMajorY = new()
+	private GeometryGraphic lineGfxMajorY = new()
 	{
 		Geometry = lineGeoY,
 		DrawLayers = lineDrawLayersMajor,
 	};
+	#endregion
 
-	private void UpdateSize(Vector2 size)
+	public LineGrid()
 	{
+		// We are going to remove these in favor of triggering updates based on property changes!
+		Window.Resize += (s, e) =>
+		{
+			Size = e.Size;
+			Update();
+		};
+
+		// We are going to remove these in favor of triggering updates based on property changes!
+		Animator.NextFrame += (s, e) =>
+		{
+			Size = Window.Size;
+			Update();
+		};
+	}
+
+	private void Update()
+	{
+		lineGfxMinorX.DrawLayers = LineDrawLayersMinor;
+		lineGfxMinorY.DrawLayers = LineDrawLayersMinor;
+		lineGfxMajorX.DrawLayers = LineDrawLayersMajor;
+		lineGfxMajorY.DrawLayers = LineDrawLayersMajor;
+
 		Graphics.RemoveRange(0, Graphics.Count);
 
-		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, size.Y), };
-		for (int x = 0; x < size.X; x += 20)
+		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, Size.Y), };
+		for (int x = 0; x < Size.X; x += (int)MinorSpacing.X)
 		{
-			var lineGfx = (x % 100) switch
+			var lineGfx = (x % (MinorSpacing.X * MajorInterval.X)) switch
 			{
 				0 => lineGfxMajorX,
 				_ => lineGfxMinorX,
@@ -77,10 +107,10 @@ public class LineGrid : Node
 			});
 		}
 
-		lineGeoY.Line = new Line { Start = new(0, 0), End = new(size.X, 0), };
-		for (int y = 0; y < size.Y; y += 20)
+		lineGeoY.Line = new Line { Start = new(0, 0), End = new(Size.X, 0), };
+		for (int y = 0; y < Size.Y; y += (int)MinorSpacing.Y)
 		{
-			var lineGfx = (y % 100) switch
+			var lineGfx = (y % (MinorSpacing.Y * MajorInterval.Y)) switch
 			{
 				0 => lineGfxMajorY,
 				_ => lineGfxMinorY,
@@ -92,10 +122,5 @@ public class LineGrid : Node
 				Transform = Transform.Identity.Translated(new(0, y))
 			});
 		}
-	}
-
-	private void HandleResize(object? sender, ResizeEvent evt)
-	{
-		UpdateSize(evt.Size);
 	}
 }

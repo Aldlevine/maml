@@ -16,7 +16,7 @@ public class TwirlyNode : Node
 	{
 		GraphicComponent gfxComponent = new()
 		{
-			Graphic = ellipseGfx,
+			Graphic = baseGfx,
 		};
 
 		PointerDown += OnPointerDown;
@@ -116,18 +116,26 @@ public class TwirlyNode : Node
 		defaultDrawLayers[1] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[1].Brush)},
 	};
 
-	private static EllipseGeometry ellipseGeo = new()
+	private static EllipseGeometry baseGeo = new()
 	{
 		Ellipse = new() { Radius = new(10, 10), }
 	};
+	// private static RectGeometry baseGeo = new()
+	// {
+	// 	Rect = new() { Position = new(-10, -10), End = new(10, 10), },
+	// };
+	// private static LineGeometry baseGeo = new()
+	// {
+	// 	Line = new() { Start = new(-10, 0), End = new(10, 0), },
+	// };
 
 	private GeometryGraphic hitRectGfx;
 	private List<DrawLayer> hitRectVisible = new() { };
 	private List<DrawLayer> hitRectHidden = new() { };
 
-	private GeometryGraphic ellipseGfx = new()
+	private GeometryGraphic baseGfx = new()
 	{
-		Geometry = ellipseGeo,
+		Geometry = baseGeo,
 		DrawLayers = new()
 		{
 			defaultDrawLayers[0],
@@ -212,7 +220,7 @@ public class TwirlyNode : Node
 					if (double.Abs(scale.X - 1) < 0.01 && double.Abs(scale.Y - 1) < 0.01)
 					{
 						scale = Vector2.One;
-						Engine.Singleton.Animator.Frame -= ResetScale;
+						Animator.Frame -= ResetScale;
 					}
 					else
 					{
@@ -231,15 +239,15 @@ public class TwirlyNode : Node
 		{
 			case FrameState.Enter:
 				{
-					ellipseGfx.DrawLayers.Clear();
-					ellipseGfx.DrawLayers.AddRange(animatedDrawLayers);
+					baseGfx.DrawLayers.Clear();
+					baseGfx.DrawLayers.AddRange(animatedDrawLayers);
 				}
 				break;
 
 			case FrameState.Exit:
 				{
-					ellipseGfx.DrawLayers.Clear();
-					ellipseGfx.DrawLayers.AddRange(defaultDrawLayers);
+					baseGfx.DrawLayers.Clear();
+					baseGfx.DrawLayers.AddRange(defaultDrawLayers);
 				}
 				break;
 
@@ -263,15 +271,15 @@ public class TwirlyNode : Node
 		{
 			case FrameState.Enter:
 				{
-					ellipseGfx.DrawLayers.Clear();
-					ellipseGfx.DrawLayers.AddRange(animatedDrawLayers);
+					baseGfx.DrawLayers.Clear();
+					baseGfx.DrawLayers.AddRange(animatedDrawLayers);
 				}
 				break;
 
 			case FrameState.Exit:
 				{
-					ellipseGfx.DrawLayers.Clear();
-					ellipseGfx.DrawLayers.AddRange(defaultDrawLayers);
+					baseGfx.DrawLayers.Clear();
+					baseGfx.DrawLayers.AddRange(defaultDrawLayers);
 				}
 				break;
 
@@ -295,17 +303,17 @@ public class TwirlyNode : Node
 	{
 		if (evt.Button == PointerButton.Left)
 		{
-			Engine.Singleton.Window.PointerUp += OnPointerUp;
-			Engine.Singleton.Window.PointerMove += OnPointerMove;
+			Window.PointerUp += OnPointerUp;
+			Window.PointerMove += OnPointerMove;
 
 			// Remove animations
-			Engine.Singleton.Animator.Frame -= Pulse;
-			Engine.Singleton.Animator.Frame -= HideSelect;
+			Animator.Frame -= Pulse;
+			Animator.Frame -= HideSelect;
 
 			// Add animations
-			Engine.Singleton.Animator.Frame += Spin;
-			Engine.Singleton.Animator.Frame += ResetScale;
-			Engine.Singleton.Animator.Frame += ShowSelect;
+			Animator.Frame += Spin;
+			Animator.Frame += ResetScale;
+			Animator.Frame += ShowSelect;
 
 			Parent?.Children.Add(this);
 		}
@@ -320,17 +328,17 @@ public class TwirlyNode : Node
 	{
 		if (evt.Button == PointerButton.Left)
 		{
-			Engine.Singleton.Window.PointerUp -= OnPointerUp;
-			Engine.Singleton.Window.PointerMove -= OnPointerMove;
+			Window.PointerUp -= OnPointerUp;
+			Window.PointerMove -= OnPointerMove;
 
 			// Remove animations
-			Engine.Singleton.Animator.Frame -= Spin;
-			Engine.Singleton.Animator.Frame -= ResetScale;
-			Engine.Singleton.Animator.Frame -= ShowSelect;
+			Animator.Frame -= Spin;
+			Animator.Frame -= ResetScale;
+			Animator.Frame -= ShowSelect;
 
 			// Add animations
-			Engine.Singleton.Animator.Frame += Pulse;
-			Engine.Singleton.Animator.Frame += HideSelect;
+			Animator.Frame += Pulse;
+			Animator.Frame += HideSelect;
 
 		}
 	}
@@ -339,15 +347,15 @@ public class TwirlyNode : Node
 	{
 		if ((evt.ButtonMask & PointerButton.Left) > 0)
 		{
-			Engine.Singleton.Animator.Frame -= HideSelect;
-			Engine.Singleton.Animator.Frame += ShowSelect;
+			Animator.Frame -= HideSelect;
+			Animator.Frame += ShowSelect;
 		}
 	}
 
 	private void OnPointerExit(object? sender, PointerEvent evt)
 	{
-		Engine.Singleton.Animator.Frame -= ShowSelect;
-		Engine.Singleton.Animator.Frame += HideSelect;
+		Animator.Frame -= ShowSelect;
+		Animator.Frame += HideSelect;
 	}
 	#endregion
 }

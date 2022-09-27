@@ -5,8 +5,6 @@ namespace Maml.Events;
 
 public record Event { }
 
-public record InitEvent : Event { };
-
 public record KeyEvent : Event
 {
 	public VirtualKey VirtualKey;

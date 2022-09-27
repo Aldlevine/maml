@@ -1,15 +1,22 @@
-﻿using Maml.Math;
+﻿using Maml.Graphics;
+using Maml.Math;
+using Maml.Scene;
 using System;
 
 namespace Maml;
 
-public static class Program2
+public static class Program
 {
 	internal static void Main()
 	{
 		Engine.Singleton.Initialize();
 
-		Engine.Singleton.Window!.SceneTree.Root = new Scene.Node
+		if (Engine.Singleton.Window == null)
+		{
+			throw new ApplicationException("Unable to create window!");
+		}
+
+		Engine.Singleton.Window.SceneTree.Root = new Node
 		{
 			Name = "Root",
 			Children = GetNodes(),
@@ -19,17 +26,31 @@ public static class Program2
 		Engine.Singleton.Run();
 	}
 
-	private static Scene.Node.NodeCollection GetNodes()
+	private static Node.NodeCollection GetNodes()
 	{
-		Scene.Node.NodeCollection result = new()
+		Node.NodeCollection result = new()
 		{
-			new LineGrid(),
+			new LineGrid
+			{
+				MinorSpacing = new(20, 20),
+				MajorInterval = new(5, 5),
+				LineDrawLayersMajor = new()
+				{
+					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.5f } }, 3),
+					new Stroke(new ColorBrush { Color = Colors.Lime with { A = 0.5f } }, 1),
+				},
+			},
+			// new LineGrid
+			// {
+			// 	MinorSpacing = new(40, 40),
+			// 	MajorInterval = new(10, 10),
+			// },
 		};
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 300; i++)
 		{
 			result.Add(new TwirlyNode
 			{
-				Transform = new Math.Transform
+				Transform = new Transform
 				{
 					Origin = new(
 						Random.Shared.Next((int)Engine.Singleton.Window.Size.X),

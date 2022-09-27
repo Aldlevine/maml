@@ -1,4 +1,5 @@
-﻿using Maml.Math;
+﻿using Maml.Animation;
+using Maml.Math;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +7,10 @@ namespace Maml.Scene;
 
 public partial class Node
 {
+	protected Engine Engine => Engine.Singleton;
+	protected Window Window => Engine.Singleton.Window;
+	protected Animator Animator => Engine.Singleton.Animator;
+
 	public string Name { get; set; } = string.Empty;
 	// TODO: Make dirty when this changes
 	public Transform Transform { get; set; } = Transform.Identity;

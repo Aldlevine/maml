@@ -6,11 +6,8 @@ using static Windows.Win32.PInvoke;
 
 namespace Maml;
 
-public class Engine : EngineBase<Window, RenderTarget>
+public partial class Engine : EngineBase<Window, RenderTarget>
 {
-	private static Engine? singleton { get; set; }
-	public static Engine Singleton => singleton ?? (singleton = new Engine());
-
 	#region Abstract
 	public override Window Window { get; protected set; } = null!;
 

@@ -1,6 +1,7 @@
 ﻿using Maml.Animation;
 using Maml.Events;
 using Maml.Graphics;
+using Windows.Foundation.Metadata;
 
 namespace Maml;
 
@@ -12,17 +13,11 @@ public abstract class EngineBase<TWindow, TRenderTarget>
 	public Animator Animator { get; } = new();
 	public abstract void Run();
 
-	public virtual void Initialize()
-	{
-		Window.Draw += HandleDraw;
-	}
+	public virtual void Initialize() { }
+}
 
-	private void HandleDraw(object? sender, DrawEvent e)
-	{
-		if (e.RenderTarget is RenderTarget rt)
-		{
-			rt.Clear(new Color(0x333333ff));
-			rt.DrawScene(Window.SceneTree);
-		}
-	}
+public partial class Engine
+{
+	private static Engine? singleton { get; set; }
+	public static Engine Singleton => singleton ?? (singleton = new Engine());
 }
