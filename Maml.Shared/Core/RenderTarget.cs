@@ -1,6 +1,7 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
+using Windows.Networking.NetworkOperators;
 
 namespace Maml;
 
@@ -31,12 +32,11 @@ public abstract class RenderTargetBase
 	public void DrawScene(SceneTree sceneTree)
 	{
 		foreach (var node in sceneTree.Nodes)
-			foreach (var c in node.Graphics)
+		{
+			if (node is GraphicNode graphicNode)
 			{
-				if (c is GraphicComponent g && g.Graphic != null)
-				{
-					g.Graphic.Draw(this, node.GlobalTransform * g.Transform);
-				}
+				graphicNode.Graphic?.Draw(this, node.GlobalTransform);
 			}
+		}
 	}
 }

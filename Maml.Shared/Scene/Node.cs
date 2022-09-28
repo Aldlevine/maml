@@ -1,32 +1,60 @@
 ﻿using Maml.Animation;
+using Maml.Events;
 using Maml.Math;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 
 namespace Maml.Scene;
 
-public partial class Node
+public partial class Node: IChanged
 {
+	public event EventHandler<ChangedEvent>? Changed;
+	public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
+
 	protected Engine Engine => Engine.Singleton;
 	protected Window Window => Engine.Singleton.Window;
 	protected Animator Animator => Engine.Singleton.Animator;
 
+	public string this[string idx]
+	{
+		get => idx;
+		init => Console.WriteLine(idx, value);
+	}
+
 	public string Name { get; set; } = string.Empty;
 	// TODO: Make dirty when this changes
-	public Transform Transform { get; set; } = Transform.Identity;
+
+	private Transform transform = Transform.Identity;
+	public Transform Transform
+	{
+		get => transform;
+		set
+		{
+			if (transform != value)
+			{
+				transform = value;
+				markGlobalTransformDirty();
+			}
+		}
+	}
+
+	private Transform globalTransform = Transform.Identity;
 	public Transform GlobalTransform
 	{
-		get => getGlobalTransform();
+		get => isGlobalTransformDirty switch
+		{
+			true => (globalTransform = getGlobalTransform()),
+			false => globalTransform,
+		};
 		set => setGlobalTransform(value);
 	}
+
 
 	// TODO: Put this stuff in subclasses
 	// TODO: Make dirty when this changes
 	public int ZIndex { get; set; } = 0;
-	public List<GraphicComponent> Graphics { get; init; } = new();
 
 	public IShape? HitShape { get; set; } = default;
-	// public InputComponent Input { get; init; } = new();
 
 	// TODO: Notify tree when child is added
 	private NodeCollection children = new();
@@ -44,90 +72,25 @@ public partial class Node
 
 	public override string? ToString() => $"{GetType().Name}#{Name}";
 
-	// TODO: CACHE THIS MFER
-	private Transform getGlobalTransform()
-	{
-		return (Parent?.getGlobalTransform() * Transform) ?? Transform;
-	}
+	private Transform getGlobalTransform() =>
+		(Parent?.getGlobalTransform() * Transform) ?? Transform;
 
-	private void setGlobalTransform(Transform value)
-	{
+	private void setGlobalTransform(Transform value) =>
 		Transform = (Parent?.GlobalTransform.Inverse() * value) ?? value;
-	}
-}
 
-partial class Node
-{
-	public partial class NodeCollection : IList<Node>
+	private bool isGlobalTransformDirty = true;
+	private void markGlobalTransformDirty(bool propagate = true)
 	{
-		private List<Node> list { get; init; } = new();
-		private Node? parentNode { get; set; }
-
-		private void ReparentNode(Node node)
+		isGlobalTransformDirty = true;
+		isDirty = true;
+		if (propagate)
 		{
-			node.Parent?.Children.Remove(node);
-			node.Parent = ParentNode;
-		}
-
-		public Node? ParentNode
-		{
-			get => parentNode;
-			set
+			foreach (var child in Children)
 			{
-				if (parentNode != value)
-				{
-					parentNode = value;
-					foreach (var node in list)
-					{
-						ReparentNode(node);
-					}
-				}
+				child.markGlobalTransformDirty(propagate);
 			}
 		}
-
-		public Node this[int index]
-		{
-			get => ((IList<Node>)list)[index];
-			set
-			{
-				ReparentNode(value);
-				((IList<Node>)list)[index] = value;
-			}
-		}
-
-		public int Count => ((ICollection<Node>)list).Count;
-
-		public bool IsReadOnly => ((ICollection<Node>)list).IsReadOnly;
-
-		public void Add(Node item)
-		{
-			ReparentNode(item);
-			((ICollection<Node>)list).Add(item);
-		}
-
-		public void Clear() => ((ICollection<Node>)list).Clear();
-		public bool Contains(Node item) => ((ICollection<Node>)list).Contains(item);
-		public void CopyTo(Node[] array, int arrayIndex) => ((ICollection<Node>)list).CopyTo(array, arrayIndex);
-		public IEnumerator<Node> GetEnumerator() => ((IEnumerable<Node>)list).GetEnumerator();
-		public int IndexOf(Node item) => ((IList<Node>)list).IndexOf(item);
-		public void Insert(int index, Node item)
-		{
-			ReparentNode(item);
-			((IList<Node>)list).Insert(index, item);
-		}
-
-		public bool Remove(Node item)
-		{
-			item.Parent = null;
-			return ((ICollection<Node>)list).Remove(item);
-		}
-
-		public void RemoveAt(int index)
-		{
-			list[index].Parent = null;
-			((IList<Node>)list).RemoveAt(index);
-		}
-
-		IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)list).GetEnumerator();
 	}
+
+	internal bool isDirty = false;
 }

@@ -14,6 +14,7 @@ public abstract class EngineBase<TWindow, TRenderTarget>
 	public abstract void Run();
 
 	public virtual void Initialize() { }
+	public virtual void Dispose() { }
 }
 
 public partial class Engine

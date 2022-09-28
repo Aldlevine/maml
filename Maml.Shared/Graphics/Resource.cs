@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Maml.Events;
+using System;
 
 namespace Maml.Graphics;
-public abstract partial class Resource : IDisposable
+public abstract partial class Resource : IDisposable, IChanged
 {
+	public event EventHandler<ChangedEvent>? Changed;
+	public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
+
 	public bool IsDirty { get; internal set; }
 
 	private bool isDisposed;
+
 	protected abstract void FreeResources();
 	protected virtual void Dispose(bool disposing)
 	{

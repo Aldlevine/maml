@@ -48,7 +48,6 @@ public class RenderTarget : RenderTargetBase, IDisposable
 	}
 	unsafe public override void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
 
-
 	#endregion
 
 	#region Internal

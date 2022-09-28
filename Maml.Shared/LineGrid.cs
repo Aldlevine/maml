@@ -89,7 +89,7 @@ public class LineGrid : Node
 		lineGfxMajorX.DrawLayers = LineDrawLayersMajor;
 		lineGfxMajorY.DrawLayers = LineDrawLayersMajor;
 
-		Graphics.RemoveRange(0, Graphics.Count);
+		Children.RemoveRange(0, Children.Count);
 
 		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, Size.Y), };
 		for (int x = 0; x < Size.X; x += (int)MinorSpacing.X)
@@ -100,7 +100,7 @@ public class LineGrid : Node
 				_ => lineGfxMinorX,
 			};
 
-			Graphics.Add(new GraphicComponent
+			Children.Add(new GraphicNode
 			{
 				Graphic = lineGfx,
 				Transform = Transform.Identity.Translated(new(x, 0))
@@ -116,7 +116,7 @@ public class LineGrid : Node
 				_ => lineGfxMinorY,
 			};
 
-			Graphics.Add(new GraphicComponent
+			Children.Add(new GraphicNode
 			{
 				Graphic = lineGfx,
 				Transform = Transform.Identity.Translated(new(0, y))

@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Maml.Math;
 
-public partial struct Transform
+public partial struct Transform : IEquatable<Transform>
 {
 	public Vector2 X
 	{
@@ -142,6 +142,14 @@ public partial struct Transform
 		return rect;
 	}
 
+	public static bool operator ==(Transform left, Transform right) => left.Equals(right);
+	public static bool operator !=(Transform left, Transform right) => !(left == right);
+	public override bool Equals(object? obj) => obj is Transform transform && Equals(transform);
+	public bool Equals(Transform other) => matrix.Equals(other.matrix);
+	public override int GetHashCode() => HashCode.Combine(matrix);
+
+
 	private double tdotx(in Vector2 v) => X.X * v.X + Y.X * v.Y;
 	private double tdoty(in Vector2 v) => X.Y * v.X + Y.Y * v.Y;
+
 }

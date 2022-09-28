@@ -10,9 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Animation\Animator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\IChanged.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Color.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\EngineBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\RenderTargetBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Engine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RenderTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Graphic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Resource.cs" />
@@ -27,18 +28,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\PointerButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Units.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scene\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene\GraphicNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.Input.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.NodeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\SceneTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TwirlyNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\VirtualKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\WindowBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Window.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Events\" />
     <Folder Include="$(MSBuildThisFileDirectory)Animation\" />
   </ItemGroup>
 </Project>

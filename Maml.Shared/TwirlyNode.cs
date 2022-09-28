@@ -14,11 +14,6 @@ public class TwirlyNode : Node
 	private Node smallCircles;
 	public TwirlyNode()
 	{
-		GraphicComponent gfxComponent = new()
-		{
-			Graphic = baseGfx,
-		};
-
 		PointerDown += OnPointerDown;
 		PointerEnter += OnPointerEnter;
 		PointerExit += OnPointerExit;
@@ -32,65 +27,64 @@ public class TwirlyNode : Node
 		{
 			(bigCircles = new Node
 			{
-				Graphics = new()
-				{
-					new GraphicComponent(gfxComponent)
-					{
-						Transform = new() { Origin = new(-15, 0), },
-					},
-					new GraphicComponent(gfxComponent)
-					{
-						Transform = new() { Origin = new(+15, 0), },
-					},
-					new GraphicComponent(gfxComponent)
-					{
-						Transform = new() { Origin = new(0, -15), },
-					},
-					new GraphicComponent(gfxComponent)
-					{
-						Transform = new() { Origin = new(0, +15), },
-					},
-				},
-
 				Children = new()
 				{
+					new GraphicNode
+					{
+						Graphic = baseGfx,
+						Transform = new() { Origin = new(-15, 0), },
+					},
+					new GraphicNode
+					{
+						Graphic = baseGfx,
+						Transform = new() { Origin = new(+15, 0), },
+					},
+					new GraphicNode
+					{
+						Graphic = baseGfx,
+						Transform = new() { Origin = new(0, -15), },
+					},
+					new GraphicNode
+					{
+						Graphic = baseGfx,
+						Transform = new() { Origin = new(0, +15), },
+					},
+
 					(smallCircles = new Node
 					{
-						Graphics = new()
+						Children = new()
 						{
-							(new GraphicComponent(gfxComponent)
+							new GraphicNode
 							{
-								Transform = new Transform { Scale = new(0.75, 0.75), Origin = new(+25, 0), }
-							}),
-							(new GraphicComponent(gfxComponent)
+								Graphic = baseGfx,
+								Transform = new() { Scale = new(0.75, 0.75), Origin = new(-25, 0), },
+							},
+							new GraphicNode
 							{
-								Transform = new Transform { Scale = new(0.75, 0.75), Origin = new(-25, 0), }
-							}),
-							(new GraphicComponent(gfxComponent)
+								Graphic = baseGfx,
+								Transform = new() { Scale = new(0.75, 0.75), Origin = new(+25, 0), },
+							},
+							new GraphicNode
 							{
-								Transform = new Transform { Scale = new(0.75, 0.75), Origin = new(0, +25), }
-							}),
-							(new GraphicComponent(gfxComponent)
+								Graphic = baseGfx,
+								Transform = new() { Scale = new(0.75, 0.75), Origin = new(0, -25), },
+							},
+							new GraphicNode
 							{
-								Transform = new Transform { Scale = new(0.75, 0.75), Origin = new(0, -25), }
-							}),
+								Graphic = baseGfx,
+								Transform = new() { Scale = new(0.75, 0.75), Origin = new(0, +25), },
+							},
 						},
 					}),
 				},
 			}),
-			(new Node
+			(new GraphicNode
 			{
-				Graphics = new()
+				Graphic = (hitRectGfx = new GeometryGraphic
 				{
-					(new GraphicComponent
-					{
-						Graphic = (hitRectGfx = new GeometryGraphic
-						{
-							Geometry = new EllipseGeometry { Ellipse = (Ellipse)HitShape, },
-							DrawLayers = hitRectHidden,
-						}),
-					}),
-				},
+					Geometry = new EllipseGeometry { Ellipse = (Ellipse)HitShape, },
+					DrawLayers = hitRectHidden,
+				}),
 			}),
 		};
 
@@ -321,7 +315,7 @@ public class TwirlyNode : Node
 
 	private void OnPointerMove(object? sender, PointerEvent evt)
 	{
-		Transform = Transform.Translated(evt.PositionDelta);
+		GlobalTransform = GlobalTransform.Translated(evt.PositionDelta);
 	}
 
 	private void OnPointerUp(object? sender, PointerEvent evt)

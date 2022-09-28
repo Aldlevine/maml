@@ -17,6 +17,7 @@ public partial class ColorBrush : Brush
 			{
 				_Color = value;
 				IsDirty = true;
+				RaiseChanged(this, new());
 			}
 		}
 	}

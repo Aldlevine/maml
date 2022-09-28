@@ -1,11 +1,16 @@
-﻿using Maml.Math;
+﻿using Maml.Events;
+using Maml.Math;
+using System;
 using System.Collections.Generic;
+using Windows.Devices.Sensors;
 
 namespace Maml.Graphics;
 
-public abstract partial class Graphic
+public abstract partial class Graphic: IChanged
 {
-	// public abstract void Draw(ViewportBase viewport, Transform transform);
+	public event EventHandler<ChangedEvent>? Changed;
+	public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
+
 	public abstract void Draw(RenderTargetBase renderTarget, Transform transform);
 
 	// public abstract Rect GetBoundingRect(Transform transform);
@@ -13,7 +18,20 @@ public abstract partial class Graphic
 
 public partial class GeometryGraphic : Graphic
 {
-	public Geometry? Geometry { get; set; }
+	private Geometry? geometry;
+	public Geometry? Geometry
+	{
+		get => geometry;
+		set
+		{
+			if (geometry == value) { return; }
+			if (geometry != null) { geometry.Changed -= RaiseChanged; }
+			geometry = value;
+			if (geometry != null) { geometry.Changed += RaiseChanged; }
+		}
+	}
+
+	// TODO: Emit Changed
 	public List<DrawLayer> DrawLayers { get; set; } = new();
 
 	public GeometryGraphic() { }
@@ -24,10 +42,10 @@ public partial class GeometryGraphic : Graphic
 		DrawLayers = geometryGraphic.DrawLayers;
 	}
 
-	// public override void Draw(ViewportBase vp, Transform transform)
 	public override void Draw(RenderTargetBase rt, Transform transform)
 	{
 		if (Geometry == null) { return; }
+		if (DrawLayers.Count == 0) { return; }
 
 		Transform curXform = rt.GetTransform();
 		rt.SetTransform(curXform * transform);

@@ -13,16 +13,12 @@ public partial class Engine : EngineBase<Window, RenderTarget>
 
 	public override void Run()
 	{
-		Animator.Frame += (s, e) => Window.Redraw(false);
-
 		while (GetMessage(out MSG msg, default, 0, 0))
 		{
 			TranslateMessage(in msg);
 			DispatchMessage(in msg);
 			Animator.Tick();
 		}
-
-		Animator.Dispose();
 	}
 
 	unsafe public override void Initialize()
@@ -38,7 +34,15 @@ public partial class Engine : EngineBase<Window, RenderTarget>
 		Window.RegisterWindowClass();
 		Window = new Window();
 
+		// This should process the scene tree and check for changes before rerawing
+		Animator.Frame += (s, e) => Window.Redraw(false);
+
 		base.Initialize();
+	}
+
+	public override void Dispose()
+	{
+		Animator.Dispose();
 	}
 	#endregion
 

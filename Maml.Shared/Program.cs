@@ -20,7 +20,7 @@ public static class Program
 		{
 			Name = "Root",
 			Children = GetNodes(),
-			Transform = Transform.PixelIdentity,
+			// Transform = Transform.PixelIdentity,
 		};
 
 		Engine.Singleton.Run();
@@ -36,9 +36,15 @@ public static class Program
 				MajorInterval = new(5, 5),
 				LineDrawLayersMajor = new()
 				{
-					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.5f } }, 3),
-					new Stroke(new ColorBrush { Color = Colors.Lime with { A = 0.5f } }, 1),
+					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.25f } }, 3),
+					new Stroke(new ColorBrush { Color = Colors.Lime with { A = 0.25f } }, 1),
 				},
+				LineDrawLayersMinor = new()
+				{
+					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.25f } }, 1),
+				},
+				Transform = Transform.PixelIdentity,
+				["Hello"] = "World",
 			},
 			// new LineGrid
 			// {
@@ -46,7 +52,7 @@ public static class Program
 			// 	MajorInterval = new(10, 10),
 			// },
 		};
-		for (int i = 0; i < 300; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			result.Add(new TwirlyNode
 			{
