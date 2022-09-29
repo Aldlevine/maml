@@ -1,7 +1,9 @@
 ﻿using Maml.Animation;
 using Maml.Graphics;
 using Maml.Math;
+using Maml.Observable;
 using Maml.Scene;
+using System;
 using System.Collections.Generic;
 
 namespace Maml;
@@ -11,7 +13,13 @@ public class LineGrid : Node
 	#region Configuration
 	public Vector2 MinorSpacing { get; set; } = new(20, 20);
 	public Vector2 MajorInterval { get; set; } = new(5, 5);
-	public Vector2 Size { get; set; }
+
+	public static ObservableProperty<LineGrid, Vector2> SizeProperty = new(new(100, 100));
+	public Vector2 Size
+	{
+		get => SizeProperty[this].Get();
+		set => SizeProperty[this].Set(value);
+	}
 	#endregion
 
 	#region Resources
@@ -28,63 +36,62 @@ public class LineGrid : Node
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.5f } }, 1),
 	};
 
-	private static LineGeometry lineGeoX = new()
+	private LineGeometry lineGeoX = new()
 	{
 		Line = new() { Start = new(0, 0), End = new(0, 0) },
 	};
-	private static LineGeometry lineGeoY = new()
+	private LineGeometry lineGeoY = new()
 	{
 		Line = new() { Start = new(0, 0), End = new(0, 0) },
 	};
 
 	private GeometryGraphic lineGfxMinorX = new()
 	{
-		Geometry = lineGeoX,
+		// Geometry = lineGeoX,
 		DrawLayers = lineDrawLayersMinor,
 	};
 
 	private GeometryGraphic lineGfxMinorY = new()
 	{
-		Geometry = lineGeoY,
+		// Geometry = lineGeoY,
 		DrawLayers = lineDrawLayersMinor,
 	};
 
 	private GeometryGraphic lineGfxMajorX = new()
 	{
-		Geometry = lineGeoX,
+		// Geometry = lineGeoX,
 		DrawLayers = lineDrawLayersMajor,
 	};
 
 	private GeometryGraphic lineGfxMajorY = new()
 	{
-		Geometry = lineGeoY,
+		// Geometry = lineGeoY,
 		DrawLayers = lineDrawLayersMajor,
 	};
 	#endregion
 
 	public LineGrid()
 	{
-		// We are going to remove these in favor of triggering updates based on property changes!
-		Window.Resize += (s, e) =>
-		{
-			Size = e.Size;
-			Update();
-		};
+		lineGfxMinorX.Geometry = lineGeoX;
+		lineGfxMajorX.Geometry = lineGeoX;
+		lineGfxMinorY.Geometry = lineGeoY;
+		lineGfxMajorY.Geometry = lineGeoY;
 
-		// We are going to remove these in favor of triggering updates based on property changes!
+		// We queue it for the next frame because we call update on this frame regardless
 		Animator.NextFrame += (s, e) =>
 		{
-			Size = Window.Size;
+			lineGfxMinorX.DrawLayers = LineDrawLayersMinor;
+			lineGfxMinorY.DrawLayers = LineDrawLayersMinor;
+			lineGfxMajorX.DrawLayers = LineDrawLayersMajor;
+			lineGfxMajorY.DrawLayers = LineDrawLayersMajor;
+
+			SizeProperty[this].Changed += (s, v) => Update();
 			Update();
 		};
 	}
 
 	private void Update()
 	{
-		lineGfxMinorX.DrawLayers = LineDrawLayersMinor;
-		lineGfxMinorY.DrawLayers = LineDrawLayersMinor;
-		lineGfxMajorX.DrawLayers = LineDrawLayersMajor;
-		lineGfxMajorY.DrawLayers = LineDrawLayersMajor;
 
 		Children.Clear();
 

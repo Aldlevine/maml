@@ -34,7 +34,7 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 			throw new InvalidOperationException();
 		}
 
-		if (isDirty)
+		if (isDirty || !ComputedProperty.Cached)
 		{
 			Value = ComputedProperty.Get(Object);
 			isDirty = false;
@@ -51,15 +51,26 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 
 		ComputedProperty.Set(Object, value);
 		// Changed?.Invoke(this, new(this));
-		Changed?.Invoke(this, value);
-		isDirty = true;
-		return true;
+		if (ComputedProperty.Get != null)
+		{
+			// TODO: we shouldn't call Get here.
+			// It's possible that multiple changes happen before
+			// evaluation is needed, so we should have a way of
+			// passing the value lazily
+			Changed?.Invoke(this, ComputedProperty.Get(Object));
+			isDirty = true;
+			return true;
+		}
+		return false;
 	}
 
 	public void BindTo(IBinding<T> from)
 	{
+		//from.Changed += HandleChanged;
+		//Value = from.Value;
 		from.Changed += HandleChanged;
 		Value = from.Value;
+		SetDirty(this, Value);
 	}
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Gaming.Input;
 
 namespace Maml.Observable;
 
@@ -33,8 +34,10 @@ public class ObservableBinding<O, T> : IBinding<O, T> where O : ObservableObject
 
 	public void BindTo(IBinding<T> from)
 	{
-		Value = from.Value;
 		from.Changed += HandleChanged;
+		Value = from.Value;
+		SetDirty(this, Value);
+		//Changed?.Invoke(this, Value);
 	}
 
 	public void SetDirty(object? sender, T value)

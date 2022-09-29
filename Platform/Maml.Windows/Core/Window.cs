@@ -26,13 +26,18 @@ public partial class Window : WindowBase<RenderTarget>
 		};
 	}
 
-	public override Vector2 Size
+	//public override Vector2 Size
+	//{
+	//	get
+	//	{
+	//		GetClientRect(hWnd, out var rc);
+	//		return new(rc.right - rc.left, rc.bottom - rc.top);
+	//	}
+	//}
+	protected override Vector2 GetSize()
 	{
-		get
-		{
-			GetClientRect(hWnd, out var rc);
-			return new(rc.right - rc.left, rc.bottom - rc.top);
-		}
+		GetClientRect(hWnd, out var rc);
+		return new(rc.right - rc.left, rc.bottom - rc.top);
 	}
 
 	public override double DpiRatio => GetDpiForWindow(hWnd) * stdDpiInv;
@@ -107,7 +112,7 @@ public partial class Window : WindowBase<RenderTarget>
 		}
 	}
 
-	unsafe internal Window()
+	unsafe internal Window(): base()
 	{
 		RegisterWindow(this);
 
@@ -254,6 +259,7 @@ public partial class Window : WindowBase<RenderTarget>
 				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
 			}
 
+			SizeProperty[this].SetDirty(this, Size);
 			Resize?.Invoke(this, new ResizeEvent { Size = Size });
 		}
 	}

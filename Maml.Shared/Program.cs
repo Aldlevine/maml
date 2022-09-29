@@ -24,9 +24,9 @@ public static class Program
 		Engine.Singleton.Animator.Frame += (s, e) =>
 		{
 			testNode.Transform = Transform.Identity
-				.Translated(Engine.Singleton.Window.Size / -2)
+				.Translated(new(-240, -240))
 				.Rotated(-(startTick - e.Tick).TotalSeconds)
-				.Translated(Engine.Singleton.Window.Size / 2);
+				.Translated((Engine.Singleton.Window.Size / 2));
 		};
 
 		Engine.Singleton.Run();
@@ -52,12 +52,18 @@ public static class Program
 					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.25f } }, 1),
 				},
 				Transform = Transform.PixelIdentity,
+				[LineGrid.SizeProperty] = Window.SizeProperty[Engine.Singleton.Window],
 			},
 			new LineGrid
 			{
 				MinorSpacing = new(40, 40),
-				MajorInterval = new(10, 10),
-				[Node.TransformProperty] = testNode[Node.TransformProperty],
+				MajorInterval = new(1, 1),
+				LineDrawLayersMajor = new()
+				{
+					new Stroke(new ColorBrush { Color = Colors.Red with { }, }, 1),
+				},
+				Size = new(481, 481),
+				[Node.TransformProperty] = Node.TransformProperty[testNode],
 			},
 		};
 

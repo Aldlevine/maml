@@ -13,7 +13,6 @@ public class ObservableObject
 		{
 			dynamic p = property;
 			IBinding b = p.GetBinding(this);
-			// dynamic v = value;
 			b.BindTo(value);
 		}
 	}

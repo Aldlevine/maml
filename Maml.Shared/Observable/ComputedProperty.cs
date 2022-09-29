@@ -10,6 +10,7 @@ public class ComputedProperty<O, T> : IProperty<O, T> where O : ObservableObject
 {
 	public ComputedPropertyGetter<O, T>? Get;
 	public ComputedPropertySetter<O, T>? Set;
+	public bool Cached = true;
 
 	public IBinding<O, T> this[O @object] => GetBinding(@object);
 
