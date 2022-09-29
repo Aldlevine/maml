@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Maml.Events;
 
-public record ChangedEvent: Event { }
+public record ChangedEvent : Event { }
 
 public interface IChanged
 {

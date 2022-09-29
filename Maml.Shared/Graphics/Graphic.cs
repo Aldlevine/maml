@@ -2,11 +2,10 @@
 using Maml.Math;
 using System;
 using System.Collections.Generic;
-using Windows.Devices.Sensors;
 
 namespace Maml.Graphics;
 
-public abstract partial class Graphic: IChanged
+public abstract partial class Graphic : IChanged
 {
 	public event EventHandler<ChangedEvent>? Changed;
 	public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
@@ -47,13 +46,11 @@ public partial class GeometryGraphic : Graphic
 		if (Geometry == null) { return; }
 		if (DrawLayers.Count == 0) { return; }
 
-		Transform curXform = rt.GetTransform();
-		rt.SetTransform(curXform * transform);
+		rt.SetTransform(transform);
 
 		foreach (var layer in DrawLayers)
 		{
 			rt.DrawGeometry(Geometry, layer);
 		}
-		rt.SetTransform(curXform);
 	}
 }

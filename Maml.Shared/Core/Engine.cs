@@ -1,7 +1,5 @@
 ﻿using Maml.Animation;
-using Maml.Events;
-using Maml.Graphics;
-using Windows.Foundation.Metadata;
+using System.Threading;
 
 namespace Maml;
 
@@ -15,6 +13,8 @@ public abstract class EngineBase<TWindow, TRenderTarget>
 
 	public virtual void Initialize() { }
 	public virtual void Dispose() { }
+
+	internal Mutex EventMutex = new();
 }
 
 public partial class Engine

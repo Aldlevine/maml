@@ -1,5 +1,6 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
+using Maml.Observable;
 using Maml.Scene;
 using System;
 
@@ -7,23 +8,30 @@ namespace Maml;
 
 public static class Program
 {
+	private static Node testNode = new();
+
 	internal static void Main()
 	{
 		Engine.Singleton.Initialize();
-
-		if (Engine.Singleton.Window == null)
-		{
-			throw new ApplicationException("Unable to create window!");
-		}
 
 		Engine.Singleton.Window.SceneTree.Root = new Node
 		{
 			Name = "Root",
 			Children = GetNodes(),
-			// Transform = Transform.PixelIdentity,
+		};
+
+		var startTick = DateTime.Now;
+		Engine.Singleton.Animator.Frame += (s, e) =>
+		{
+			testNode.Transform = Transform.Identity
+				.Translated(Engine.Singleton.Window.Size / -2)
+				.Rotated(-(startTick - e.Tick).TotalSeconds)
+				.Translated(Engine.Singleton.Window.Size / 2);
 		};
 
 		Engine.Singleton.Run();
+
+		Engine.Singleton.Dispose();
 	}
 
 	private static Node.NodeCollection GetNodes()
@@ -44,14 +52,15 @@ public static class Program
 					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.25f } }, 1),
 				},
 				Transform = Transform.PixelIdentity,
-				["Hello"] = "World",
 			},
-			// new LineGrid
-			// {
-			// 	MinorSpacing = new(40, 40),
-			// 	MajorInterval = new(10, 10),
-			// },
+			new LineGrid
+			{
+				MinorSpacing = new(40, 40),
+				MajorInterval = new(10, 10),
+				[Node.TransformProperty] = testNode[Node.TransformProperty],
+			},
 		};
+
 		for (int i = 0; i < 100; i++)
 		{
 			result.Add(new TwirlyNode

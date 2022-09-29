@@ -1,62 +1,35 @@
 ﻿using Maml.Animation;
-using Maml.Events;
 using Maml.Math;
-using System;
-using System.Collections.Generic;
+using Maml.Observable;
 
 namespace Maml.Scene;
 
-public partial class Node: IChanged
+public partial class Node : ObservableObject
 {
-	public event EventHandler<ChangedEvent>? Changed;
-	public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
-
 	protected Engine Engine => Engine.Singleton;
 	protected Window Window => Engine.Singleton.Window;
 	protected Animator Animator => Engine.Singleton.Animator;
 
-	public string this[string idx]
+	public Node()
 	{
-		get => idx;
-		init => Console.WriteLine(idx, value);
-	}
-
-	public string Name { get; set; } = string.Empty;
-	// TODO: Make dirty when this changes
-
-	private Transform transform = Transform.Identity;
-	public Transform Transform
-	{
-		get => transform;
-		set
+		Children.ParentNode = this;
+		TransformProperty[this].Changed += GlobalTransformProperty[this].SetDirty;
+		GlobalTransformProperty[this].Changed += (s, e) =>
 		{
-			if (transform != value)
+			foreach (var child in Children)
 			{
-				transform = value;
-				markGlobalTransformDirty();
+				GlobalTransformProperty[child].SetDirty(s, e);
 			}
-		}
-	}
-
-	private Transform globalTransform = Transform.Identity;
-	public Transform GlobalTransform
-	{
-		get => isGlobalTransformDirty switch
-		{
-			true => (globalTransform = getGlobalTransform()),
-			false => globalTransform,
 		};
-		set => setGlobalTransform(value);
 	}
 
-
-	// TODO: Put this stuff in subclasses
-	// TODO: Make dirty when this changes
+	public Node? Parent { get; private set; }
+	public string Name { get; set; } = string.Empty;
 	public int ZIndex { get; set; } = 0;
-
 	public IShape? HitShape { get; set; } = default;
 
 	// TODO: Notify tree when child is added
+	// Children
 	private NodeCollection children = new();
 	public NodeCollection Children
 	{
@@ -68,29 +41,35 @@ public partial class Node: IChanged
 		}
 	}
 
-	public Node? Parent { get; private set; }
-
-	public override string? ToString() => $"{GetType().Name}#{Name}";
-
-	private Transform getGlobalTransform() =>
-		(Parent?.getGlobalTransform() * Transform) ?? Transform;
-
-	private void setGlobalTransform(Transform value) =>
-		Transform = (Parent?.GlobalTransform.Inverse() * value) ?? value;
-
-	private bool isGlobalTransformDirty = true;
-	private void markGlobalTransformDirty(bool propagate = true)
+	// Transform
+	public static ObservableProperty<Node, Transform> TransformProperty = new(Transform.Identity);
+	public Transform Transform
 	{
-		isGlobalTransformDirty = true;
-		isDirty = true;
-		if (propagate)
-		{
-			foreach (var child in Children)
-			{
-				child.markGlobalTransformDirty(propagate);
-			}
-		}
+		get => TransformProperty[this].Get();
+		set => TransformProperty[this].Set(value);
 	}
 
-	internal bool isDirty = false;
+	// GlobalTransform
+	public static ComputedProperty<Node, Transform> GlobalTransformProperty = new()
+	{
+		Get = (Node self) => self.getGlobalTransform(),
+		Set = (Node self, Transform value) => self.setGlobalTransform(value),
+	};
+	public Transform GlobalTransform
+	{
+		get => GlobalTransformProperty[this].Get();
+		set => GlobalTransformProperty[this].Set(value);
+	}
+	private Transform getGlobalTransform() => Parent switch
+	{
+		null => Transform,
+		_ => Parent.GlobalTransform * Transform,
+	};
+	private void setGlobalTransform(Transform transform) => Transform = Parent switch
+	{
+		null => transform,
+		_ => Parent.GlobalTransform.Inverse() * transform,
+	};
+
+	public override string? ToString() => $"{GetType().Name}#{Name}";
 }

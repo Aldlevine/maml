@@ -1,6 +1,8 @@
-﻿namespace Maml.Math;
+﻿using System;
 
-public partial struct Rect : IShape
+namespace Maml.Math;
+
+public partial struct Rect : IShape, IEquatable<Rect>
 {
 	public Vector2 Position { get; set; } = Vector2.Zero;
 	public Vector2 Size { get; set; } = Vector2.Zero;
@@ -43,5 +45,11 @@ public partial struct Rect : IShape
 	public Rect GetBoundingRect(in Transform transform) => transform * this;
 
 	public override string? ToString() => $"Rect({Position}, {Size})";
+	public override bool Equals(object? obj) => obj is Rect rect && Equals(rect);
+	public bool Equals(Rect other) => Position.Equals(other.Position) && Size.Equals(other.Size);
+	public override int GetHashCode() => HashCode.Combine(Position, Size);
+
+	public static bool operator ==(Rect left, Rect right) => left.Equals(right);
+	public static bool operator !=(Rect left, Rect right) => !(left == right);
 }
 

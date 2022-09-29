@@ -240,19 +240,22 @@ public partial class Window : WindowBase<RenderTarget>
 
 	unsafe internal void HandleResize()
 	{
-		float dpi = GetDpiForWindow(hWnd);
-		if (syncRenderTarget != null)
+		lock(Engine.Singleton.EventMutex)
 		{
-			((ID2D1HwndRenderTarget*)syncRenderTarget.pRenderTarget)->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
-			((ID2D1HwndRenderTarget*)syncRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
-		}
-		if (immediateRenderTarget != null)
-		{
-			((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
-			((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
-		}
+			float dpi = GetDpiForWindow(hWnd);
+			if (syncRenderTarget != null)
+			{
+				((ID2D1HwndRenderTarget*)syncRenderTarget.pRenderTarget)->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
+				((ID2D1HwndRenderTarget*)syncRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
+			}
+			if (immediateRenderTarget != null)
+			{
+				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
+				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
+			}
 
-		Resize?.Invoke(this, new ResizeEvent { Size = Size });
+			Resize?.Invoke(this, new ResizeEvent { Size = Size });
+		}
 	}
 
 	private (LRESULT result, bool wasHandled) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
@@ -285,9 +288,13 @@ public partial class Window : WindowBase<RenderTarget>
 					WINDOWINFO pwi = default;
 					if (GetWindowInfo(hWnd, ref pwi))
 					{
+						var oldRect = clientRect;
 						clientRect = new Rect(pwi.rcClient);
+						if (oldRect.Size != clientRect.Size)
+						{
+							HandleResize();
+						}
 					}
-					HandleResize();
 				}
 				wasHandled = true;
 				break;

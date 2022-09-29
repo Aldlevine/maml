@@ -1,11 +1,8 @@
 ﻿using Maml.Animation;
-using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
-using System;
 using System.Collections.Generic;
-using Windows.Graphics.Holographic;
 
 namespace Maml;
 
@@ -89,7 +86,7 @@ public class LineGrid : Node
 		lineGfxMajorX.DrawLayers = LineDrawLayersMajor;
 		lineGfxMajorY.DrawLayers = LineDrawLayersMajor;
 
-		Children.RemoveRange(0, Children.Count);
+		Children.Clear();
 
 		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, Size.Y), };
 		for (int x = 0; x < Size.X; x += (int)MinorSpacing.X)

@@ -1,7 +1,6 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
-using Windows.Networking.NetworkOperators;
 
 namespace Maml;
 
