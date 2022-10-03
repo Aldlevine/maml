@@ -14,7 +14,6 @@ public partial class Node : ObservableObject
 	public Node()
 	{
 		Children.ParentNode = this;
-		TransformProperty[this].Changed += GlobalTransformProperty[this].SetDirty;
 		GlobalTransformProperty[this].Changed += (s, e) =>
 		{
 			foreach (var child in Children)
@@ -43,7 +42,7 @@ public partial class Node : ObservableObject
 	}
 
 	// ******** Transform ********
-	public static ObservableProperty<Node, Transform> TransformProperty = new(Transform.Identity);
+	public static BasicProperty<Node, Transform> TransformProperty = new(Transform.Identity);
 	public Transform Transform
 	{
 		get => TransformProperty[this].Get();
@@ -55,6 +54,7 @@ public partial class Node : ObservableObject
 	{
 		Get = (Node self) => self.Transform.Origin,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Origin = value, },
+		Dependencies = (Node self) => new[] { TransformProperty[self], },
 	};
 	public Vector2 Origin
 	{
@@ -67,6 +67,7 @@ public partial class Node : ObservableObject
 	{
 		Get = (Node self) => self.Transform.Rotation,
 		Set = (Node self, double value) => self.Transform = self.Transform with { Rotation = value, },
+		Dependencies = (Node self) => new[] { TransformProperty[self], },
 	};
 	public double Rotation
 	{
@@ -79,6 +80,7 @@ public partial class Node : ObservableObject
 	{
 		Get = (Node self) => self.Transform.Scale,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Scale = value, },
+		Dependencies = (Node self) => new[] { TransformProperty[self], },
 	};
 	public Vector2 Scale
 	{
@@ -91,6 +93,7 @@ public partial class Node : ObservableObject
 	{
 		Get = (Node self) => self.getGlobalTransform(),
 		Set = (Node self, Transform value) => self.setGlobalTransform(value),
+		Dependencies = (Node self) => new[] { TransformProperty[self], },
 	};
 	public Transform GlobalTransform
 	{
@@ -113,6 +116,7 @@ public partial class Node : ObservableObject
 	{
 		Get = (Node self) => self.Transform.Origin,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Origin = value, },
+		Dependencies = (Node self) => new[] { GlobalTransformProperty[self], },
 	};
 	public Vector2 GlobalOrigin
 	{
@@ -125,6 +129,7 @@ public partial class Node : ObservableObject
 	{
 		Get = (Node self) => self.Transform.Rotation,
 		Set = (Node self, double value) => self.Transform = self.Transform with { Rotation = value, },
+		Dependencies = (Node self) => new[] { GlobalTransformProperty[self], },
 	};
 	public double GlobalRotation
 	{
@@ -137,6 +142,7 @@ public partial class Node : ObservableObject
 	{
 		Get = (Node self) => self.Transform.Scale,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Scale = value, },
+		Dependencies = (Node self) => new[] { GlobalTransformProperty[self], },
 	};
 	public Vector2 GlobalScale
 	{

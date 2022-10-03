@@ -27,13 +27,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\Event.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\PointerButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Units.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Observable\ComputedBinding.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Observable\ComputedProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\Binding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Observable\LazyGet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\Property.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableBinding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\GraphicNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.cs" />

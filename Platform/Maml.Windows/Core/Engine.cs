@@ -7,7 +7,7 @@ using static Windows.Win32.PInvoke;
 
 namespace Maml;
 
-public partial class Engine : EngineBase<Window, RenderTarget>
+public partial class Engine
 {
 	#region Abstract
 	public override Window Window { get; protected set; } = null!;

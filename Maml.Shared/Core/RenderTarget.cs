@@ -28,3 +28,5 @@ public abstract class RenderTargetBase
 		}
 	}
 }
+
+public partial class RenderTarget: RenderTargetBase { }

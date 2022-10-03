@@ -88,11 +88,11 @@ public class Animator
 				Delta = delta,
 			};
 
-			Parallel.ForEach(frame.GetInvocationList(), (inv, state) =>
-			{
-				((EventHandler<FrameEvent>)inv).Invoke(this, evt);
-			});
-			//frame?.Invoke(this, evt);
+			//Parallel.ForEach(frame.GetInvocationList(), (inv, state) =>
+			//{
+			//	((EventHandler<FrameEvent>)inv).Invoke(this, evt);
+			//});
+			frame?.Invoke(this, evt);
 
 			NextFrame?.Invoke(this, evt);
 			NextFrame = null;

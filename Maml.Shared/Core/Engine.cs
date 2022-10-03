@@ -5,11 +5,9 @@ using System.Threading;
 
 namespace Maml;
 
-public abstract class EngineBase<TWindow, TRenderTarget>
-	where TRenderTarget : RenderTargetBase
-	where TWindow : WindowBase<TRenderTarget>
+public abstract class EngineBase
 {
-	public abstract TWindow Window { get; protected set; }
+	public abstract Window Window { get; protected set; }
 	public Animator Animator { get; } = new();
 	public abstract void Run();
 
@@ -37,7 +35,7 @@ public abstract class EngineBase<TWindow, TRenderTarget>
 	}
 }
 
-public partial class Engine
+public partial class Engine: EngineBase
 {
 	private static Engine? singleton { get; set; }
 	public static Engine Singleton => singleton ?? (singleton = new Engine());

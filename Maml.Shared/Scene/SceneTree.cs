@@ -28,9 +28,9 @@ public class SceneTree
 		yield return root;
 		foreach (var child in root.Children)
 		{
-			foreach (var childNodes in GetNodes(child))
+			foreach (var childNode in GetNodes(child))
 			{
-				yield return childNodes;
+				yield return childNode;
 			}
 		}
 	}

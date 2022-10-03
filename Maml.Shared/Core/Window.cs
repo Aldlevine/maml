@@ -6,15 +6,15 @@ using System;
 
 namespace Maml;
 
-public abstract class WindowBase<TRenderTarget> : ObservableObject where TRenderTarget : RenderTargetBase
+public abstract class WindowBase : ObservableObject
 {
-	public abstract TRenderTarget? RenderTarget { get; }
+	public abstract RenderTarget? RenderTarget { get; }
 	public SceneTree SceneTree { get; init; } = new();
 
 	// TODO: this might need to be implementation specific
-	public static ComputedProperty<WindowBase<TRenderTarget>, Vector2> SizeProperty = new()
+	public static ComputedProperty<WindowBase, Vector2> SizeProperty = new()
 	{
-		Get = (WindowBase<TRenderTarget> window) => window.GetSize(),
+		Get = (window) => window.GetSize(),
 		Cached = false,
 	};
 	public Vector2 Size => SizeProperty[this].Get();
@@ -36,9 +36,9 @@ public abstract class WindowBase<TRenderTarget> : ObservableObject where TRender
 	{
 		Engine.Singleton.Animator.NextFrame += (s, e) =>
 		{
-			SizeProperty[this].SetDirty(this, Size);
+			SizeProperty[this].SetDirty();
 		};
 	}
-
-
 }
+
+public partial class Window: WindowBase { }

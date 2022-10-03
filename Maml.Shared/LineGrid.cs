@@ -56,35 +56,35 @@ public class LineGrid : Node
 	#endregion
 
 	#region Configuration
-	public static ObservableProperty<LineGrid, Vector2> MinorSpacingProperty = new(new(20, 20));
+	public static BasicProperty<LineGrid, Vector2> MinorSpacingProperty = new(new(20, 20));
 	public Vector2 MinorSpacing
 	{
 		get => MinorSpacingProperty[this].Get();
 		set => MinorSpacingProperty[this].Set(value);
 	}
 
-	public static ObservableProperty<LineGrid, Vector2> MajorIntervalProperty = new(new(5, 5));
+	public static BasicProperty<LineGrid, Vector2> MajorIntervalProperty = new(new(5, 5));
 	public Vector2 MajorInterval
 	{
 		get => MajorIntervalProperty[this].Get();
 		set => MajorIntervalProperty[this].Set(value);
 	}
 
-	public static ObservableProperty<LineGrid, Vector2> SizeProperty = new(new(100, 100));
+	public static BasicProperty<LineGrid, Vector2> SizeProperty = new(new(100, 100));
 	public Vector2 Size
 	{
 		get => SizeProperty[this].Get();
 		set => SizeProperty[this].Set(value);
 	}
 
-	public static ObservableProperty<LineGrid, List<DrawLayer>> LineDrawLayersMinorProperty = new(lineDrawLayersMinor);
+	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMinorProperty = new(lineDrawLayersMinor);
 	public List<DrawLayer> LineDrawLayersMinor
 	{
 		get => LineDrawLayersMinorProperty[this].Get();
 		set => LineDrawLayersMinorProperty[this].Set(value);
 	}
 
-	public static ObservableProperty<LineGrid, List<DrawLayer>> LineDrawLayersMajorProperty = new(lineDrawLayersMajor);
+	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMajorProperty = new(lineDrawLayersMajor);
 	public List<DrawLayer> LineDrawLayersMajor
 	{
 		get => LineDrawLayersMajorProperty[this].Get();
@@ -124,6 +124,10 @@ public class LineGrid : Node
 
 	private void UpdateGrid()
 	{
+		foreach (var child in Children)
+		{
+			child.Dispose();
+		}
 		Children.Clear();
 
 		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, Size.Y), };

@@ -5,7 +5,7 @@ using Windows.Win32.Graphics.Direct2D;
 
 namespace Maml;
 
-public class RenderTarget : RenderTargetBase, IDisposable
+public partial class RenderTarget: IDisposable
 {
 	#region Abstract
 	unsafe public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());

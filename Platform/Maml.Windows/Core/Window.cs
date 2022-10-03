@@ -1,5 +1,6 @@
 ﻿using Maml.Events;
 using Maml.Math;
+using Maml.Observable;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -14,7 +15,7 @@ using static Windows.Win32.PInvoke;
 
 namespace Maml;
 
-public partial class Window : WindowBase<RenderTarget>
+public partial class Window
 {
 	#region Abstract
 	public override RenderTarget? RenderTarget
@@ -26,14 +27,6 @@ public partial class Window : WindowBase<RenderTarget>
 		};
 	}
 
-	//public override Vector2 Size
-	//{
-	//	get
-	//	{
-	//		GetClientRect(hWnd, out var rc);
-	//		return new(rc.right - rc.left, rc.bottom - rc.top);
-	//	}
-	//}
 	protected override Vector2 GetSize()
 	{
 		GetClientRect(hWnd, out var rc);
@@ -261,10 +254,8 @@ public partial class Window : WindowBase<RenderTarget>
 				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
 			}
 
-			SizeProperty[this].SetDirty(this, Size);
-
-			// Should we keep the event too??
-			//Resize?.Invoke(this, new ResizeEvent { Size = Size });
+			Resize?.Invoke(this, new ResizeEvent { Size = Size });
+			SizeProperty[this].SetDirty();
 		}
 	}
 
