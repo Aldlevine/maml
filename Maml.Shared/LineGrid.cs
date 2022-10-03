@@ -10,28 +10,13 @@ namespace Maml;
 
 public class LineGrid : Node
 {
-	#region Configuration
-	public Vector2 MinorSpacing { get; set; } = new(20, 20);
-	public Vector2 MajorInterval { get; set; } = new(5, 5);
-
-	public static ObservableProperty<LineGrid, Vector2> SizeProperty = new(new(100, 100));
-	public Vector2 Size
-	{
-		get => SizeProperty[this].Get();
-		set => SizeProperty[this].Set(value);
-	}
-	#endregion
-
 	#region Resources
-	public List<DrawLayer> LineDrawLayersMinor = lineDrawLayersMinor;
-	public List<DrawLayer> LineDrawLayersMajor = lineDrawLayersMajor;
-
-	private static List<DrawLayer> lineDrawLayersMinor = new()
+	private readonly static List<DrawLayer> lineDrawLayersMinor = new()
 	{
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.25f } }, 1),
 	};
 
-	private static List<DrawLayer> lineDrawLayersMajor = new()
+	private readonly static List<DrawLayer> lineDrawLayersMajor = new()
 	{
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.5f } }, 1),
 	};
@@ -70,29 +55,75 @@ public class LineGrid : Node
 	};
 	#endregion
 
+	#region Configuration
+	public static ObservableProperty<LineGrid, Vector2> MinorSpacingProperty = new(new(20, 20));
+	public Vector2 MinorSpacing
+	{
+		get => MinorSpacingProperty[this].Get();
+		set => MinorSpacingProperty[this].Set(value);
+	}
+
+	public static ObservableProperty<LineGrid, Vector2> MajorIntervalProperty = new(new(5, 5));
+	public Vector2 MajorInterval
+	{
+		get => MajorIntervalProperty[this].Get();
+		set => MajorIntervalProperty[this].Set(value);
+	}
+
+	public static ObservableProperty<LineGrid, Vector2> SizeProperty = new(new(100, 100));
+	public Vector2 Size
+	{
+		get => SizeProperty[this].Get();
+		set => SizeProperty[this].Set(value);
+	}
+
+	public static ObservableProperty<LineGrid, List<DrawLayer>> LineDrawLayersMinorProperty = new(lineDrawLayersMinor);
+	public List<DrawLayer> LineDrawLayersMinor
+	{
+		get => LineDrawLayersMinorProperty[this].Get();
+		set => LineDrawLayersMinorProperty[this].Set(value);
+	}
+
+	public static ObservableProperty<LineGrid, List<DrawLayer>> LineDrawLayersMajorProperty = new(lineDrawLayersMajor);
+	public List<DrawLayer> LineDrawLayersMajor
+	{
+		get => LineDrawLayersMajorProperty[this].Get();
+		set => LineDrawLayersMajorProperty[this].Set(value);
+	}
+
+	// public Transform MyTransform { get; set; } = Transform.Identity;
+	#endregion
+
 	public LineGrid()
 	{
+		// Because we can't assign from instance members in the initializer
 		lineGfxMinorX.Geometry = lineGeoX;
 		lineGfxMajorX.Geometry = lineGeoX;
 		lineGfxMinorY.Geometry = lineGeoY;
 		lineGfxMajorY.Geometry = lineGeoY;
 
-		// We queue it for the next frame because we call update on this frame regardless
-		Animator.NextFrame += (s, e) =>
-		{
-			lineGfxMinorX.DrawLayers = LineDrawLayersMinor;
-			lineGfxMinorY.DrawLayers = LineDrawLayersMinor;
-			lineGfxMajorX.DrawLayers = LineDrawLayersMajor;
-			lineGfxMajorY.DrawLayers = LineDrawLayersMajor;
+		// TODO: we will move this to the property initializer
+		LineDrawLayersMinorProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateDrawLayers);
+		LineDrawLayersMajorProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateDrawLayers);
+		Engine.QueueDeferred(UpdateDrawLayers);
 
-			SizeProperty[this].Changed += (s, v) => Update();
-			Update();
-		};
+		// TODO: we will move this to the property initializer
+		SizeProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
+		MinorSpacingProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
+		MajorIntervalProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
+		Engine.QueueDeferred(UpdateGrid);
 	}
 
-	private void Update()
+	private void UpdateDrawLayers()
 	{
+		lineGfxMinorX.DrawLayers = LineDrawLayersMinor;
+		lineGfxMinorY.DrawLayers = LineDrawLayersMinor;
+		lineGfxMajorX.DrawLayers = LineDrawLayersMajor;
+		lineGfxMajorY.DrawLayers = LineDrawLayersMajor;
+	}
 
+	private void UpdateGrid()
+	{
 		Children.Clear();
 
 		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, Size.Y), };

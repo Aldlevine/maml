@@ -1,14 +1,15 @@
 ﻿using Maml.Animation;
 using Maml.Math;
 using Maml.Observable;
+using System;
 
 namespace Maml.Scene;
 
 public partial class Node : ObservableObject
 {
-	protected Engine Engine => Engine.Singleton;
-	protected Window Window => Engine.Singleton.Window;
-	protected Animator Animator => Engine.Singleton.Animator;
+	protected static Engine Engine => Engine.Singleton;
+	protected static Window Window => Engine.Singleton.Window;
+	protected static Animator Animator => Engine.Singleton.Animator;
 
 	public Node()
 	{
@@ -41,6 +42,8 @@ public partial class Node : ObservableObject
 		}
 	}
 
+	public void CallDeferred(Action action) => Animator.NextFrame += (s, e) => action.Invoke();
+
 	// Transform
 	public static ObservableProperty<Node, Transform> TransformProperty = new(Transform.Identity);
 	public Transform Transform
@@ -70,6 +73,18 @@ public partial class Node : ObservableObject
 		null => transform,
 		_ => Parent.GlobalTransform.Inverse() * transform,
 	};
+
+	// Origin
+	public static ComputedProperty<Node, Vector2> OriginProperty = new()
+	{
+		Get = (Node self) => self.Transform.Origin,
+		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Origin = value, },
+	};
+	public Vector2 Origin
+	{
+		get => OriginProperty[this].Get();
+		set => OriginProperty[this].Set(value);
+	}
 
 	public override string? ToString() => $"{GetType().Name}#{Name}";
 }

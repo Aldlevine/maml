@@ -30,11 +30,14 @@ public abstract class RenderTargetBase
 
 	public void DrawScene(SceneTree sceneTree)
 	{
-		foreach (var node in sceneTree.Nodes)
+		lock (Engine.Singleton.EventMutex)
 		{
-			if (node is GraphicNode graphicNode)
+			foreach (var node in sceneTree.Nodes)
 			{
-				graphicNode.Graphic?.Draw(this, node.GlobalTransform);
+				if (node is GraphicNode graphicNode)
+				{
+					graphicNode.Graphic?.Draw(this, node.GlobalTransform);
+				}
 			}
 		}
 	}

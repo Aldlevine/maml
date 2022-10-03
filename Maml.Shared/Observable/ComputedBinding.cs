@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Media.Devices;
 
 namespace Maml.Observable;
 
@@ -11,7 +12,10 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 	{
 		isDirty = true;
 		// Changed?.Invoke(sender, new(this));
-		Changed?.Invoke(sender, value);
+		if (ComputedProperty.Get != null)
+		{
+			Changed?.Invoke(sender, ComputedProperty.Get(Object));
+		}
 	}
 
 	public O Object { get; init; }
@@ -69,7 +73,10 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 		//from.Changed += HandleChanged;
 		//Value = from.Value;
 		from.Changed += HandleChanged;
-		Value = from.Value;
+		if (ComputedProperty.Set != null)
+		{
+			Set(from.Value);
+		}
 		SetDirty(this, Value);
 	}
 }

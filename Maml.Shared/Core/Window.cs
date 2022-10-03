@@ -34,10 +34,10 @@ public abstract class WindowBase<TRenderTarget> : ObservableObject where TRender
 
 	public WindowBase()
 	{
-		//Engine.Singleton.Animator.NextFrame += (s, e) =>
-		//{
-		//	SizeProperty[this].SetDirty(this, Size);
-		//};
+		Engine.Singleton.Animator.NextFrame += (s, e) =>
+		{
+			SizeProperty[this].SetDirty(this, Size);
+		};
 	}
 
 

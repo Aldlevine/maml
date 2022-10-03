@@ -114,14 +114,6 @@ public class TwirlyNode : Node
 	{
 		Ellipse = new() { Radius = new(10, 10), }
 	};
-	// private static RectGeometry baseGeo = new()
-	// {
-	// 	Rect = new() { Position = new(-10, -10), End = new(10, 10), },
-	// };
-	// private static LineGeometry baseGeo = new()
-	// {
-	// 	Line = new() { Start = new(-10, 0), End = new(10, 0), },
-	// };
 
 	private GeometryGraphic hitRectGfx;
 	private List<DrawLayer> hitRectVisible = new() { };
@@ -333,7 +325,6 @@ public class TwirlyNode : Node
 			// Add animations
 			Animator.Frame += Pulse;
 			Animator.Frame += HideSelect;
-
 		}
 	}
 

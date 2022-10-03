@@ -98,6 +98,8 @@ public class Animator
 			NextFrame = null;
 
 			lastTick = tick;
+
+			Engine.Singleton.ProcessDeferred();
 		}
 	}
 

@@ -8,7 +8,11 @@ namespace Maml;
 
 public static class Program
 {
-	private static Node testNode = new();
+	private static LineGrid mainGrid = default!;
+	private static Node centeringNode = default!;
+	private static Node rotatingNode = default!;
+	private static LineGrid rotatingGrid = default!;
+	private static Node reticleNode = default!;
 
 	internal static void Main()
 	{
@@ -23,10 +27,7 @@ public static class Program
 		var startTick = DateTime.Now;
 		Engine.Singleton.Animator.Frame += (s, e) =>
 		{
-			testNode.Transform = Transform.Identity
-				.Translated(new(-240, -240))
-				.Rotated(-(startTick - e.Tick).TotalSeconds)
-				.Translated((Engine.Singleton.Window.Size / 2));
+			rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
 		};
 
 		Engine.Singleton.Run();
@@ -34,11 +35,19 @@ public static class Program
 		Engine.Singleton.Dispose();
 	}
 
+	private static IBinding<WindowBase<RenderTarget>, Vector2> gridSizeBinding = Window.SizeProperty[Engine.Singleton.Window].With((Vector2 size) =>
+	{
+		var max = double.Max(size.X, size.Y);
+		var side = double.Sqrt(2 * max * max);
+		side = double.Ceiling(side / rotatingGrid.MinorSpacing.X * 2) * rotatingGrid.MinorSpacing.X * 2;
+		return new Vector2(side, side);
+	});
+
 	private static Node.NodeCollection GetNodes()
 	{
 		Node.NodeCollection result = new()
 		{
-			new LineGrid
+			(mainGrid = new LineGrid
 			{
 				MinorSpacing = new(20, 20),
 				MajorInterval = new(5, 5),
@@ -53,30 +62,80 @@ public static class Program
 				},
 				Transform = Transform.PixelIdentity,
 				[LineGrid.SizeProperty] = Window.SizeProperty[Engine.Singleton.Window],
-			},
-			new LineGrid
+			}),
+
+			(centeringNode = new Node
 			{
-				MinorSpacing = new(40, 40),
-				MajorInterval = new(1, 1),
-				LineDrawLayersMajor = new()
+				[Node.OriginProperty] = Window.SizeProperty[Engine.Singleton.Window].With((Vector2 v) => v / 2),
+				Children = new()
 				{
-					new Stroke(new ColorBrush { Color = Colors.Red with { }, }, 1),
-				},
-				Size = new(481, 481),
-				[Node.TransformProperty] = Node.TransformProperty[testNode],
-			},
+					(rotatingNode = new Node
+					{
+						Children = new()
+						{
+							(rotatingGrid = new LineGrid
+							{
+								MinorSpacing = new(40, 40),
+								MajorInterval = new(10000, 10000),
+								LineDrawLayersMinor = new()
+								{
+									new Stroke(new ColorBrush { Color = Colors.DarkViolet, }, 3),
+								},
+								[LineGrid.SizeProperty] = gridSizeBinding,
+								[Node.OriginProperty] = gridSizeBinding.With((Vector2 v) => v / -2),
+							}),
+						},
+					}),
+
+					(reticleNode = new Node
+					{
+						Children = new()
+						{
+							(new GraphicNode
+							{
+								Graphic = new GeometryGraphic
+								{
+									Geometry = new EllipseGeometry
+									{
+										Ellipse = new() { Radius = new(13, 13), },
+									},
+									DrawLayers = new()
+									{
+										new Stroke(new ColorBrush { Color = Colors.AntiqueWhite, }, 3),
+									},
+								},
+							}),
+							(new GraphicNode
+							{
+								Graphic = new GeometryGraphic
+								{
+									Geometry = new EllipseGeometry
+									{
+										Ellipse = new() { Radius = new(11, 11), },
+									},
+									DrawLayers = new()
+									{
+										new Fill(new ColorBrush { Color = Colors.Red with { A = 0.5f, }, }),
+										new Stroke(new ColorBrush { Color = Colors.Red, }, 3),
+									},
+								},
+							}),
+						}
+					}),
+
+				}
+			}),
+
+
 		};
 
 		for (int i = 0; i < 100; i++)
 		{
 			result.Add(new TwirlyNode
 			{
-				Transform = new Transform
-				{
-					Origin = new(
-						Random.Shared.Next((int)Engine.Singleton.Window.Size.X),
-						Random.Shared.Next((int)Engine.Singleton.Window.Size.Y)),
-				}
+				Origin = new(
+					Random.Shared.Next((int)Engine.Singleton.Window.Size.X),
+					Random.Shared.Next((int)Engine.Singleton.Window.Size.Y)),
 			});
 		}
 

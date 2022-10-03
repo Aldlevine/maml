@@ -37,7 +37,7 @@ public partial class Window : WindowBase<RenderTarget>
 	protected override Vector2 GetSize()
 	{
 		GetClientRect(hWnd, out var rc);
-		return new(rc.right - rc.left, rc.bottom - rc.top);
+		return new Vector2(rc.right - rc.left, rc.bottom - rc.top);
 	}
 
 	public override double DpiRatio => GetDpiForWindow(hWnd) * stdDpiInv;
@@ -150,8 +150,10 @@ public partial class Window : WindowBase<RenderTarget>
 			HWND.Null,
 			0,
 			0,
-			(int)System.Math.Ceiling(1440 * DpiRatio),
-			(int)System.Math.Ceiling(810 * DpiRatio),
+			//(int)System.Math.Ceiling(1440 * DpiRatio),
+			//(int)System.Math.Ceiling(810 * DpiRatio),
+			(int)System.Math.Ceiling(1440.0),
+			(int)System.Math.Ceiling(810.0),
 			SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
 		ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
 		UpdateWindow(hWnd);
@@ -164,10 +166,13 @@ public partial class Window : WindowBase<RenderTarget>
 
 	unsafe private void CreateRenderTarget(ID2D1HwndRenderTarget** ppRenderTarget, D2D1_PRESENT_OPTIONS presentMode)
 	{
+		var dpi = GetDpiForWindow(hWnd);
 		D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new()
 		{
-			dpiX = stdDpi,
-			dpiY = stdDpi,
+			//dpiX = stdDpi,
+			//dpiY = stdDpi,
+			dpiX = dpi,
+			dpiY = dpi,
 		};
 
 		D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
@@ -260,7 +265,7 @@ public partial class Window : WindowBase<RenderTarget>
 			}
 
 			SizeProperty[this].SetDirty(this, Size);
-			Resize?.Invoke(this, new ResizeEvent { Size = Size });
+			//Resize?.Invoke(this, new ResizeEvent { Size = Size });
 		}
 	}
 

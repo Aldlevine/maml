@@ -1,5 +1,8 @@
 ﻿namespace Maml.Observable;
 
+// TODO: Need to clean up subscriptions so that abandoned objects can be GCd
+// Possibly implement IDisposable?
+// Or possibly implement a custom event that uses weak refs to delegates.
 public class ObservableObject
 {
 	public IBinding this[IProperty property]
