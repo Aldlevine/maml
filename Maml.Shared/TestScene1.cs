@@ -14,7 +14,7 @@ internal class TestScene1 : Node
 	private Node rotatingNode = default!;
 	private Node reticleNode = default!;
 
-	private IBinding<WindowBase<RenderTarget>, Vector2> gridSizeBinding = default!;
+	private Binding<WindowBase<RenderTarget>, Vector2> gridSizeBinding = default!;
 
 	public TestScene1() : base()
 	{

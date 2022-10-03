@@ -3,25 +3,21 @@ using Windows.Media.Devices;
 
 namespace Maml.Observable;
 
-public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
+public class ComputedBinding<O, T> : Binding<O, T> where O : ObservableObject
 {
-	// public event EventHandler<LazyGet<O, T>>? Changed;
-	public event EventHandler<T>? Changed;
-	public void HandleChanged(object? sender, T value) => Set(value);
-	public void SetDirty(object? sender, T value)
+	public override event EventHandler<T>? Changed;
+	public override void HandleChanged(object? sender, T value) => Set(value);
+	public override void SetDirty(object? sender, T value)
 	{
 		isDirty = true;
-		// Changed?.Invoke(sender, new(this));
 		if (ComputedProperty.Get != null)
 		{
 			Changed?.Invoke(sender, ComputedProperty.Get(Object));
 		}
 	}
 
-	public O Object { get; init; }
-	public IProperty<O, T> Property => ComputedProperty;
+	public override Property<O, T> Property => ComputedProperty;
 	public ComputedProperty<O, T> ComputedProperty;
-	public T Value { get; private set; }
 	private bool isDirty = true;
 
 	public ComputedBinding(O @object, ComputedProperty<O, T> property)
@@ -31,7 +27,7 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 		Value = default!;
 	}
 
-	public T Get()
+	public override T Get()
 	{
 		if (ComputedProperty.Get == null)
 		{
@@ -46,7 +42,7 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 		return Value!;
 	}
 
-	public bool Set(T value)
+	public override bool Set(T value)
 	{
 		if (ComputedProperty.Set == null)
 		{
@@ -54,7 +50,6 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 		}
 
 		ComputedProperty.Set(Object, value);
-		// Changed?.Invoke(this, new(this));
 		if (ComputedProperty.Get != null)
 		{
 			// TODO: we shouldn't call Get here.
@@ -68,10 +63,8 @@ public class ComputedBinding<O, T> : IBinding<O, T> where O : ObservableObject
 		return false;
 	}
 
-	public void BindTo(IBinding<T> from)
+	public override void BindTo(Binding<T> from)
 	{
-		//from.Changed += HandleChanged;
-		//Value = from.Value;
 		from.Changed += HandleChanged;
 		if (ComputedProperty.Set != null)
 		{

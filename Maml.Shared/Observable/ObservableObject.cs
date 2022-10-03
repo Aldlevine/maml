@@ -5,7 +5,7 @@
 // Or possibly implement a custom event that uses weak refs to delegates.
 public class ObservableObject
 {
-	public IBinding this[IProperty property]
+	public Binding this[Property property]
 	{
 		get
 		{
@@ -15,11 +15,14 @@ public class ObservableObject
 		init
 		{
 			dynamic p = property;
-			IBinding b = p.GetBinding(this);
+			Binding b = p.GetBinding(this);
 			b.BindTo(value);
 		}
 	}
 
-	public IBinding<O, T> GetBinding<O, T>(IProperty<O, T> property) where O : ObservableObject => property.GetBinding((O)this);
+	public Binding<O, T> GetBinding<O, T>(Property<O, T> property) where O : ObservableObject => property.GetBinding((O)this);
 }
+
+
+
 

@@ -29,8 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Units.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ComputedBinding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ComputedProperty.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Observable\IBinding.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Observable\IProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Observable\Binding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Observable\Property.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableBinding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableProperty.cs" />

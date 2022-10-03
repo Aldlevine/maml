@@ -2,7 +2,7 @@
 
 namespace Maml.Observable;
 
-public class ObservableProperty<O, T> : IProperty<O, T> where O : ObservableObject
+public class ObservableProperty<O, T> : Property<O, T> where O : ObservableObject
 {
 	public T Default { get; init; }
 
@@ -11,10 +11,10 @@ public class ObservableProperty<O, T> : IProperty<O, T> where O : ObservableObje
 		Default = @default;
 	}
 
-	public IBinding<O, T> this[O @object] => GetBinding(@object);
+	public override Binding<O, T> this[O @object] => GetBinding(@object);
 
 	private Dictionary<O, ObservableBinding<O, T>> bindings = new();
-	public IBinding<O, T> GetBinding(O @object)
+	public override Binding<O, T> GetBinding(O @object)
 	{
 		if (!bindings.TryGetValue(@object, out var binding))
 		{
@@ -23,5 +23,5 @@ public class ObservableProperty<O, T> : IProperty<O, T> where O : ObservableObje
 		return binding;
 	}
 
-	public IBinding<O, T> GetBinding(ObservableObject @object) => GetBinding((O)@object);
+	public override Binding<O, T> GetBinding(ObservableObject @object) => GetBinding((O)@object);
 }

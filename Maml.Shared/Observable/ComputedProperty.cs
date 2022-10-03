@@ -6,16 +6,16 @@ public delegate T ComputedPropertyGetter<O, T>(O @object) where O : ObservableOb
 
 public delegate void ComputedPropertySetter<O, T>(O @object, T value) where O : ObservableObject;
 
-public class ComputedProperty<O, T> : IProperty<O, T> where O : ObservableObject
+public class ComputedProperty<O, T> : Property<O, T> where O : ObservableObject
 {
 	public ComputedPropertyGetter<O, T>? Get;
 	public ComputedPropertySetter<O, T>? Set;
 	public bool Cached = true;
 
-	public IBinding<O, T> this[O @object] => GetBinding(@object);
+	public override Binding<O, T> this[O @object] => GetBinding(@object);
 
 	private Dictionary<O, ComputedBinding<O, T>> bindings = new();
-	public IBinding<O, T> GetBinding(O @object)
+	public override Binding<O, T> GetBinding(O @object)
 	{
 		if (!bindings.TryGetValue(@object, out var binding))
 		{
@@ -24,5 +24,5 @@ public class ComputedProperty<O, T> : IProperty<O, T> where O : ObservableObject
 		return binding;
 	}
 
-	public IBinding<O, T> GetBinding(ObservableObject @object) => GetBinding((O)@object);
+	public override Binding<O, T> GetBinding(ObservableObject @object) => GetBinding((O)@object);
 }
