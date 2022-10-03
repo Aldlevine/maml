@@ -11,6 +11,7 @@ public abstract class WindowBase<TRenderTarget> : ObservableObject where TRender
 	public abstract TRenderTarget? RenderTarget { get; }
 	public SceneTree SceneTree { get; init; } = new();
 
+	// TODO: this might need to be implementation specific
 	public static ComputedProperty<WindowBase<TRenderTarget>, Vector2> SizeProperty = new()
 	{
 		Get = (WindowBase<TRenderTarget> window) => window.GetSize(),
@@ -18,7 +19,6 @@ public abstract class WindowBase<TRenderTarget> : ObservableObject where TRender
 	};
 	public Vector2 Size => SizeProperty[this].Get();
 	protected abstract Vector2 GetSize();
-	// public Vector2 Size { get; protected set; }
 	public abstract double DpiRatio { get; }
 
 	public abstract event EventHandler<ResizeEvent>? Resize;

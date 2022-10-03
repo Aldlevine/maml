@@ -27,18 +27,4 @@ public abstract class RenderTargetBase
 				break;
 		}
 	}
-
-	public void DrawScene(SceneTree sceneTree)
-	{
-		lock (Engine.Singleton.EventMutex)
-		{
-			foreach (var node in sceneTree.Nodes)
-			{
-				if (node is GraphicNode graphicNode)
-				{
-					graphicNode.Graphic?.Draw(this, node.GlobalTransform);
-				}
-			}
-		}
-	}
 }

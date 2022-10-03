@@ -223,18 +223,15 @@ public partial class Window : WindowBase<RenderTarget>
 	}
 
 
-	private Mutex drawMutex = new();
 	unsafe internal void HandleDraw()
 	{
-		lock (drawMutex)
+		lock (Engine.Singleton.EventMutex)
 		{
 			CreateDeviceResources();
 
 			RenderTarget!.pRenderTarget->BeginDraw();
 
-			RenderTarget.Clear(new Graphics.Color(0x333333ff));
-			RenderTarget.DrawScene(SceneTree);
-			// Draw?.Invoke(this, new() { RenderTarget = RenderTarget });
+			SceneTree.Draw(RenderTarget);
 
 			var hr = RenderTarget!.pRenderTarget->EndDraw();
 			if (hr == HRESULT.D2DERR_RECREATE_TARGET)
@@ -265,6 +262,8 @@ public partial class Window : WindowBase<RenderTarget>
 			}
 
 			SizeProperty[this].SetDirty(this, Size);
+
+			// Should we keep the event too??
 			//Resize?.Invoke(this, new ResizeEvent { Size = Size });
 		}
 	}

@@ -41,6 +41,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.NodeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\SceneTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestScene1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TwirlyNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\VirtualKey.cs" />

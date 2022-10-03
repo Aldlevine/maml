@@ -34,4 +34,17 @@ public class SceneTree
 			}
 		}
 	}
+
+	public void Draw(RenderTarget renderTarget)
+	{
+		renderTarget.Clear(new Graphics.Color(0x333333ff));
+
+		foreach (var node in Nodes)
+		{
+			if (node is GraphicNode graphicNode)
+			{
+				graphicNode.Graphic?.Draw(renderTarget, node.GlobalTransform);
+			}
+		}
+	}
 }

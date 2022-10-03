@@ -42,9 +42,7 @@ public partial class Node : ObservableObject
 		}
 	}
 
-	public void CallDeferred(Action action) => Animator.NextFrame += (s, e) => action.Invoke();
-
-	// Transform
+	// ******** Transform ********
 	public static ObservableProperty<Node, Transform> TransformProperty = new(Transform.Identity);
 	public Transform Transform
 	{
@@ -52,7 +50,43 @@ public partial class Node : ObservableObject
 		set => TransformProperty[this].Set(value);
 	}
 
-	// GlobalTransform
+	// Origin
+	public static ComputedProperty<Node, Vector2> OriginProperty = new()
+	{
+		Get = (Node self) => self.Transform.Origin,
+		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Origin = value, },
+	};
+	public Vector2 Origin
+	{
+		get => OriginProperty[this].Get();
+		set => OriginProperty[this].Set(value);
+	}
+
+	// Rotation
+	public static ComputedProperty<Node, double> RotationProperty = new()
+	{
+		Get = (Node self) => self.Transform.Rotation,
+		Set = (Node self, double value) => self.Transform = self.Transform with { Rotation = value, },
+	};
+	public double Rotation
+	{
+		get => RotationProperty[this].Get();
+		set => RotationProperty[this].Set(value);
+	}
+
+	// Scale
+	public static ComputedProperty<Node, Vector2> ScaleProperty = new()
+	{
+		Get = (Node self) => self.Transform.Scale,
+		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Scale = value, },
+	};
+	public Vector2 Scale
+	{
+		get => ScaleProperty[this].Get();
+		set => ScaleProperty[this].Set(value);
+	}
+
+	// ******** GlobalTransform ********
 	public static ComputedProperty<Node, Transform> GlobalTransformProperty = new()
 	{
 		Get = (Node self) => self.getGlobalTransform(),
@@ -74,16 +108,40 @@ public partial class Node : ObservableObject
 		_ => Parent.GlobalTransform.Inverse() * transform,
 	};
 
-	// Origin
-	public static ComputedProperty<Node, Vector2> OriginProperty = new()
+	// GLobal Origin
+	public static ComputedProperty<Node, Vector2> GlobalOriginProperty = new()
 	{
 		Get = (Node self) => self.Transform.Origin,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Origin = value, },
 	};
-	public Vector2 Origin
+	public Vector2 GlobalOrigin
 	{
-		get => OriginProperty[this].Get();
-		set => OriginProperty[this].Set(value);
+		get => GlobalOriginProperty[this].Get();
+		set => GlobalOriginProperty[this].Set(value);
+	}
+
+	// Global Rotation
+	public static ComputedProperty<Node, double> GlobalRotationProperty = new()
+	{
+		Get = (Node self) => self.Transform.Rotation,
+		Set = (Node self, double value) => self.Transform = self.Transform with { Rotation = value, },
+	};
+	public double GlobalRotation
+	{
+		get => GlobalRotationProperty[this].Get();
+		set => GlobalRotationProperty[this].Set(value);
+	}
+
+	// Global Scale
+	public static ComputedProperty<Node, Vector2> GlobalScaleProperty = new()
+	{
+		Get = (Node self) => self.Transform.Scale,
+		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Scale = value, },
+	};
+	public Vector2 GlobalScale
+	{
+		get => GlobalScaleProperty[this].Get();
+		set => GlobalScaleProperty[this].Set(value);
 	}
 
 	public override string? ToString() => $"{GetType().Name}#{Name}";

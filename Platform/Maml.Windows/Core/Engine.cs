@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using Maml.Animation;
+using System.Runtime.InteropServices;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.UI.WindowsAndMessaging;
 
@@ -34,10 +35,15 @@ public partial class Engine : EngineBase<Window, RenderTarget>
 		Window.RegisterWindowClass();
 		Window = new Window();
 
-		// This should process the scene tree and check for changes before rerawing
-		Animator.Frame += (s, e) => Window.Redraw(false);
+		Animator.Frame += Frame;
 
 		base.Initialize();
+	}
+
+	// This should process the scene tree and check for changes before rerawing
+	private void Frame(object? sender, FrameEvent evt)
+	{
+		Window.Redraw(false);
 	}
 
 	public override void Dispose()
