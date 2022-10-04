@@ -19,34 +19,34 @@ public class LineGrid : Node
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.5f } }, 1),
 	};
 
-	private LineGeometry lineGeoX = new()
+	private LineGeometry lineGeoX { get; } = new()
 	{
 		Line = new() { Start = new(0, 0), End = new(0, 0) },
 	};
-	private LineGeometry lineGeoY = new()
+	private LineGeometry lineGeoY { get; } = new()
 	{
 		Line = new() { Start = new(0, 0), End = new(0, 0) },
 	};
 
-	private GeometryGraphic lineGfxMinorX = new()
+	private GeometryGraphic lineGfxMinorX { get; } = new()
 	{
 		// Geometry = lineGeoX,
 		DrawLayers = lineDrawLayersMinor,
 	};
 
-	private GeometryGraphic lineGfxMinorY = new()
+	private GeometryGraphic lineGfxMinorY { get; } = new()
 	{
 		// Geometry = lineGeoY,
 		DrawLayers = lineDrawLayersMinor,
 	};
 
-	private GeometryGraphic lineGfxMajorX = new()
+	private GeometryGraphic lineGfxMajorX { get; } = new()
 	{
 		// Geometry = lineGeoX,
 		DrawLayers = lineDrawLayersMajor,
 	};
 
-	private GeometryGraphic lineGfxMajorY = new()
+	private GeometryGraphic lineGfxMajorY { get; } = new()
 	{
 		// Geometry = lineGeoY,
 		DrawLayers = lineDrawLayersMajor,
@@ -54,35 +54,35 @@ public class LineGrid : Node
 	#endregion
 
 	#region Configuration
-	public static BasicProperty<LineGrid, Vector2> MinorSpacingProperty = new(new(20, 20));
+	public static BasicProperty<LineGrid, Vector2> MinorSpacingProperty { get; } = new(new(20, 20));
 	public Vector2 MinorSpacing
 	{
 		get => MinorSpacingProperty[this].Get();
 		set => MinorSpacingProperty[this].Set(value);
 	}
 
-	public static BasicProperty<LineGrid, Vector2> MajorIntervalProperty = new(new(5, 5));
+	public static BasicProperty<LineGrid, Vector2> MajorIntervalProperty { get; } = new(new(5, 5));
 	public Vector2 MajorInterval
 	{
 		get => MajorIntervalProperty[this].Get();
 		set => MajorIntervalProperty[this].Set(value);
 	}
 
-	public static BasicProperty<LineGrid, Vector2> SizeProperty = new(new(100, 100));
+	public static BasicProperty<LineGrid, Vector2> SizeProperty { get; } = new(new(100, 100));
 	public Vector2 Size
 	{
 		get => SizeProperty[this].Get();
 		set => SizeProperty[this].Set(value);
 	}
 
-	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMinorProperty = new(lineDrawLayersMinor);
+	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMinorProperty { get; } = new(lineDrawLayersMinor);
 	public List<DrawLayer> LineDrawLayersMinor
 	{
 		get => LineDrawLayersMinorProperty[this].Get();
 		set => LineDrawLayersMinorProperty[this].Set(value);
 	}
 
-	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMajorProperty = new(lineDrawLayersMajor);
+	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMajorProperty { get; } = new(lineDrawLayersMajor);
 	public List<DrawLayer> LineDrawLayersMajor
 	{
 		get => LineDrawLayersMajorProperty[this].Get();

@@ -7,7 +7,7 @@ public partial struct Transform : IEquatable<Transform>
 {
 	public Vector2 X
 	{
-		get => new Vector2(matrix.M11, matrix.M12);
+		get => new(matrix.M11, matrix.M12);
 		set
 		{
 			matrix.M11 = (float)value.X;
@@ -17,7 +17,7 @@ public partial struct Transform : IEquatable<Transform>
 
 	public Vector2 Y
 	{
-		get => new Vector2(matrix.M21, matrix.M22);
+		get => new(matrix.M21, matrix.M22);
 		set
 		{
 			matrix.M21 = (float)value.X;
@@ -27,7 +27,7 @@ public partial struct Transform : IEquatable<Transform>
 
 	public Vector2 Origin
 	{
-		get => new Vector2(matrix.M31, matrix.M32);
+		get => new(matrix.M31, matrix.M32);
 		set
 		{
 			matrix.M31 = (float)value.X;

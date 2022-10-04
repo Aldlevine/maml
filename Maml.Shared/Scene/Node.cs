@@ -50,14 +50,14 @@ public partial class Node : ObservableObject
 	public override string? ToString() => $"{GetType().Name}#{Name}";
 
 	#region Properties
-	public static BasicProperty<Node, int> ZIndexProperty = new(0);
+	public static BasicProperty<Node, int> ZIndexProperty { get; } = new(0);
 	public int ZIndex
 	{
 		get => ZIndexProperty[this].Get();
 		set => ZIndexProperty[this].Set(value);
 	}
 
-	public static BasicProperty<Node, IShape?> HitShapeProperty = new(null);
+	public static BasicProperty<Node, IShape?> HitShapeProperty { get; } = new(null);
 	public IShape? HitShape
 	{
 		get => HitShapeProperty[this].Get();
@@ -65,7 +65,7 @@ public partial class Node : ObservableObject
 	}
 
 	// ******** Local ********
-	public static BasicProperty<Node, Transform> TransformProperty = new(Transform.Identity);
+	public static BasicProperty<Node, Transform> TransformProperty { get; } = new(Transform.Identity);
 	public Transform Transform
 	{
 		get => TransformProperty[this].Get();
@@ -73,7 +73,7 @@ public partial class Node : ObservableObject
 	}
 
 	// Origin
-	public static ComputedProperty<Node, Vector2> OriginProperty = new()
+	public static ComputedProperty<Node, Vector2> OriginProperty { get; } = new()
 	{
 		Get = (Node self) => self.Transform.Origin,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Origin = value, },
@@ -86,7 +86,7 @@ public partial class Node : ObservableObject
 	}
 
 	// Rotation
-	public static ComputedProperty<Node, double> RotationProperty = new()
+	public static ComputedProperty<Node, double> RotationProperty { get; } = new()
 	{
 		Get = (Node self) => self.Transform.Rotation,
 		Set = (Node self, double value) => self.Transform = self.Transform with { Rotation = value, },
@@ -99,7 +99,7 @@ public partial class Node : ObservableObject
 	}
 
 	// Scale
-	public static ComputedProperty<Node, Vector2> ScaleProperty = new()
+	public static ComputedProperty<Node, Vector2> ScaleProperty { get; } = new()
 	{
 		Get = (Node self) => self.Transform.Scale,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Scale = value, },
@@ -112,7 +112,7 @@ public partial class Node : ObservableObject
 	}
 
 	// ******** Global ********
-	public static ComputedProperty<Node, Transform> GlobalTransformProperty = new()
+	public static ComputedProperty<Node, Transform> GlobalTransformProperty { get; } = new()
 	{
 		Get = (Node self) => self.getGlobalTransform(),
 		Set = (Node self, Transform value) => self.setGlobalTransform(value),
@@ -135,7 +135,7 @@ public partial class Node : ObservableObject
 	};
 
 	// GLobal Origin
-	public static ComputedProperty<Node, Vector2> GlobalOriginProperty = new()
+	public static ComputedProperty<Node, Vector2> GlobalOriginProperty { get; } = new()
 	{
 		Get = (Node self) => self.Transform.Origin,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Origin = value, },
@@ -148,7 +148,7 @@ public partial class Node : ObservableObject
 	}
 
 	// Global Rotation
-	public static ComputedProperty<Node, double> GlobalRotationProperty = new()
+	public static ComputedProperty<Node, double> GlobalRotationProperty { get; } = new()
 	{
 		Get = (Node self) => self.Transform.Rotation,
 		Set = (Node self, double value) => self.Transform = self.Transform with { Rotation = value, },
@@ -161,7 +161,7 @@ public partial class Node : ObservableObject
 	}
 
 	// Global Scale
-	public static ComputedProperty<Node, Vector2> GlobalScaleProperty = new()
+	public static ComputedProperty<Node, Vector2> GlobalScaleProperty { get; } = new()
 	{
 		Get = (Node self) => self.Transform.Scale,
 		Set = (Node self, Vector2 value) => self.Transform = self.Transform with { Scale = value, },

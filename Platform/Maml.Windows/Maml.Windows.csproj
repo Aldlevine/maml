@@ -12,6 +12,7 @@
     <Platforms>AnyCPU;x64;x86</Platforms>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <StartupObject>Maml.Program</StartupObject>
+    <RootNamespace>Maml</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

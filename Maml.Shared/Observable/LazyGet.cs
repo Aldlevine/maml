@@ -3,7 +3,7 @@
 public record LazyGet<T>(T Value)
 {
 	public virtual T Value { get; } = Value;
-	public static implicit operator LazyGet<T>(T value) => new LazyGet<T>(value);
+	public static implicit operator LazyGet<T>(T value) => new(value);
 };
 
 public record LazyGet<O, T>(Binding<O, T> Binding) : LazyGet<T>(default(T)!) where O : ObservableObject

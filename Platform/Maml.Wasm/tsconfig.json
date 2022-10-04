@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"noEmitOnError": true,
 		"removeComments": false,
 		"sourceMap": true,
@@ -8,8 +8,11 @@
 		"target": "ES2015",
 		"module": "ES2015",
 		"rootDir": "wwwroot",
-		"lib": ["ES2017", "DOM"]
+		"lib": [ "ES2015", "ES2017", "DOM" ]
 	},
+	"include": [
+		"wwwroot/**/*"
+	],
 	"exclude": [
 		"node_modules"
 	]

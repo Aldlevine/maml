@@ -10,8 +10,8 @@ namespace Maml;
 
 public class TwirlyNode : Node
 {
-	private Node bigCircles;
-	private Node smallCircles;
+	private Node bigCircles { get; }
+	private Node smallCircles { get; }
 	public TwirlyNode()
 	{
 		PointerDown += OnPointerDown;
@@ -92,34 +92,34 @@ public class TwirlyNode : Node
 	}
 
 	#region Resources
-	private static List<DrawLayer> defaultDrawLayers = new()
+	private static List<DrawLayer> defaultDrawLayers { get; } = new()
 	{
 		new Stroke(new ColorBrush { Color = Colors.DarkOrange }, 7),
 		new Stroke(new ColorBrush { Color = Colors.HotPink }, 3),
 	};
 
-	private static List<DrawLayer> selectedDrawLayers = new()
+	private static List<DrawLayer> selectedDrawLayers { get; } = new()
 	{
 		new Stroke(new ColorBrush { Color = Colors.PaleGreen }, 7),
 		new Stroke(new ColorBrush { Color = Colors.DarkGoldenrod }, 3),
 	};
 
-	private List<DrawLayer> animatedDrawLayers = new()
+	private List<DrawLayer> animatedDrawLayers { get; } = new()
 	{
 		defaultDrawLayers[0] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[0].Brush)},
 		defaultDrawLayers[1] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[1].Brush)},
 	};
 
-	private static EllipseGeometry baseGeo = new()
+	private static EllipseGeometry baseGeo { get; } = new()
 	{
 		Ellipse = new() { Radius = new(10, 10), }
 	};
 
-	private GeometryGraphic hitRectGfx;
-	private List<DrawLayer> hitRectVisible = new() { };
-	private List<DrawLayer> hitRectHidden = new() { };
+	private GeometryGraphic hitRectGfx { get; }
+	private List<DrawLayer> hitRectVisible { get; } = new() { };
+	private List<DrawLayer> hitRectHidden { get; } = new() { };
 
-	private GeometryGraphic baseGfx = new()
+	private GeometryGraphic baseGfx { get; } = new()
 	{
 		Geometry = baseGeo,
 		DrawLayers = new()
@@ -242,7 +242,7 @@ public class TwirlyNode : Node
 					for (int i = 0; i < animatedDrawLayers.Count; i++)
 					{
 						if (animatedDrawLayers[i].Brush is not ColorBrush animatedBrush) { continue; }
-						if (defaultDrawLayers[i].Brush is not ColorBrush defaultBrush) { continue; }
+						if (defaultDrawLayers[i].Brush is not ColorBrush) { continue; }
 						if (selectedDrawLayers[i].Brush is not ColorBrush selectedBrush) { continue; }
 						animatedBrush.Color = Color.Lerp(animatedBrush.Color, selectedBrush.Color, evt.Delta.TotalSeconds * 7.5);
 					}
@@ -275,7 +275,7 @@ public class TwirlyNode : Node
 					{
 						if (animatedDrawLayers[i].Brush is not ColorBrush animatedBrush) { continue; }
 						if (defaultDrawLayers[i].Brush is not ColorBrush defaultBrush) { continue; }
-						if (selectedDrawLayers[i].Brush is not ColorBrush selectedBrush) { continue; }
+						if (selectedDrawLayers[i].Brush is not ColorBrush) { continue; }
 						animatedBrush.Color = Color.Lerp(animatedBrush.Color, defaultBrush.Color, evt.Delta.TotalSeconds * 0.125);
 					}
 				}
@@ -305,10 +305,7 @@ public class TwirlyNode : Node
 		}
 	}
 
-	private void OnPointerMove(object? sender, PointerEvent evt)
-	{
-		GlobalTransform = GlobalTransform.Translated(evt.PositionDelta);
-	}
+	private void OnPointerMove(object? sender, PointerEvent evt) => GlobalTransform = GlobalTransform.Translated(evt.PositionDelta);
 
 	private void OnPointerUp(object? sender, PointerEvent evt)
 	{

@@ -51,24 +51,8 @@ public partial class Window
 	private const int stdDpi = 96;
 	private const double stdDpiInv = 1.0 / (double)stdDpi;
 
-	private static int CurrentWindowID { get; set; } = 0;
-
-	// TODO: This should be weak ref
-	private static readonly Dictionary<int, Window> Windows = new();
-	private static Window? GetWindow(int id)
-	{
-		if (Windows.TryGetValue(id, out var window))
-		{
-			return window;
-		}
-		return null;
-	}
-
-	private static void RegisterWindow(Window window) => Windows[window.windowID] = window;
-
 	internal HWND hWnd;
 	private Rect clientRect;
-	private int windowID = CurrentWindowID++;
 
 	internal bool ImmediateMode = false;
 	private RenderTarget? syncRenderTarget;
@@ -105,8 +89,6 @@ public partial class Window
 
 	unsafe internal Window() : base()
 	{
-		RegisterWindow(this);
-
 		hWnd = CreateWindowEx(
 			0,
 			className,
@@ -146,11 +128,6 @@ public partial class Window
 			SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
 		ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
 		UpdateWindow(hWnd);
-	}
-
-	~Window()
-	{
-		Windows.Remove(windowID);
 	}
 
 	unsafe private void CreateRenderTarget(ID2D1HwndRenderTarget** ppRenderTarget, D2D1_PRESENT_OPTIONS presentMode)

@@ -6,12 +6,9 @@ public abstract partial class Brush : Resource { }
 
 public partial class ColorBrush : Brush
 {
-	public static BasicProperty<ColorBrush, Color> ColorProperty = new(default)
+	public static BasicProperty<ColorBrush, Color> ColorProperty { get; } = new(default)
 	{
-		Changed = (ColorBrush self) =>
-		{
-			self.IsDirty = true;
-		},
+		Changed = (ColorBrush self) => self.IsDirty = true,
 	};
 	public Color Color
 	{

@@ -8,13 +8,13 @@ namespace Maml;
 
 internal class TestScene1 : Node
 {
-	private LineGrid mainGrid = default!;
-	private LineGrid rotatingGrid = default!;
-	private Node centeringNode = default!;
-	private Node rotatingNode = default!;
-	private Node reticleNode = default!;
+	private LineGrid mainGrid { get; } = default!;
+	private LineGrid rotatingGrid { get; } = default!;
+	private Node centeringNode { get; } = default!;
+	private Node rotatingNode { get; } = default!;
+	private Node reticleNode { get; } = default!;
 
-	private Binding<WindowBase, Vector2> gridSizeBinding = default!;
+	private Binding<WindowBase, Vector2> gridSizeBinding { get; } = default!;
 
 	public TestScene1() : base()
 	{
@@ -119,10 +119,7 @@ internal class TestScene1 : Node
 		}
 
 		var startTick = DateTime.Now;
-		Animator.Frame += (s, e) =>
-		{
-			rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
-		};
+		Animator.Frame += (s, e) => rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
 
 	}
 }

@@ -6,7 +6,7 @@
     <SharedGUID>1aa34956-5c81-4d07-a1da-8cb309f82ddc</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Maml.Shared</Import_RootNamespace>
+    <Import_RootNamespace>Maml</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Animation\Animator.cs" />

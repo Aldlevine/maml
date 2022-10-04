@@ -9,8 +9,5 @@ public static class Unit
 		return from + (t * (to - from));
 	}
 
-	public static double Triangle(double t)
-	{
-		return (2 / double.Pi) * double.Asin(double.Sin(t));
-	}
+	public static double Triangle(double t) => (2 / double.Pi) * double.Asin(double.Sin(t));
 }

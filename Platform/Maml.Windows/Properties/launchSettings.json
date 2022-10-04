@@ -4,12 +4,11 @@
       "commandName": "WSL2",
       "distributionName": ""
     },
-    "Maml.WIndows": {
+    "Maml.Windows": {
       "commandName": "Project",
       "commandLineArgs": "true",
       "nativeDebugging": false,
-      "hotReloadEnabled": true,
-      "launchBrowser": false
+      "hotReloadEnabled": true
     }
   }
 }

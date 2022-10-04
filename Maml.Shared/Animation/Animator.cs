@@ -21,7 +21,7 @@ public record FrameEvent : Event
 
 public class Animator
 {
-	private Mutex frameMutex = new();
+	private Mutex frameMutex { get; } = new();
 	private event EventHandler<FrameEvent>? frame;
 	public event EventHandler<FrameEvent>? Frame
 	{
@@ -64,13 +64,10 @@ public class Animator
 
 	public event EventHandler<FrameEvent>? NextFrame;
 
-	private static readonly TimeSpan minDelta = TimeSpan.FromMilliseconds(4);
-	private static readonly TimeSpan maxDelta = TimeSpan.FromMilliseconds(256);
 	private TimeSpan delta = default;
 	private DateTime tick = DateTime.Now;
 	private DateTime lastTick = DateTime.Now;
 
-	private Mutex tickMutex = new();
 	internal void Tick()
 	{
 		if (frame == null) { return; }
@@ -87,10 +84,7 @@ public class Animator
 				Delta = delta,
 			};
 
-			Parallel.ForEach(frame.GetInvocationList(), (inv, state) =>
-			{
-				((EventHandler<FrameEvent>)inv).Invoke(this, evt);
-			});
+			Parallel.ForEach(frame.GetInvocationList(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
 			//frame?.Invoke(this, evt);
 
 			NextFrame?.Invoke(this, evt);
@@ -104,7 +98,7 @@ public class Animator
 
 
 	private Thread? tickerLoopThread;
-	private ManualResetEventSlim tickerEvent = new();
+	private ManualResetEventSlim tickerEvent { get; } = new();
 	private bool tickerAlive = true;
 	private void TickerLoop()
 	{

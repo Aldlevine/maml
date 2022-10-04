@@ -13,7 +13,7 @@ public abstract partial class Graphic : ObservableObject
 
 public partial class GeometryGraphic : Graphic
 {
-	public static BasicProperty<GeometryGraphic, Geometry?> GeometryProperty = new(null);
+	public static BasicProperty<GeometryGraphic, Geometry?> GeometryProperty { get; } = new(null);
 	public Geometry? Geometry
 	{
 		get => GeometryProperty[this].Get();

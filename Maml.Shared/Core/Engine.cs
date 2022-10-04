@@ -7,7 +7,7 @@ namespace Maml;
 
 public abstract class EngineBase
 {
-	public abstract Window Window { get; protected set; }
+	public Window Window { get; protected set; } = default!;
 	public Animator Animator { get; } = new();
 	public abstract void Run();
 
@@ -38,5 +38,5 @@ public abstract class EngineBase
 public partial class Engine : EngineBase
 {
 	private static Engine? singleton { get; set; }
-	public static Engine Singleton => singleton ?? (singleton = new Engine());
+	public static Engine Singleton => singleton ??= new Engine();
 }

@@ -33,8 +33,6 @@ public abstract class Binding<T> : Binding
 	public abstract bool Set(T value);
 	public abstract event EventHandler<LazyGet<T>>? Changed;
 
-	public void SetDirty(object? sender, LazyGet<T> value) => SetDirty();
-
 	public override void BindTo(Binding from) => BindTo((Binding<T>)from);
 	protected List<Binding<T>> boundTo { get; init; } = new();
 	protected List<Binding<T>> boundFrom { get; init; } = new();
@@ -66,7 +64,7 @@ public abstract class Binding<O, T> : Binding<T> where O : ObservableObject
 		{
 			throw new NullReferenceException();
 		}
-		var property = new BasicProperty<O, R>(default(R)!);
+		var property = new BasicProperty<O, R>(default!);
 		var binding = new BasicBinding<O, R>(@object, property);
 		Changed += (s, v) =>
 		{
@@ -162,7 +160,7 @@ public class ComputedBinding<O, T> : Binding<O, T> where O : ObservableObject
 		{
 			if (!Object.TryGetTarget(out var @object))
 			{
-				return default(T)!;
+				return default!;
 				//throw new NullReferenceException();
 			}
 			Value = ComputedProperty.Get(@object);

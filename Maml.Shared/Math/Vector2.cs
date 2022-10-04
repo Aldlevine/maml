@@ -30,17 +30,17 @@ public partial struct Vector2 : IEquatable<Vector2>
 	public override string? ToString() => $"({X},{Y})";
 
 	// Math
-	public static Vector2 operator +(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X + rhs.X, lhs.Y + rhs.Y);
-	public static Vector2 operator -(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X - rhs.X, lhs.Y - rhs.Y);
-	public static Vector2 operator *(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X * rhs.X, lhs.Y * rhs.Y);
-	public static Vector2 operator /(Vector2 lhs, Vector2 rhs) => new Vector2(lhs.X / rhs.X, lhs.Y / rhs.Y);
+	public static Vector2 operator +(Vector2 lhs, Vector2 rhs) => new(lhs.X + rhs.X, lhs.Y + rhs.Y);
+	public static Vector2 operator -(Vector2 lhs, Vector2 rhs) => new(lhs.X - rhs.X, lhs.Y - rhs.Y);
+	public static Vector2 operator *(Vector2 lhs, Vector2 rhs) => new(lhs.X * rhs.X, lhs.Y * rhs.Y);
+	public static Vector2 operator /(Vector2 lhs, Vector2 rhs) => new(lhs.X / rhs.X, lhs.Y / rhs.Y);
 
-	public static Vector2 operator +(Vector2 lhs, double rhs) => new Vector2(lhs.X + rhs, lhs.Y + rhs);
-	public static Vector2 operator -(Vector2 lhs, double rhs) => new Vector2(lhs.X - rhs, lhs.Y - rhs);
-	public static Vector2 operator *(Vector2 lhs, double rhs) => new Vector2(lhs.X * rhs, lhs.Y * rhs);
-	public static Vector2 operator /(Vector2 lhs, double rhs) => new Vector2(lhs.X / rhs, lhs.Y / rhs);
+	public static Vector2 operator +(Vector2 lhs, double rhs) => new(lhs.X + rhs, lhs.Y + rhs);
+	public static Vector2 operator -(Vector2 lhs, double rhs) => new(lhs.X - rhs, lhs.Y - rhs);
+	public static Vector2 operator *(Vector2 lhs, double rhs) => new(lhs.X * rhs, lhs.Y * rhs);
+	public static Vector2 operator /(Vector2 lhs, double rhs) => new(lhs.X / rhs, lhs.Y / rhs);
 
-	public static Vector2 operator -(Vector2 v) => new Vector2(-v.X, -v.Y);
+	public static Vector2 operator -(Vector2 v) => new(-v.X, -v.Y);
 
 	public double LengthSq() => X * X + Y * Y;
 	public double Length() => System.Math.Sqrt(LengthSq());
@@ -50,8 +50,5 @@ public partial struct Vector2 : IEquatable<Vector2>
 		return new(X / len, Y / len);
 	}
 
-	public static Vector2 Lerp(Vector2 from, Vector2 to, double t)
-	{
-		return new(Unit.Lerp(from.X, to.X, t), Unit.Lerp(from.Y, to.Y, t));
-	}
+	public static Vector2 Lerp(Vector2 from, Vector2 to, double t) => new(Unit.Lerp(from.X, to.X, t), Unit.Lerp(from.Y, to.Y, t));
 }

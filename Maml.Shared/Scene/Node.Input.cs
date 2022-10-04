@@ -5,7 +5,7 @@ namespace Maml.Scene;
 
 public partial class Node
 {
-	private object pointerUpLock = new();
+	private object pointerUpLock { get; } = new();
 	private event EventHandler<PointerEvent>? pointerUp = default;
 	public event EventHandler<PointerEvent>? PointerUp
 	{
@@ -31,7 +31,7 @@ public partial class Node
 		}
 	}
 
-	private object pointerDownLock = new();
+	private object pointerDownLock { get; } = new();
 	private event EventHandler<PointerEvent>? pointerDown = default;
 	public event EventHandler<PointerEvent>? PointerDown
 	{
@@ -57,7 +57,7 @@ public partial class Node
 		}
 	}
 
-	private object pointerMoveLock = new();
+	private object pointerMoveLock { get; } = new();
 	private event EventHandler<PointerEvent>? pointerMove = default;
 	public event EventHandler<PointerEvent>? PointerMove
 	{
@@ -85,7 +85,7 @@ public partial class Node
 		}
 	}
 
-	private object pointerEnterLock = new();
+	private object pointerEnterLock { get; } = new();
 	private event EventHandler<PointerEvent>? pointerEnter = default;
 	public event EventHandler<PointerEvent>? PointerEnter
 	{
@@ -113,7 +113,7 @@ public partial class Node
 		}
 	}
 
-	private object pointerExitLock = new();
+	private object pointerExitLock { get; } = new();
 	private event EventHandler<PointerEvent>? pointerExit = default;
 	public event EventHandler<PointerEvent>? PointerExit
 	{

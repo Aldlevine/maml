@@ -10,7 +10,6 @@ namespace Maml;
 public partial class Engine
 {
 	#region Abstract
-	public override Window Window { get; protected set; } = null!;
 
 	public override void Run()
 	{

@@ -3,6 +3,7 @@ using Maml.Math;
 using Maml.Observable;
 using Maml.Scene;
 using System;
+using System.Collections.Generic;
 
 namespace Maml;
 
@@ -12,7 +13,7 @@ public abstract class WindowBase : ObservableObject
 	public SceneTree SceneTree { get; init; } = new();
 
 	// TODO: this might need to be implementation specific
-	public static ComputedProperty<WindowBase, Vector2> SizeProperty = new()
+	public static ComputedProperty<WindowBase, Vector2> SizeProperty { get; } = new()
 	{
 		Get = (window) => window.GetSize(),
 		Cached = false,
@@ -32,12 +33,29 @@ public abstract class WindowBase : ObservableObject
 	public abstract event EventHandler<FocusEvent>? Blur;
 	public abstract event EventHandler<DrawEvent>? Draw;
 
+	private static int CurrentWindowID { get; set; } = 0;
+	protected int windowID = CurrentWindowID++;
+	// TODO: This should be weak ref
+	private static readonly Dictionary<int, Window> Windows = new();
+	protected static void RegisterWindow(Window window) => Windows[window.windowID] = window;
+	protected static Window? GetWindow(int id)
+	{
+		if (Windows.TryGetValue(id, out var window))
+		{
+			return window;
+		}
+		return null;
+	}
+
 	public WindowBase()
 	{
-		Engine.Singleton.Animator.NextFrame += (s, e) =>
-		{
-			SizeProperty[this].SetDirty();
-		};
+		RegisterWindow((Window)this);
+		Engine.Singleton.Animator.NextFrame += (s, e) => SizeProperty[this].SetDirty();
+	}
+
+	~WindowBase()
+	{
+		Windows.Remove(windowID);
 	}
 }
 

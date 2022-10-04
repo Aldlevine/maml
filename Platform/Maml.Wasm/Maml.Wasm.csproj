@@ -11,17 +11,12 @@
 		<WasmEnableES6>true</WasmEnableES6>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
+    <StartupObject>Maml.Program</StartupObject>
+		<RootNamespace>Maml</RootNamespace>
 	</PropertyGroup>
 
 
 	<!-- TypeScript -->
-	<PropertyGroup>
-		<TypeScriptOutDir></TypeScriptOutDir>
-		<TypeScriptTarget>ES2017</TypeScriptTarget>
-		<TypeScriptNoImplicitAny>true</TypeScriptNoImplicitAny>
-		<TypeScriptRemoveComments>false</TypeScriptRemoveComments>
-	</PropertyGroup>
-
 	<PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	</PropertyGroup>
 
@@ -34,15 +29,16 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<Content Include="tsconfig.json"></Content>
 	</ItemGroup>
 	<!-- /TypeScript -->
 
 	<!-- Dependencies -->
 	<ItemGroup>
-		<None Include="**/*.js">
+		<None Include="wwwroot/**/*.js">
 			<DependentUpon>%(Filename).ts</DependentUpon>
 		</None>
-		<None Include="**/*.js.map">
+		<None Include="wwwroot/**/*.js.map">
 			<DependentUpon>%(Filename)</DependentUpon>
 		</None>
 	</ItemGroup>
@@ -53,8 +49,8 @@
 		<WasmExtraFilesToDeploy Include="wwwroot/**/*.html" />
 		<WasmExtraFilesToDeploy Include="wwwroot/**/*.js" />
 		<WasmExtraFilesToDeploy Include="wwwroot/**/*.json" />
-		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="**/*.ts" />
-		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="**/*.js.map" />
+		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="wwwroot/**/*.ts" />
+		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="wwwroot/**/*.js.map" />
 	</ItemGroup>
 	<!-- /ExtraFiles -->
 
@@ -67,7 +63,7 @@
 		<WasmExtraFilesToDeploy Remove="bin\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <WasmExtraFilesToDeploy Remove="wwwroot\viewport.ts" />
+	  <WasmExtraFilesToDeploy Remove="wwwroot\window.ts" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="wwwroot\index.html">

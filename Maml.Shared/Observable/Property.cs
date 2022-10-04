@@ -32,13 +32,10 @@ public abstract class Property<O, T> : Property<T> where O : ObservableObject
 	}
 
 	public override void RemoveBinding(ObservableObject @object) => RemoveBinding((O)@object);
-	public void RemoveBinding(O @object)
-	{
-		bindings.Remove(@object.id, out _);
-	}
+	public void RemoveBinding(O @object) => bindings.Remove(@object.id, out _);
 
 	protected abstract Binding<O, T> CreateBinding(O @object);
-	private ConcurrentDictionary<ulong, Binding<O, T>> bindings = new();
+	private ConcurrentDictionary<ulong, Binding<O, T>> bindings { get; } = new();
 }
 #endregion
 
