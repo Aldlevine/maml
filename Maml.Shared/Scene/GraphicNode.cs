@@ -1,17 +1,14 @@
 ﻿using Maml.Graphics;
+using Maml.Observable;
 
 namespace Maml.Scene;
 
 public class GraphicNode : Node
 {
-	private Graphic? graphic;
+	public static BasicProperty<GraphicNode, Graphic?> GraphicProperty = new(null);
 	public Graphic? Graphic
 	{
-		get => graphic;
-		set
-		{
-			if (graphic == value) return;
-			graphic = value;
-		}
+		get => GraphicProperty[this].Get();
+		set => GraphicProperty[this].Set(value);
 	}
 }

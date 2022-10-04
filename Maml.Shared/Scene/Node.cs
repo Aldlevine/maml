@@ -36,11 +36,8 @@ public partial class Node : ObservableObject
 		}
 	}
 	public string Name { get; set; } = string.Empty;
-	public int ZIndex { get; set; } = 0;
-	public IShape? HitShape { get; set; } = default;
 
 	// TODO: Notify tree when child is added
-	// Children
 	private NodeCollection children = new();
 	public NodeCollection Children
 	{
@@ -51,8 +48,24 @@ public partial class Node : ObservableObject
 			children.ParentNode = this;
 		}
 	}
+	public override string? ToString() => $"{GetType().Name}#{Name}";
 
-	// ******** Transform ********
+	#region Properties
+	public static BasicProperty<Node, int> ZIndexProperty = new(0);
+	public int ZIndex
+	{
+		get => ZIndexProperty[this].Get();
+		set => ZIndexProperty[this].Set(value);
+	}
+
+	public static BasicProperty<Node, IShape?> HitShapeProperty = new(null);
+	public IShape? HitShape
+	{
+		get => HitShapeProperty[this].Get();
+		set => HitShapeProperty[this].Set(value);
+	}
+
+	// ******** Local ********
 	public static BasicProperty<Node, Transform> TransformProperty = new(Transform.Identity);
 	public Transform Transform
 	{
@@ -99,7 +112,7 @@ public partial class Node : ObservableObject
 		set => ScaleProperty[this].Set(value);
 	}
 
-	// ******** GlobalTransform ********
+	// ******** Global ********
 	public static ComputedProperty<Node, Transform> GlobalTransformProperty = new()
 	{
 		Get = (Node self) => self.getGlobalTransform(),
@@ -160,6 +173,5 @@ public partial class Node : ObservableObject
 		get => GlobalScaleProperty[this].Get();
 		set => GlobalScaleProperty[this].Set(value);
 	}
-
-	public override string? ToString() => $"{GetType().Name}#{Name}";
+	#endregion
 }
