@@ -14,16 +14,27 @@ public partial class Node : ObservableObject
 	public Node()
 	{
 		Children.ParentNode = this;
-		GlobalTransformProperty[this].Changed += (s, e) =>
-		{
-			foreach (var child in Children)
-			{
-				GlobalTransformProperty[child].SetDirty(s, e);
-			}
-		};
 	}
 
-	public Node? Parent { get; private set; }
+	private Node? parent;
+	public Node? Parent
+	{
+		get => parent;
+		private set
+		{
+			if (parent == value) { return; }
+
+			if (parent != null)
+			{
+				GlobalTransformProperty[this].UndependOn(GlobalTransformProperty[parent]);
+			}
+			parent = value;
+			if (parent != null)
+			{
+				GlobalTransformProperty[this].DependOn(GlobalTransformProperty[parent]);
+			}
+		}
+	}
 	public string Name { get; set; } = string.Empty;
 	public int ZIndex { get; set; } = 0;
 	public IShape? HitShape { get; set; } = default;

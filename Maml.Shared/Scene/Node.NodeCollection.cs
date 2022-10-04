@@ -53,7 +53,15 @@ partial class Node
 			((ICollection<Node>)list).Add(item);
 		}
 
-		public void Clear() => ((ICollection<Node>)list).Clear();
+		// public void Clear() => ((ICollection<Node>)list).Clear();
+		public void Clear()
+		{
+			foreach (var item in list)
+			{
+				item.Parent = null;
+			}
+			((ICollection<Node>) list).Clear();
+		}
 		public bool Contains(Node item) => ((ICollection<Node>)list).Contains(item);
 		public void CopyTo(Node[] array, int arrayIndex) => ((ICollection<Node>)list).CopyTo(array, arrayIndex);
 		public IEnumerator<Node> GetEnumerator() => ((IEnumerable<Node>)list).GetEnumerator();

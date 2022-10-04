@@ -6,7 +6,7 @@ namespace Maml.Scene;
 
 public partial class Node
 {
-	private Mutex pointerUpLock = new();
+	private object pointerUpLock = new();
 	private event EventHandler<PointerEvent>? pointerUp = default;
 	public event EventHandler<PointerEvent>? PointerUp
 	{
@@ -32,7 +32,7 @@ public partial class Node
 		}
 	}
 
-	private Mutex pointerDownLock = new();
+	private object pointerDownLock = new();
 	private event EventHandler<PointerEvent>? pointerDown = default;
 	public event EventHandler<PointerEvent>? PointerDown
 	{
@@ -58,7 +58,7 @@ public partial class Node
 		}
 	}
 
-	private Mutex pointerMoveLock = new();
+	private object pointerMoveLock = new();
 	private event EventHandler<PointerEvent>? pointerMove = default;
 	public event EventHandler<PointerEvent>? PointerMove
 	{
@@ -76,9 +76,9 @@ public partial class Node
 			lock (pointerMoveLock)
 			{
 				pointerMove -= value;
-				if (pointerExit?.GetInvocationList().Length == 0)
-					if (pointerEnter?.GetInvocationList().Length == 0)
-						if (pointerMove?.GetInvocationList().Length == 0)
+				if ((pointerExit?.GetInvocationList().Length ?? 0) == 0)
+					if ((pointerEnter?.GetInvocationList().Length ?? 0) == 0)
+						if ((pointerMove?.GetInvocationList().Length ?? 0) == 0)
 						{
 							Window.PointerMove -= HandlePointerMove;
 						}
@@ -86,7 +86,7 @@ public partial class Node
 		}
 	}
 
-	private Mutex pointerEnterLock = new();
+	private object pointerEnterLock = new();
 	private event EventHandler<PointerEvent>? pointerEnter = default;
 	public event EventHandler<PointerEvent>? PointerEnter
 	{
@@ -104,9 +104,9 @@ public partial class Node
 			lock (pointerEnterLock)
 			{
 				pointerEnter -= value;
-				if (pointerExit?.GetInvocationList().Length == 0)
-					if (pointerEnter?.GetInvocationList().Length == 0)
-						if (pointerMove?.GetInvocationList().Length == 0)
+				if ((pointerExit?.GetInvocationList().Length ?? 0) == 0)
+					if ((pointerEnter?.GetInvocationList().Length ?? 0) == 0)
+						if ((pointerMove?.GetInvocationList().Length ?? 0) == 0)
 						{
 							Window.PointerMove -= HandlePointerMove;
 						}
@@ -114,7 +114,7 @@ public partial class Node
 		}
 	}
 
-	private Mutex pointerExitLock = new();
+	private object pointerExitLock = new();
 	private event EventHandler<PointerEvent>? pointerExit = default;
 	public event EventHandler<PointerEvent>? PointerExit
 	{
@@ -132,9 +132,9 @@ public partial class Node
 			lock (pointerExitLock)
 			{
 				pointerExit -= value;
-				if (pointerExit?.GetInvocationList().Length == 0)
-					if (pointerEnter?.GetInvocationList().Length == 0)
-						if (pointerMove?.GetInvocationList().Length == 0)
+				if ((pointerExit?.GetInvocationList().Length ?? 0) == 0)
+					if ((pointerEnter?.GetInvocationList().Length ?? 0) == 0)
+						if ((pointerMove?.GetInvocationList().Length ?? 0) == 0)
 						{
 							Window.PointerMove -= HandlePointerMove;
 						}
