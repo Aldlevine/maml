@@ -1,6 +1,5 @@
 ﻿using Maml.Events;
 using System;
-using System.Threading;
 
 namespace Maml.Scene;
 

@@ -1,21 +1,21 @@
-﻿using Maml.Math;
-using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Maml.Observable;
 
 #region Abstract
+public delegate void PropertyChanged<O, T>(O @object) where O : ObservableObject;
 public abstract class Property
 {
 	public abstract Binding GetBinding(ObservableObject @object);
 	public abstract void RemoveBinding(ObservableObject @object);
 }
 
-public abstract class Property<T>: Property { }
-
-public abstract class Property<O, T>: Property<T> where O: ObservableObject
+public abstract class Property<T> : Property { }
+public abstract class Property<O, T> : Property<T> where O : ObservableObject
 {
+	public PropertyChanged<O, T>? Changed;
+
 	public Binding<O, T> this[O @object] => GetBinding(@object);
 
 	public override Binding GetBinding(ObservableObject @object) => GetBinding((O)@object);
@@ -54,12 +54,12 @@ public class BasicProperty<O, T> : Property<O, T> where O : ObservableObject
 #region Computed Property
 public delegate T ComputedPropertyGetter<O, T>(O @object) where O : ObservableObject;
 public delegate void ComputedPropertySetter<O, T>(O @object, T value) where O : ObservableObject;
-public delegate Binding[] ComputedPropertyInitter<O, T>(O @object) where O : ObservableObject;
+public delegate Binding[] ComputedPropertyDependencies<O, T>(O @object) where O : ObservableObject;
 public class ComputedProperty<O, T> : Property<O, T> where O : ObservableObject
 {
 	public ComputedPropertyGetter<O, T>? Get;
 	public ComputedPropertySetter<O, T>? Set;
-	public ComputedPropertyInitter<O, T>? Dependencies;
+	public ComputedPropertyDependencies<O, T>? Dependencies;
 	public bool Cached = true;
 	protected override Binding<O, T> CreateBinding(O @object) => new ComputedBinding<O, T>(@object, this);
 }

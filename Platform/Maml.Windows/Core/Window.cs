@@ -1,10 +1,8 @@
 ﻿using Maml.Events;
 using Maml.Math;
-using Maml.Observable;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Gdi;
@@ -66,11 +64,11 @@ public partial class Window
 		return null;
 	}
 
-	private static void RegisterWindow(Window window) => Windows[window.id] = window;
+	private static void RegisterWindow(Window window) => Windows[window.windowID] = window;
 
 	internal HWND hWnd;
 	private Rect clientRect;
-	private int id = CurrentWindowID++;
+	private int windowID = CurrentWindowID++;
 
 	internal bool ImmediateMode = false;
 	private RenderTarget? syncRenderTarget;
@@ -105,7 +103,7 @@ public partial class Window
 		}
 	}
 
-	unsafe internal Window(): base()
+	unsafe internal Window() : base()
 	{
 		RegisterWindow(this);
 
@@ -136,15 +134,13 @@ public partial class Window
 			throw new Exception("CreateWindow Failed " + err);
 		}
 
-		SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, id);
+		SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, windowID);
 
 		SetWindowPos(
 			hWnd,
 			HWND.Null,
 			0,
 			0,
-			//(int)System.Math.Ceiling(1440 * DpiRatio),
-			//(int)System.Math.Ceiling(810 * DpiRatio),
 			(int)System.Math.Ceiling(1440.0),
 			(int)System.Math.Ceiling(810.0),
 			SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
@@ -154,7 +150,7 @@ public partial class Window
 
 	~Window()
 	{
-		Windows.Remove(id);
+		Windows.Remove(windowID);
 	}
 
 	unsafe private void CreateRenderTarget(ID2D1HwndRenderTarget** ppRenderTarget, D2D1_PRESENT_OPTIONS presentMode)
@@ -162,8 +158,6 @@ public partial class Window
 		var dpi = GetDpiForWindow(hWnd);
 		D2D1_RENDER_TARGET_PROPERTIES renderTargetProps = new()
 		{
-			//dpiX = stdDpi,
-			//dpiY = stdDpi,
 			dpiX = dpi,
 			dpiY = dpi,
 		};
@@ -240,7 +234,7 @@ public partial class Window
 
 	unsafe internal void HandleResize()
 	{
-		lock(Engine.Singleton.EventMutex)
+		lock (Engine.Singleton.EventMutex)
 		{
 			float dpi = GetDpiForWindow(hWnd);
 			if (syncRenderTarget != null)
@@ -384,7 +378,6 @@ public partial class Window
 
 		return result;
 	}
-
 
 	#endregion
 }

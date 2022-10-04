@@ -1,11 +1,11 @@
-﻿using Maml.Events;
+﻿using Maml.Observable;
 using System;
 
 namespace Maml.Graphics;
-public abstract partial class Resource : IDisposable, IChanged
+public abstract partial class Resource : ObservableObject, IDisposable
 {
-	public event EventHandler<ChangedEvent>? Changed;
-	public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
+	//public event EventHandler<ChangedEvent>? Changed;
+	//public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
 
 	public bool IsDirty { get; internal set; }
 

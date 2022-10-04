@@ -1,6 +1,5 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
-using Maml.Scene;
 
 namespace Maml;
 
@@ -29,4 +28,4 @@ public abstract class RenderTargetBase
 	}
 }
 
-public partial class RenderTarget: RenderTargetBase { }
+public partial class RenderTarget : RenderTargetBase { }

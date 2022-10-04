@@ -5,7 +5,7 @@ using Windows.Win32.Graphics.Direct2D;
 
 namespace Maml;
 
-public partial class RenderTarget: IDisposable
+public partial class RenderTarget : IDisposable
 {
 	#region Abstract
 	unsafe public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
@@ -26,6 +26,7 @@ public partial class RenderTarget: IDisposable
 		}
 	}
 
+	// TODO: Support stroke style
 	unsafe public override void DrawGeometry(Geometry geometry, Stroke stroke)
 	{
 		switch (geometry)

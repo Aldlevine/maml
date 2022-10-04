@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Maml.Graphics;
 
-[StructLayout(LayoutKind.Explicit, Size=16)]
+[StructLayout(LayoutKind.Explicit, Size = 16)]
 public partial struct Color : IEquatable<Color>
 {
 	[FieldOffset(0)] public float R;

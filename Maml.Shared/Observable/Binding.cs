@@ -94,6 +94,11 @@ public abstract class Binding<O, T> : Binding<T> where O : ObservableObject
 			b.SetDirty();
 		}
 
+		if (Object.TryGetTarget(out var @object))
+		{
+			Property.Changed?.Invoke(@object);
+		}
+
 		Changed?.Invoke(this, new LazyGet<O, T>(this));
 	}
 }

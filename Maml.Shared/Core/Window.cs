@@ -41,4 +41,4 @@ public abstract class WindowBase : ObservableObject
 	}
 }
 
-public partial class Window: WindowBase { }
+public partial class Window : WindowBase { }

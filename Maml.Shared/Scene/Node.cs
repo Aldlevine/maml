@@ -1,7 +1,6 @@
 ﻿using Maml.Animation;
 using Maml.Math;
 using Maml.Observable;
-using System;
 
 namespace Maml.Scene;
 

@@ -35,7 +35,7 @@ public abstract class EngineBase
 	}
 }
 
-public partial class Engine: EngineBase
+public partial class Engine : EngineBase
 {
 	private static Engine? singleton { get; set; }
 	public static Engine Singleton => singleton ?? (singleton = new Engine());

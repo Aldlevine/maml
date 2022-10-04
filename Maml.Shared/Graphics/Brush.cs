@@ -1,25 +1,22 @@
-﻿namespace Maml.Graphics;
+﻿using Maml.Observable;
 
-public abstract partial class Brush : Resource
-{
+namespace Maml.Graphics;
 
-}
+public abstract partial class Brush : Resource { }
 
 public partial class ColorBrush : Brush
 {
-	private Color _Color;
+	public static BasicProperty<ColorBrush, Color> ColorProperty = new(default)
+	{
+		Changed = (ColorBrush self) =>
+		{
+			self.IsDirty = true;
+		},
+	};
 	public Color Color
 	{
-		get => _Color;
-		set
-		{
-			if (_Color != value)
-			{
-				_Color = value;
-				IsDirty = true;
-				RaiseChanged(this, new());
-			}
-		}
+		get => ColorProperty[this].Get();
+		set => ColorProperty[this].Set(value);
 	}
 
 	public ColorBrush() : base() { }

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Maml.Scene;
@@ -60,7 +59,7 @@ partial class Node
 			{
 				item.Parent = null;
 			}
-			((ICollection<Node>) list).Clear();
+			((ICollection<Node>)list).Clear();
 		}
 		public bool Contains(Node item) => ((ICollection<Node>)list).Contains(item);
 		public void CopyTo(Node[] array, int arrayIndex) => ((ICollection<Node>)list).CopyTo(array, arrayIndex);

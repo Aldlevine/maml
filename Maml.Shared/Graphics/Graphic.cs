@@ -1,15 +1,11 @@
-﻿using Maml.Events;
-using Maml.Math;
-using System;
+﻿using Maml.Math;
+using Maml.Observable;
 using System.Collections.Generic;
 
 namespace Maml.Graphics;
 
-public abstract partial class Graphic : IChanged
+public abstract partial class Graphic : ObservableObject
 {
-	public event EventHandler<ChangedEvent>? Changed;
-	public void RaiseChanged(object? sender, ChangedEvent e) => Changed?.Invoke(sender, e);
-
 	public abstract void Draw(RenderTargetBase renderTarget, Transform transform);
 
 	// public abstract Rect GetBoundingRect(Transform transform);
@@ -17,17 +13,11 @@ public abstract partial class Graphic : IChanged
 
 public partial class GeometryGraphic : Graphic
 {
-	private Geometry? geometry;
+	public static BasicProperty<GeometryGraphic, Geometry?> GeometryProperty = new(null);
 	public Geometry? Geometry
 	{
-		get => geometry;
-		set
-		{
-			if (geometry == value) { return; }
-			if (geometry != null) { geometry.Changed -= RaiseChanged; }
-			geometry = value;
-			if (geometry != null) { geometry.Changed += RaiseChanged; }
-		}
+		get => GeometryProperty[this].Get();
+		set => GeometryProperty[this].Set(value);
 	}
 
 	// TODO: Emit Changed

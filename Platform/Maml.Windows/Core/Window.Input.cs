@@ -14,7 +14,7 @@ partial class Window
 	private Vector2 previousPointerPosition = Vector2.Zero;
 	internal void HandlePointer(WPARAM wParam, LPARAM lParam)
 	{
-		lock(Engine.Singleton.EventMutex)
+		lock (Engine.Singleton.EventMutex)
 		{
 			uint pointerId = (uint)LoWord(wParam);
 			GetPointerInfo(pointerId, out var pointerInfo);

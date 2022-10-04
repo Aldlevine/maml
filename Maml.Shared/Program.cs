@@ -1,10 +1,4 @@
-﻿using Maml.Graphics;
-using Maml.Math;
-using Maml.Observable;
-using Maml.Scene;
-using System;
-
-namespace Maml;
+﻿namespace Maml;
 
 public static class Program
 {

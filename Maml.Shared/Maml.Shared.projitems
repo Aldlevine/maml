@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Animation\Animator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\IChanged.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Color.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Engine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RenderTarget.cs" />

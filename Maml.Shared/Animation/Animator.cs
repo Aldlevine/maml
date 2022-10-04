@@ -1,6 +1,5 @@
 ﻿using Maml.Events;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +27,7 @@ public class Animator
 	{
 		add
 		{
-			lock(frameMutex)
+			lock (frameMutex)
 			{
 				frame += value;
 				value?.Invoke(this, new()
@@ -47,7 +46,7 @@ public class Animator
 		}
 		remove
 		{
-			lock(frameMutex)
+			lock (frameMutex)
 			{
 				if (frame != null && Array.IndexOf(frame.GetInvocationList(), value) > -1)
 				{
