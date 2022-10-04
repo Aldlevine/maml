@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace Maml.Graphics;
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Explicit, Size=16)]
 public partial struct Color : IEquatable<Color>
 {
-	public float R;
-	public float G;
-	public float B;
-	public float A;
+	[FieldOffset(0)] public float R;
+	[FieldOffset(4)] public float G;
+	[FieldOffset(8)] public float B;
+	[FieldOffset(12)] public float A;
 
 	public Color(uint hex)
 	{
@@ -36,6 +36,7 @@ public partial struct Color : IEquatable<Color>
 		B = (float)Unit.Lerp(lhs.B, rhs.B, t),
 		A = (float)Unit.Lerp(lhs.A, rhs.A, t),
 	};
+
 	public override bool Equals(object? obj) => obj is Color color && Equals(color);
 	public bool Equals(Color other) => R == other.R && G == other.G && B == other.B && A == other.A;
 	public override int GetHashCode() => HashCode.Combine(R, G, B, A);
