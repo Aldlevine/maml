@@ -11,4 +11,6 @@ public class GraphicNode : Node
 		get => GraphicProperty[this].Get();
 		set => GraphicProperty[this].Set(value);
 	}
+
+	public virtual void Draw(RenderTarget renderTarget) => Graphic?.Draw(renderTarget, GlobalTransform);
 }

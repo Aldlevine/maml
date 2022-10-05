@@ -22,8 +22,10 @@ public partial class Window : WindowBase
 	public override event EventHandler<FocusEvent>? Blur;
 	public override event EventHandler<DrawEvent>? Draw;
 
-	private Vector2 windowSize = Vector2.Zero;
+	private Vector2 windowSize = baseWindowSize;
 	protected override Vector2 GetSize() => windowSize;
+
+	internal static Vector2 baseWindowSize { get; private set; } = Vector2.Zero;
 
 	public Window()
 	{
@@ -34,6 +36,7 @@ public partial class Window : WindowBase
 	[SuppressMessage("Style", "IDE0022:Use expression body for methods", Justification = "Not supported for JSExport")]
 	internal static void HandleResize(int windowID, int width, int height)
 	{
+		baseWindowSize = new(width, height);
 		GetWindow(windowID)?.HandleResize(width, height);
 	}
 

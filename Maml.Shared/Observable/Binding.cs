@@ -15,6 +15,7 @@ public abstract class Binding
 	{
 		dependFrom.Add(from);
 		from.dependTo.Add(this);
+		SetDirty();
 	}
 
 	public void UndependOn(Binding from)

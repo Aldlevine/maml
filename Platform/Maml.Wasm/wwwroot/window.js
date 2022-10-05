@@ -13,9 +13,16 @@ class MamlWindow {
         return __awaiter(this, void 0, void 0, function* () {
             wasm.setModuleImports("window.js", this);
             this.interop = yield wasm.getAssemblyExports("Maml.Wasm", "Maml.Window");
-            window.onresize = (_evt) => {
-                this.interop.HandleResize(0, window.innerWidth, window.innerHeight);
-            };
+            window.onorientationchange =
+                window.onresize = (_evt) => {
+                    this.interop.HandleResize(0, window.innerWidth, window.innerHeight);
+                    const canvas = document.getElementById("canvas");
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    canvas.style.width = `${window.innerWidth}px`;
+                    canvas.style.height = `${window.innerHeight}px`;
+                };
+            window.onresize(null);
             window.onpointermove = (evt) => {
                 this.interop.HandlePointerMove(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
             };

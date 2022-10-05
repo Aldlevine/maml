@@ -88,8 +88,6 @@ public class LineGrid : Node
 		get => LineDrawLayersMajorProperty[this].Get();
 		set => LineDrawLayersMajorProperty[this].Set(value);
 	}
-
-	// public Transform MyTransform { get; set; } = Transform.Identity;
 	#endregion
 
 	public LineGrid()
@@ -109,7 +107,7 @@ public class LineGrid : Node
 		SizeProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
 		MinorSpacingProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
 		MajorIntervalProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
-		Engine.QueueDeferred(UpdateGrid);
+		//Engine.QueueDeferred(UpdateGrid);
 	}
 
 	private void UpdateDrawLayers()

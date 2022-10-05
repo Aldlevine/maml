@@ -43,7 +43,7 @@ public class SceneTree
 		{
 			if (node is GraphicNode graphicNode)
 			{
-				graphicNode.Graphic?.Draw(renderTarget, node.GlobalTransform);
+				graphicNode.Draw(renderTarget);
 			}
 		}
 	}

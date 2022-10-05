@@ -73,5 +73,13 @@ public partial class RenderTarget
 
 	[JSImport("setTransform", "render-target.js")]
 	private static partial double[] SetTransform(int id, double[] matrix);
+
+	[JSImport("releaseBrush", "render-target.js")]
+	private static partial void ReleaseBrush(int id, int brushId);
+	internal void ReleaseBrush(int brushId) => ReleaseBrush(CanvasId, brushId);
+
+	[JSImport("makeColorBrush", "render-target.js")]
+	private static partial int MakeColorBrush(int id, string color);
+	internal int MakeColorBrush(Color color) => MakeColorBrush(CanvasId, color.ToCSSColor());
 	#endregion
 }

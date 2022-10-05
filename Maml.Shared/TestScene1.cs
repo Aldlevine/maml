@@ -108,7 +108,7 @@ internal class TestScene1 : Node
 			}),
 		};
 
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 50; i++)
 		{
 			Children.Add(new TwirlyNode
 			{
