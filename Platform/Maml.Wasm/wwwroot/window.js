@@ -12,18 +12,18 @@ class MamlWindow {
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             wasm.setModuleImports("window.js", this);
-            const interop = yield wasm.getAssemblyExports("Maml.Wasm", "Maml.Window");
-            window.onresize = (ev) => {
-                interop.HandleResize(0, window.innerWidth, window.innerHeight);
+            this.interop = yield wasm.getAssemblyExports("Maml.Wasm", "Maml.Window");
+            window.onresize = (_evt) => {
+                this.interop.HandleResize(0, window.innerWidth, window.innerHeight);
             };
-            window.onpointermove = (ev) => {
-                interop.HandlePointerMove(0, ev.clientX, ev.clientY, ev.button, ev.buttons);
+            window.onpointermove = (evt) => {
+                this.interop.HandlePointerMove(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
             };
-            window.onpointerdown = (ev) => {
-                interop.HandlePointerDown(0, ev.clientX, ev.clientY, ev.button, ev.buttons);
+            window.onpointerdown = (evt) => {
+                this.interop.HandlePointerDown(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
             };
-            window.onpointerup = (ev) => {
-                interop.HandlePointerUp(0, ev.clientX, ev.clientY, ev.button, ev.buttons);
+            window.onpointerup = (evt) => {
+                this.interop.HandlePointerUp(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
             };
         });
     }

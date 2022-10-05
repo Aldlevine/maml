@@ -2,9 +2,9 @@
 
 type MamlWindowInterop = {
 	HandleResize: (id: number, width: number, height: number) => void;
-	HandlePointerMove: (id: number, x: number, y: number, button: number, buttonMask: number) => void;
-	HandlePointerDown: (id: number, x: number, y: number, button: number, buttonMask: number) => void;
-	HandlePointerUp: (id: number, x: number, y: number, button: number, buttonMask: number) => void;
+	HandlePointerMove: (id: number, x: number, y: number, iButton: number, iButtonMask: number) => void;
+	HandlePointerDown: (id: number, x: number, y: number, iButton: number, iButtonMask: number) => void;
+	HandlePointerUp: (id: number, x: number, y: number, iButton: number, iButtonMask: number) => void;
 //	HandleWheel: (x: number, y: number, dx: number, dy: number) => void;
 //	HandleKeyDown: (key: string, echo: boolean) => void;
 //	HandleKeyUp: (key: string) => void;
@@ -13,25 +13,26 @@ type MamlWindowInterop = {
 }
 
 class MamlWindow {
+	private interop: MamlWindowInterop;
+
 	public async init(): Promise<void> {
 		wasm.setModuleImports("window.js", this);
+		this.interop = await wasm.getAssemblyExports<MamlWindowInterop>("Maml.Wasm", "Maml.Window");
 
-		const interop = await wasm.getAssemblyExports<MamlWindowInterop>("Maml.Wasm", "Maml.Window");
-
-		window.onresize = (ev: UIEvent) => {
-			interop.HandleResize(0, window.innerWidth, window.innerHeight);
+		window.onresize = (_evt: UIEvent) => {
+			this.interop.HandleResize(0, window.innerWidth, window.innerHeight);
 		};
 
-		window.onpointermove = (ev: PointerEvent) => {
-			interop.HandlePointerMove(0, ev.clientX, ev.clientY, ev.button, ev.buttons);
+		window.onpointermove = (evt: PointerEvent) => {
+			this.interop.HandlePointerMove(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
 		};
 
-		window.onpointerdown = (ev: PointerEvent) => {
-			interop.HandlePointerDown(0, ev.clientX, ev.clientY, ev.button, ev.buttons);
+		window.onpointerdown = (evt: PointerEvent) => {
+			this.interop.HandlePointerDown(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
 		};
 
-		window.onpointerup = (ev: PointerEvent) => {
-			interop.HandlePointerUp(0, ev.clientX, ev.clientY, ev.button, ev.buttons);
+		window.onpointerup = (evt: PointerEvent) => {
+			this.interop.HandlePointerUp(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
 		};
 	}
 }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices.JavaScript;
 namespace Maml;
 public partial class Window : WindowBase
 {
-	public override RenderTarget? RenderTarget => throw new NotImplementedException();
+	public override RenderTarget? RenderTarget { get; }
 
 	public override double DpiRatio => throw new NotImplementedException();
 
@@ -24,6 +24,11 @@ public partial class Window : WindowBase
 
 	private Vector2 windowSize = Vector2.Zero;
 	protected override Vector2 GetSize() => windowSize;
+
+	public Window()
+	{
+		RenderTarget = new RenderTarget() { CanvasId = 0, };
+	}
 
 	[JSExport]
 	[SuppressMessage("Style", "IDE0022:Use expression body for methods", Justification = "Not supported for JSExport")]

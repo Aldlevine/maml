@@ -1,14 +1,14 @@
 ﻿import { wasm } from "./wasm.js";
+import { renderTarget } from "./render-target.js";
 import { mamlWindow } from "./window.js";
-//import { viewport } from "./viewport.js";
-//import { input } from "./input.js";
+import { engine } from "./engine.js";
 
 Main();
 
 async function Main() {
 	await wasm.init();
-	//await viewport.init();
-	//await input.init();
+	await renderTarget.init();
 	await mamlWindow.init();
+	await engine.init();
 	await wasm.run("Maml.Wasm");
 }

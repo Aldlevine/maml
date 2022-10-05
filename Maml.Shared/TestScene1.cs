@@ -19,7 +19,7 @@ internal class TestScene1 : Node
 	public TestScene1() : base()
 	{
 		gridSizeBinding =
-		Window.SizeProperty[Window].With((Vector2 size) =>
+		WindowBase.SizeProperty[Window].With((Vector2 size) =>
 		{
 			var max = double.Max(size.X, size.Y);
 			var side = double.Sqrt(2 * max * max);
@@ -43,12 +43,12 @@ internal class TestScene1 : Node
 					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.25f } }, 1),
 				},
 				Transform = Transform.PixelIdentity,
-				[LineGrid.SizeProperty] = Window.SizeProperty[Window],
+				[LineGrid.SizeProperty] = WindowBase.SizeProperty[Window],
 			}),
 
 			(centeringNode = new Node
 			{
-				[Node.OriginProperty] = Window.SizeProperty[Window].With((Vector2 v) => v / 2),
+				[OriginProperty] = WindowBase.SizeProperty[Window].With((Vector2 v) => v / 2),
 				Children = new()
 				{
 					(rotatingNode = new Node
@@ -64,7 +64,7 @@ internal class TestScene1 : Node
 									new Stroke(new ColorBrush { Color = Colors.DarkViolet, }, 3),
 								},
 								[LineGrid.SizeProperty] = gridSizeBinding,
-								[Node.OriginProperty] = gridSizeBinding.With((Vector2 v) => v / -2),
+								[OriginProperty] = gridSizeBinding.With((Vector2 v) => v / -2),
 							}),
 						},
 					}),

@@ -15,6 +15,9 @@
 		<RootNamespace>Maml</RootNamespace>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<DefineConstants>$(DefineConstants);MAML_WASM</DefineConstants>
+	</PropertyGroup>
 
 	<!-- TypeScript -->
 	<PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,6 +33,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<Content Include="tsconfig.json"></Content>
+		<TypeScriptCompile Remove="bin\**" />
 	</ItemGroup>
 	<!-- /TypeScript -->
 
@@ -53,24 +57,6 @@
 		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="wwwroot/**/*.js.map" />
 	</ItemGroup>
 	<!-- /ExtraFiles -->
-
-	<!-- HideThisForSomeReason -->
-	<ItemGroup>
-		<Compile Remove="bin\**" />
-		<EmbeddedResource Remove="bin\**" />
-		<None Remove="bin\**" />
-		<TypeScriptCompile Remove="bin\**" />
-		<WasmExtraFilesToDeploy Remove="bin\**" />
-	</ItemGroup>
-	<ItemGroup>
-	  <WasmExtraFilesToDeploy Remove="wwwroot\window.ts" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Update="wwwroot\index.html">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
-	<!-- /HideThisForSomeReason -->
 
 	<Import Project="..\..\Maml.Shared\Maml.Shared.projitems" Label="Shared" />
 

@@ -177,6 +177,7 @@ public partial class Window
 		// Somehow need to notify Geometries and Brushes to release their stuff...
 	}
 
+	// TODO: Need to abstract out the window update stuff
 	internal void Redraw(bool forceUpdate)
 	{
 		InvalidateRect(hWnd, (RECT?)null, false);

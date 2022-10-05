@@ -15,6 +15,10 @@
     <RootNamespace>Maml</RootNamespace>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<DefineConstants>$(DefineConstants);MAML_WIN</DefineConstants>
+	</PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
   </PropertyGroup>

@@ -8,17 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { wasm } from "./wasm.js";
-import { renderTarget } from "./render-target.js";
-import { mamlWindow } from "./window.js";
-import { engine } from "./engine.js";
-Main();
-function Main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield wasm.init();
-        yield renderTarget.init();
-        yield mamlWindow.init();
-        yield engine.init();
-        yield wasm.run("Maml.Wasm");
-    });
+class Engine {
+    constructor() {
+        this.boundFrameRequestCallback = this.frameRequestCallback.bind(this);
+    }
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            wasm.setModuleImports("engine.js", this);
+            this.interop = yield wasm.getAssemblyExports("Maml.Wasm", "Maml.Engine");
+            requestAnimationFrame(this.boundFrameRequestCallback);
+        });
+    }
+    frameRequestCallback() {
+        this.interop.HandleAnimationFrame(0);
+        requestAnimationFrame(this.boundFrameRequestCallback);
+    }
 }
-//# sourceMappingURL=main.js.map
+export const engine = new Engine();
+//# sourceMappingURL=engine.js.map

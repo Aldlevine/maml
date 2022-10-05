@@ -1,20 +1,22 @@
 ﻿namespace Maml;
 
-public static class Program
+internal static class Program
 {
-	internal static void Main()
+	private static Engine Engine = Engine.Singleton;
+
+	private static void Main()
 	{
-		Engine.Singleton.Initialize();
+		Engine.Initialize();
+		Engine.Window.SceneTree.Root = new TestScene1();
 
-		Engine.Singleton.Window.SceneTree.Root = new TestScene1();
+#if MAML_WASM
+		Engine.Window.Resize += (s, e) => System.Console.WriteLine(e);
+		Engine.Window.PointerMove += (s, e) => System.Console.WriteLine("Move {0}", e);
+		Engine.Window.PointerDown += (s, e) => System.Console.WriteLine("Down {0}", e);
+		Engine.Window.PointerUp += (s, e) => System.Console.WriteLine("Up {0}", e);
+#endif
 
-		Engine.Singleton.Window.Resize += (s, e) => System.Console.WriteLine(e);
-		Engine.Singleton.Window.PointerMove += (s, e) => System.Console.WriteLine("Move {0}", e);
-		Engine.Singleton.Window.PointerDown += (s, e) => System.Console.WriteLine("Down {0}", e);
-		Engine.Singleton.Window.PointerUp += (s, e) => System.Console.WriteLine("Up {0}", e);
-
-		Engine.Singleton.Run();
-
-		Engine.Singleton.Dispose();
+		Engine.Run();
+		Engine.Dispose();
 	}
 }
