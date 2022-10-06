@@ -5,7 +5,7 @@
 		<TargetArchitecture>wasm</TargetArchitecture>
 		<TargetOS>Browser</TargetOS>
 		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-		<UseMonoRuntime>true</UseMonoRuntime>
+		<UseMonoRuntime>false</UseMonoRuntime>
 		<WasmMainJSPath>wwwroot/main.js</WasmMainJSPath>
 		<OutputType>Exe</OutputType>
 		<WasmEnableES6>true</WasmEnableES6>

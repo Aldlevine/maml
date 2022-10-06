@@ -29,11 +29,7 @@ public partial class Engine
 	private void Frame(object? sender, FrameEvent e)
 	{
 		// Draw my stuff here
-		if (Window.RenderTarget != null)
-		{
-			Window.RenderTarget.Clear(new Color(0x333333ff));
-			Window.SceneTree.Draw(Window.RenderTarget);
-		}
+		Window?.Update();
 	}
 
 	[JSExport]

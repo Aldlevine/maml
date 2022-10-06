@@ -12,6 +12,8 @@ class RenderTarget {
     constructor() {
         this.canvases = {};
         this.contexts = {};
+        this.geometries = {};
+        this.currentGeometryId = 0;
         this.brushes = {};
         this.currentBrushId = 0;
     }
@@ -88,12 +90,45 @@ class RenderTarget {
         const ctx = this.contexts[id];
         ctx.setTransform(DOMMatrix.fromFloat64Array(matrixArray));
     }
-    makeColorBrush(id, color) {
-        this.brushes[this.currentBrushId] = color;
-        return this.currentBrushId++;
+    fillGeometry(id, geometryId, brushId) {
+        const ctx = this.contexts[id];
+        ctx.fillStyle = this.brushes[brushId];
+        ctx.fill(this.geometries[geometryId]);
+    }
+    strokeGeometry(id, geometryId, brushId, thickness) {
+        const ctx = this.contexts[id];
+        ctx.strokeStyle = this.brushes[brushId];
+        ctx.lineWidth = thickness;
+        ctx.stroke(this.geometries[geometryId]);
+    }
+    releaseGeometry(id, geometryId) {
+        delete this.geometries[geometryId];
+    }
+    makeRectGeometry(id, x, y, w, h) {
+        const path = new Path2D();
+        path.rect(x, y, w, h);
+        this.geometries[this.currentGeometryId] = path;
+        return this.currentGeometryId++;
+    }
+    makeEllipseGeometry(id, x, y, radiusX, radiusY) {
+        const path = new Path2D();
+        path.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
+        this.geometries[this.currentGeometryId] = path;
+        return this.currentGeometryId++;
+    }
+    makeLineGeometry(id, startX, startY, endX, endY) {
+        const path = new Path2D();
+        path.moveTo(startX, startY);
+        path.lineTo(endX, endY);
+        this.geometries[this.currentGeometryId] = path;
+        return this.currentGeometryId++;
     }
     releaseBrush(id, brushId) {
         delete this.brushes[brushId];
+    }
+    makeColorBrush(id, color) {
+        this.brushes[this.currentBrushId] = color;
+        return this.currentBrushId++;
     }
 }
 export const renderTarget = new RenderTarget();

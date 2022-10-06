@@ -93,7 +93,7 @@ public partial struct Transform : IEquatable<Transform>
 		new(0, 1),
 		new(0.5f, 0.5f));
 
-	// public Transform Translated(Vector2 offset) => new Transform { Origin = offset } * this;//this with { Origin = Origin + offset, };
+	//public Transform Translated(Vector2 offset) => new Transform { Origin = offset } * this;//this with { Origin = Origin + offset, };
 	public Transform Translated(Vector2 offset) => this with { Origin = Origin + offset, };
 
 	public Transform Scaled(Vector2 scale) => new Transform { Scale = scale } * this;//this with { Scale = Scale * scale, };

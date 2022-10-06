@@ -1,4 +1,5 @@
 ﻿using Maml.Events;
+using Maml.Graphics;
 using Maml.Math;
 using Maml.Observable;
 using Maml.Scene;
@@ -45,6 +46,13 @@ public abstract class WindowBase : ObservableObject
 			return window;
 		}
 		return null;
+	}
+
+	public void Update()
+	{
+		if (RenderTarget == null) { return;  }
+		RenderTarget.Clear(new Color(0x333333ff));
+		SceneTree.Draw(RenderTarget);
 	}
 
 	public WindowBase()

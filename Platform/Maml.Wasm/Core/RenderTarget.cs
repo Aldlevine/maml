@@ -1,6 +1,7 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
 using System.Runtime.InteropServices.JavaScript;
+using System.Threading;
 
 namespace Maml;
 public partial class RenderTarget
@@ -12,13 +13,13 @@ public partial class RenderTarget
 		switch (geometry)
 		{
 			case RectGeometry g:
-				FillRect(CanvasId, g.Rect.Position.X, g.Rect.Position.Y, g.Rect.Size.X, g.Rect.Size.Y, fill.Brush.GetResource(this));
-				break;
-			case EllipseGeometry g:
-				FillEllipse(CanvasId, g.Ellipse.Center.X, g.Ellipse.Center.Y, g.Ellipse.Radius.X, g.Ellipse.Radius.Y, fill.Brush.GetResource(this));
+				FillRect(g.Rect.Position.X, g.Rect.Position.Y, g.Rect.Size.X, g.Rect.Size.Y, fill.Brush.GetResource(this));
 				break;
 			case LineGeometry:
 				// We can't fill lines
+				break;
+			default:
+				FillGeometry(geometry.GetResource(this), fill.Brush.GetResource(this));
 				break;
 		}
 	}
@@ -28,13 +29,10 @@ public partial class RenderTarget
 		switch (geometry)
 		{
 			case RectGeometry g:
-				StrokeRect(CanvasId, g.Rect.Position.X, g.Rect.Position.Y, g.Rect.Size.X, g.Rect.Size.Y, stroke.Brush.GetResource(this), stroke.Thickness);
+				StrokeRect(g.Rect.Position.X, g.Rect.Position.Y, g.Rect.Size.X, g.Rect.Size.Y, stroke.Brush.GetResource(this), stroke.Thickness);
 				break;
-			case EllipseGeometry g:
-				StrokeEllipse(CanvasId, g.Ellipse.Center.X, g.Ellipse.Center.Y, g.Ellipse.Radius.X, g.Ellipse.Radius.Y, stroke.Brush.GetResource(this), stroke.Thickness);
-				break;
-			case LineGeometry g:
-				StrokeLine(CanvasId, g.Line.Start.X, g.Line.Start.Y, g.Line.End.X, g.Line.End.Y, stroke.Brush.GetResource(this), stroke.Thickness);
+			default:
+				StrokeGeometry(geometry.GetResource(this), stroke.Brush.GetResource(this), stroke.Thickness);
 				break;
 		}
 	}
@@ -51,28 +49,47 @@ public partial class RenderTarget
 	private static partial void Clear(int id, string color);
 
 	[JSImport("fillRect", "render-target.js")]
-	private static partial void FillRect(int id, double x, double y, double width, double height, int brushId);
+	private static partial void FillRect(int id, double x, double y, double w, double h, int brushId);
+	private void FillRect(double x, double y, double w, double h, int brushId) => FillRect(CanvasId, x, y, w, h, brushId);
 
 	[JSImport("fillEllipse", "render-target.js")]
 	private static partial void FillEllipse(int id, double x, double y, double radiusX, double radiusY, int brushId);
 
 	[JSImport("strokeRect", "render-target.js")]
-	// TODO: include stroke style
-	private static partial void StrokeRect(int id, double x, double y, double width, double height, int brushId, double thickness);
-
-	[JSImport("strokeEllipse", "render-target.js")]
-	// TODO: include stroke style
-	private static partial void StrokeEllipse(int id, double x, double y, double width, double height, int brushId, double thickness);
-
-	[JSImport("strokeLine", "render-target.js")]
-	// TODO: include stroke style
-	private static partial void StrokeLine(int id, double startX, double startY, double endX, double endY, int brushId, double thickness);
+	private static partial void StrokeRect(int id, double x, double y, double w, double h, int brushId, double thickness);
+	private void StrokeRect(double x, double y, double w, double h, int brushId, double thickness) => StrokeRect(CanvasId, x, y, w, h, brushId, thickness);
 
 	[JSImport("getTransform", "render-target.js")]
 	private static partial double[] GetTransform(int id);
 
 	[JSImport("setTransform", "render-target.js")]
 	private static partial double[] SetTransform(int id, double[] matrix);
+
+
+	[JSImport("fillGeometry", "render-target.js")]
+	private static partial void FillGeometry(int id, int geometryId, int brushId);
+	internal void FillGeometry(int geometryId, int brushId) => FillGeometry(CanvasId, geometryId, brushId);
+
+	[JSImport("strokeGeometry", "render-target.js")]
+	private static partial void StrokeGeometry(int id, int geometryId, int brushId, double thickness);
+	internal void StrokeGeometry(int geometryId, int brushId, double thickness) => StrokeGeometry(CanvasId, geometryId, brushId, thickness);
+
+	[JSImport("releaseGeometry", "render-target.js")]
+	private static partial void ReleaseGeometry(int id, int geometryId);
+	internal void ReleaseGeometry(int geometryId) => ReleaseGeometry(CanvasId, geometryId);
+
+	[JSImport("makeRectGeometry", "render-target.js")]
+	private static partial int MakeRectGeometry(int id, double x, double y, double w, double h);
+	internal int MakeRectGeometry(Rect rect) => MakeRectGeometry(CanvasId, rect.Position.X, rect.Position.Y, rect.Size.X, rect.Size.Y);
+
+	[JSImport("makeEllipseGeometry", "render-target.js")]
+	private static partial int MakeEllipseGeometry(int id, double x, double y, double radiusX, double radiusY);
+	internal int MakeEllipseGeometry(Ellipse ellipse) => MakeEllipseGeometry(CanvasId, ellipse.Center.X, ellipse.Center.Y, ellipse.Radius.X, ellipse.Radius.Y);
+
+	[JSImport("makeLineGeometry", "render-target.js")]
+	private static partial int MakeLineGeometry(int id, double startX, double startY, double endX, double endY);
+	internal int MakeLineGeometry(Line line) => MakeLineGeometry(CanvasId, line.Start.X, line.Start.Y, line.End.X, line.End.Y);
+
 
 	[JSImport("releaseBrush", "render-target.js")]
 	private static partial void ReleaseBrush(int id, int brushId);
@@ -81,5 +98,6 @@ public partial class RenderTarget
 	[JSImport("makeColorBrush", "render-target.js")]
 	private static partial int MakeColorBrush(int id, string color);
 	internal int MakeColorBrush(Color color) => MakeColorBrush(CanvasId, color.ToCSSColor());
+
 	#endregion
 }

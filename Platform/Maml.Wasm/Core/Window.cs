@@ -33,7 +33,6 @@ public partial class Window : WindowBase
 	}
 
 	[JSExport]
-	[SuppressMessage("Style", "IDE0022:Use expression body for methods", Justification = "Not supported for JSExport")]
 	internal static void HandleResize(int windowID, int width, int height)
 	{
 		baseWindowSize = new(width, height);
@@ -45,6 +44,7 @@ public partial class Window : WindowBase
 		windowSize = new(width, height);
 		Resize?.Invoke(this, new() { Size = Size, });
 		SizeProperty[this].SetDirty();
+		Update();
 	}
 
 	private Vector2 previousPointerPosition = Vector2.Zero;
@@ -68,6 +68,7 @@ public partial class Window : WindowBase
 			ButtonMask = buttonMask,
 		});
 		previousPointerPosition = position;
+		//Update();
 	}
 
 	[JSExport]
@@ -87,6 +88,8 @@ public partial class Window : WindowBase
 			Button = button,
 			ButtonMask = buttonMask,
 		});
+		previousPointerPosition = position;
+		//Update();
 	}
 
 	[JSExport]
@@ -106,6 +109,8 @@ public partial class Window : WindowBase
 			Button = button,
 			ButtonMask = buttonMask,
 		});
+		previousPointerPosition = position;
+		//Update();
 	}
 
 	private static PointerButton jsButtonToPointerButton(int iButton)

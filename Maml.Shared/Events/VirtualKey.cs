@@ -1,5 +1,6 @@
 ﻿namespace Maml.Events;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "Values match Mircorosft's VK list")]
 public enum VirtualKey
 {
 	A = 65,
@@ -92,12 +93,8 @@ public enum VirtualKey
 	J = 74,
 	Junja = 23,
 	K = 75,
-#pragma warning disable CA1069 // Enums values should not be duplicated
 	Kana = 21,
-#pragma warning restore CA1069 // Enums values should not be duplicated
-#pragma warning disable CA1069 // Enums values should not be duplicated
 	Kanji = 25,
-#pragma warning restore CA1069 // Enums values should not be duplicated
 	L = 76,
 	Left = 37,
 	LeftAlt = 164, // LeftMenu

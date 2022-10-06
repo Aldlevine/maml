@@ -11,6 +11,7 @@ public partial class Brush : Resource
 	internal RenderTarget? lastRenderTarget;
 
 	internal abstract void MakeResource(RenderTarget rt);
+
 	internal int GetResource(RenderTarget renderTarget, bool noCache = false)
 	{
 		if (iResource == null)
@@ -20,16 +21,16 @@ public partial class Brush : Resource
 		else
 		{
 			if (noCache || IsDirty || lastRenderTarget != renderTarget)
-			//if (noCache || IsDirty)
 			{
-				lastRenderTarget = renderTarget;
 				FreeResources();
 				MakeResource(renderTarget);
-				IsDirty = false;
 			}
 		}
+		IsDirty = false;
+		lastRenderTarget = renderTarget;
 		return (int)iResource!;
 	}
+
 	protected override void FreeResources()
 	{
 		if (iResource != null)

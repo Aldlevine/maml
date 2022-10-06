@@ -183,7 +183,7 @@ public class TwirlyNode : Node
 					// var t = double.Sin((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
 					var t = Unit.Triangle((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
 					var targetScale = Vector2.Lerp(minScale, maxScale, t);
-					var scale = Vector2.Lerp(Transform.Scale, targetScale, evt.Delta.TotalSeconds * 10);
+					var scale = Vector2.Lerp(Transform.Scale, targetScale, double.Clamp(evt.Delta.TotalSeconds * 10, 0, 1));
 					Transform = Transform with { Scale = scale, };
 				}
 				break;
@@ -210,7 +210,7 @@ public class TwirlyNode : Node
 					}
 					else
 					{
-						scale = Vector2.Lerp(scale, Vector2.One, double.Min(evt.Delta.TotalSeconds * 10, 1));
+						scale = Vector2.Lerp(scale, Vector2.One, double.Clamp(evt.Delta.TotalSeconds * 10, 0, 1));
 					}
 					Transform = Transform with { Scale = scale, };
 				}
@@ -244,7 +244,7 @@ public class TwirlyNode : Node
 						if (animatedDrawLayers[i].Brush is not ColorBrush animatedBrush) { continue; }
 						if (defaultDrawLayers[i].Brush is not ColorBrush) { continue; }
 						if (selectedDrawLayers[i].Brush is not ColorBrush selectedBrush) { continue; }
-						animatedBrush.Color = Color.Lerp(animatedBrush.Color, selectedBrush.Color, evt.Delta.TotalSeconds * 7.5);
+						animatedBrush.Color = Color.Lerp(animatedBrush.Color, selectedBrush.Color, double.Clamp(evt.Delta.TotalSeconds * 7.5, 0, 1));
 					}
 				}
 				break;
@@ -276,7 +276,7 @@ public class TwirlyNode : Node
 						if (animatedDrawLayers[i].Brush is not ColorBrush animatedBrush) { continue; }
 						if (defaultDrawLayers[i].Brush is not ColorBrush defaultBrush) { continue; }
 						if (selectedDrawLayers[i].Brush is not ColorBrush) { continue; }
-						animatedBrush.Color = Color.Lerp(animatedBrush.Color, defaultBrush.Color, evt.Delta.TotalSeconds * 0.125);
+						animatedBrush.Color = Color.Lerp(animatedBrush.Color, defaultBrush.Color, double.Clamp(evt.Delta.TotalSeconds * 0.125, 0, 1));
 					}
 				}
 				break;
