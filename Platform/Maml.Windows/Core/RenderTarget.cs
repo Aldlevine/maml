@@ -8,8 +8,10 @@ namespace Maml;
 public partial class RenderTarget : IDisposable
 {
 	#region Abstract
+	public override void BeginDraw() { }
+	public override void EndDraw() { }
 	unsafe public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
-
+	unsafe public override void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
 	unsafe public override void DrawGeometry(Geometry geometry, Fill fill)
 	{
 		switch (geometry)
@@ -42,12 +44,6 @@ public partial class RenderTarget : IDisposable
 				break;
 		}
 	}
-	unsafe public override Transform GetTransform()
-	{
-		pRenderTarget->GetTransform(out var matrix);
-		return new(matrix);
-	}
-	unsafe public override void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
 
 	#endregion
 

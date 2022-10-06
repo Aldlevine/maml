@@ -6,7 +6,9 @@ namespace Maml;
 public abstract class RenderTargetBase
 {
 	// Platform Specific
-	public abstract Transform GetTransform();
+	//public abstract Transform GetTransform();
+	public abstract void BeginDraw();
+	public abstract void EndDraw();
 	public abstract void SetTransform(Transform transform);
 
 	public abstract void Clear(Color color);

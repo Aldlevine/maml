@@ -13,6 +13,10 @@
 		<Nullable>enable</Nullable>
     <StartupObject>Maml.Program</StartupObject>
 		<RootNamespace>Maml</RootNamespace>
+		<RunAOTCompilation>true</RunAOTCompilation>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>full</TrimMode>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>

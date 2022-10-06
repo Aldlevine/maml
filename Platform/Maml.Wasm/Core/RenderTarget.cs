@@ -1,5 +1,6 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
+using System.Collections.Generic;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading;
 
@@ -7,7 +8,8 @@ namespace Maml;
 public partial class RenderTarget
 {
 	#region Abstract
-	public override void Clear(Color color) => Clear(CanvasId, color.ToCSSColor());
+	public override void Clear(Color color) => InternalClear(color);
+	public override void SetTransform(Transform transform) => InternalSetTransform(transform);
 	public override void DrawGeometry(Geometry geometry, Fill fill)
 	{
 		switch (geometry)
@@ -36,43 +38,87 @@ public partial class RenderTarget
 				break;
 		}
 	}
-
-	public override Transform GetTransform() => new(GetTransform(CanvasId));
-
-	public override void SetTransform(Transform transform) => SetTransform(CanvasId, transform.ToDoubleArray());
 	#endregion
 
 	#region Internal
 	internal int CanvasId = 0;
 
-	[JSImport("clear", "render-target.js")]
-	private static partial void Clear(int id, string color);
+	// Draw Commands
+	private enum WasmDrawCommand
+	{
+		Clear,
+		SetTransform,
+		FillRect,
+		StrokeRect,
+		FillGeometry,
+		StrokeGeometry,
+	}
+	internal List<double> DrawCommandBuffer { get; } = new(10_000);
 
-	[JSImport("fillRect", "render-target.js")]
-	private static partial void FillRect(int id, double x, double y, double w, double h, int brushId);
-	private void FillRect(double x, double y, double w, double h, int brushId) => FillRect(CanvasId, x, y, w, h, brushId);
+	public override void BeginDraw()
+	{
+		DrawCommandBuffer.Clear();
+	}
 
-	[JSImport("fillEllipse", "render-target.js")]
-	private static partial void FillEllipse(int id, double x, double y, double radiusX, double radiusY, int brushId);
+	public override void EndDraw()
+	{
+		ProcessDrawCommands(DrawCommandBuffer.ToArray());
+	}
 
-	[JSImport("strokeRect", "render-target.js")]
-	private static partial void StrokeRect(int id, double x, double y, double w, double h, int brushId, double thickness);
-	private void StrokeRect(double x, double y, double w, double h, int brushId, double thickness) => StrokeRect(CanvasId, x, y, w, h, brushId, thickness);
+	private void InternalClear(Color color)
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.Clear,
+			color.R, color.G, color.B, color.A,
+		});
+	}
 
-	[JSImport("getTransform", "render-target.js")]
-	private static partial double[] GetTransform(int id);
+	private void FillRect(double x, double y, double w, double h, int brushId)
+	{
+		DrawCommandBuffer.AddRange(new double[] {
+			(double)WasmDrawCommand.FillRect,
+			x, y, w, h, brushId,
+		});
+	}
 
-	[JSImport("setTransform", "render-target.js")]
-	private static partial double[] SetTransform(int id, double[] matrix);
+	private void StrokeRect(double x, double y, double w, double h, int brushId, double thickness)
+	{
+		DrawCommandBuffer.AddRange(new double[] {
+			(double)WasmDrawCommand.StrokeRect,
+			x, y, w, h, brushId, thickness,
+		});
+	}
 
+	private void InternalSetTransform(Transform transform)
+	{
+		DrawCommandBuffer.Add((double)WasmDrawCommand.SetTransform);
+		DrawCommandBuffer.AddRange(transform.ToDoubleArray());
+	}
 
-	[JSImport("fillGeometry", "render-target.js")]
-	private static partial void FillGeometry(int id, int geometryId, int brushId);
-	internal void FillGeometry(int geometryId, int brushId) => FillGeometry(CanvasId, geometryId, brushId);
+	private void FillGeometry(int geometryId, int brushId)
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.FillGeometry,
+			geometryId, brushId,
+		});
+	}
 
-	[JSImport("strokeGeometry", "render-target.js")]
-	private static partial void StrokeGeometry(int id, int geometryId, int brushId, double thickness);
-	internal void StrokeGeometry(int geometryId, int brushId, double thickness) => StrokeGeometry(CanvasId, geometryId, brushId, thickness);
+	private void StrokeGeometry(int geometryId, int brushId, double thickness)
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.StrokeGeometry,
+			geometryId, brushId, thickness,
+		});
+	}
+
+	[JSImport("processDrawCommands", "render-target.js")]
+	private static partial void ProcessDrawCommands(int canvasId, [JSMarshalAs<JSType.Array<JSType.Number>>] double[] commandBuffer);
+	internal void ProcessDrawCommands(double[] commandBuffer) => ProcessDrawCommands(CanvasId, commandBuffer);
+
+	// Resource commands
 
 	[JSImport("releaseGeometry", "render-target.js")]
 	private static partial void ReleaseGeometry(int id, int geometryId);

@@ -50,9 +50,11 @@ public abstract class WindowBase : ObservableObject
 
 	public void Update()
 	{
-		if (RenderTarget == null) { return;  }
+		if (RenderTarget == null) { return; }
+		RenderTarget.BeginDraw();
 		RenderTarget.Clear(new Color(0x333333ff));
 		SceneTree.Draw(RenderTarget);
+		RenderTarget.EndDraw();
 	}
 
 	public WindowBase()
