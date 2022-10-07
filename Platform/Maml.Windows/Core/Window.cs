@@ -196,7 +196,7 @@ public partial class Window
 
 			RenderTarget!.pRenderTarget->BeginDraw();
 
-			SceneTree.Draw(RenderTarget);
+			Update();
 
 			var hr = RenderTarget!.pRenderTarget->EndDraw();
 			if (hr == HRESULT.D2DERR_RECREATE_TARGET)

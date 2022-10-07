@@ -118,8 +118,19 @@ internal class TestScene1 : Node
 			});
 		}
 
-		var startTick = DateTime.Now;
-		Animator.Frame += (s, e) => rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
+		DateTime startTick = DateTime.Now;
+		Animator.Frame += (s, e) =>
+		{
+			switch (e.FrameState)
+			{
+				case Animation.FrameState.Enter:
+					startTick = e.Tick;
+					break;
+				case Animation.FrameState.Play:
+					rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
+					break;
+			}
+		};
 
 	}
 }
