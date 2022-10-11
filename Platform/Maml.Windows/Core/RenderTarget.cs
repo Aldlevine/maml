@@ -25,6 +25,9 @@ public partial class RenderTarget : IDisposable
 			case LineGeometry g:
 				// We can't fill line geometry
 				break;
+			default:
+				pRenderTarget->FillGeometry(geometry.GetResource(Engine.Singleton), fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
+				break;
 		}
 	}
 
@@ -41,6 +44,9 @@ public partial class RenderTarget : IDisposable
 				break;
 			case LineGeometry g:
 				pRenderTarget->DrawLine(g.Line.Start.ToD2DPoint2F(), g.Line.End.ToD2DPoint2F(), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				break;
+			default:
+				pRenderTarget->DrawGeometry(geometry.GetResource(Engine.Singleton), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
 				break;
 		}
 	}

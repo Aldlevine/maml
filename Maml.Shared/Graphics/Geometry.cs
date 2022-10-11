@@ -1,4 +1,5 @@
 ﻿using Maml.Math;
+using Maml.Observable;
 
 namespace Maml.Graphics;
 
@@ -66,3 +67,20 @@ public partial class RectGeometry : Geometry
 		Rect = rectGeometry.Rect;
 	}
 }
+
+//public partial class TextGeometry : Geometry
+//{
+//	public static BasicProperty<TextGeometry, string> TextProperty = new("");
+//	public string Text
+//	{
+//		get => TextProperty[this].Get();
+//		set => TextProperty[this].Set(value);
+//	}
+
+//	public static BasicProperty<TextGeometry, Vector2> MaxSizeProperty = new(Vector2.Zero);
+//	public Vector2 MaxSize
+//	{
+//		get => MaxSizeProperty[this].Get();
+//		set => MaxSizeProperty[this].Set(value);
+//	}
+//}

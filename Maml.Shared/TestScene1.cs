@@ -106,6 +106,30 @@ internal class TestScene1 : Node
 					}),
 				},
 			}),
+
+			(new GraphicNode
+			{
+				Graphic = new GeometryGraphic
+				{
+					Geometry = new TextGeometry
+					{
+						Text = "This is one helluva piece of things!",
+						Font = new()
+						{
+							Name = "Segoe UI",
+							Size = 16,
+							Style = FontStyle.Normal,
+							Weight = 400,
+						},
+					},
+					DrawLayers = new()
+					{
+						//new Stroke(new ColorBrush { Color = Colors.Red, }, 4),
+						new Fill(new ColorBrush { Color = Colors.White, }),
+					},
+				},
+				Transform = Transform.Identity with { Origin = new(100, 100), },
+			}),
 		};
 
 		for (int i = 0; i < 100; i++)

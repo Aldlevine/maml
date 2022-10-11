@@ -21,6 +21,10 @@ ID2D1HwndRenderTarget
 ID2D1SolidColorBrush
 ID2D1GeometryRealization
 
+// Windows.Win32.Graphics.DirectWrite
+DWriteCreateFactory
+IDWriteFactory
+
 GetDpiForWindow
 GetModuleHandle
 UpdateWindow
