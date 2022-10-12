@@ -62,7 +62,7 @@ unsafe public partial class LineGeometry : Geometry
 			engine.pD2DFactory->CreatePathGeometry((ID2D1PathGeometry**)ppResource);
 		}
 		ID2D1GeometrySink* pSink;
-		((ID2D1PathGeometry*)pResource)->Open(&pSink);
+		((ID2D1PathGeometry*)pResource)->Open(&pSink).ThrowOnFailure();
 		pSink->BeginFigure(Line.Start.ToD2DPoint2F(), Windows.Win32.Graphics.Direct2D.Common.D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
 		pSink->AddLine(Line.End.ToD2DPoint2F());
 		pSink->EndFigure(Windows.Win32.Graphics.Direct2D.Common.D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);

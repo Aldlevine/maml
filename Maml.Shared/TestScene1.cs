@@ -117,6 +117,7 @@ internal class TestScene1 : Node
 						Font = new()
 						{
 							Name = "Segoe UI",
+							// Size = 10.0 * (96.0 / 72.0),
 							Size = 16,
 							Style = FontStyle.Normal,
 							Weight = 400,
@@ -124,11 +125,11 @@ internal class TestScene1 : Node
 					},
 					DrawLayers = new()
 					{
-						//new Stroke(new ColorBrush { Color = Colors.Red, }, 4),
+						new Stroke(new ColorBrush { Color = Colors.Red, }, 3),
 						new Fill(new ColorBrush { Color = Colors.White, }),
 					},
 				},
-				Transform = Transform.PixelIdentity with { Origin = new(100, 100), },
+				Transform = Transform.Identity with { Origin = new(100.5, 100.5), },
 			}),
 		};
 

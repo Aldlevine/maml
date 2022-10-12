@@ -26,7 +26,11 @@ public partial class RenderTarget : IDisposable
 				// We can't fill line geometry
 				break;
 			default:
-				pRenderTarget->FillGeometry(geometry.GetResource(Engine.Singleton), fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
+				var pResource = geometry.GetResource(Engine.Singleton);
+				//if (pResource != null)
+				{
+					pRenderTarget->FillGeometry(pResource, fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
+				}
 				break;
 		}
 	}

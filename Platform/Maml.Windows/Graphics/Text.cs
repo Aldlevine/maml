@@ -53,15 +53,31 @@ public partial class TextGeometry : Geometry
 			1000,
 			1000,
 			&pTextLayout).ThrowOnFailure();
-		engine.Window.RenderTarget.pRenderTarget->DrawTextLayout(
-			Vector2.Zero.ToD2DPoint2F(),
-			pTextLayout,
-			brush.GetResource(engine.Window.RenderTarget.pRenderTarget),
-			D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+		//fixed (ID2D1Geometry** ppResource = &pResource)
+		//{
+		//	engine.pD2DFactory->CreatePathGeometry((ID2D1PathGeometry**)ppResource);
+		//}
+		//ID2D1GeometrySink* pSink;
+		//((ID2D1PathGeometry*)pResource)->Open(&pSink);
+
 		fixed (ID2D1Geometry** ppResource = &pResource)
 		{
-			engine.pD2DFactory->CreateRectangleGeometry(new Rect { Position=new(0,0), Size=new(100,100), }.ToD2DRectF(), (ID2D1RectangleGeometry**)ppResource);
+			TextRenderer tr = new(ppResource);
+			pTextLayout->Draw(null, tr, 0, 0).ThrowOnFailure();
 		}
+		//pSink->Close().ThrowOnFailure();
+		//pSink->Release();
+
+		//engine.Window.RenderTarget.pRenderTarget->DrawTextLayout(
+		//	Vector2.Zero.ToD2DPoint2F(),
+		//	pTextLayout,
+		//	brush.GetResource(engine.Window.RenderTarget.pRenderTarget),
+		//	D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE);
+		//fixed (ID2D1Geometry** ppResource = &pResource)
+		//{
+		//	engine.pD2DFactory->CreateRectangleGeometry(new Rect { Position=new(0,0), Size=new(100,100), }.ToD2DRectF(), (ID2D1RectangleGeometry**)ppResource);
+		//}
 		/**/
 
 		/** /
