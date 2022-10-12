@@ -24,6 +24,9 @@ ID2D1GeometryRealization
 // Windows.Win32.Graphics.DirectWrite
 DWriteCreateFactory
 IDWriteFactory
+DWRITE_GLYPH_RUN_DESCRIPTION
+DWRITE_STRIKETHROUGH
+DWRITE_UNDERLINE
 
 GetDpiForWindow
 GetModuleHandle

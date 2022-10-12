@@ -12,6 +12,8 @@ using Windows.Win32.Graphics.DirectWrite;
 namespace Maml.Graphics;
 public partial class TextGeometry : Geometry
 {
+	private readonly Brush brush = new ColorBrush { Color = Colors.Black };
+
 	internal override unsafe void MakeResource(Engine engine)
 	{
 		IDWriteFontCollection* pSystemFontCollection;
@@ -24,11 +26,45 @@ public partial class TextGeometry : Geometry
 		IDWriteFontFamily* pFontFamily;
 		pSystemFontCollection->GetFontFamily(index, &pFontFamily).ThrowOnFailure();
 		IDWriteFont* pFont;
-		pFontFamily->GetFirstMatchingFont((DWRITE_FONT_WEIGHT)Font.Weight, DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL, (DWRITE_FONT_STYLE)Font.Style, &pFont);
+		pFontFamily->GetFirstMatchingFont(
+			(DWRITE_FONT_WEIGHT)Font.Weight,
+			DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL,
+			(DWRITE_FONT_STYLE)Font.Style,
+			&pFont).ThrowOnFailure();
 		IDWriteFontFace* pFontFace;
 		pFont->CreateFontFace(&pFontFace).ThrowOnFailure();
 
-		/*
+		/**/
+		IDWriteTextFormat* pTextFormat;
+		engine.pDWriteFactory->CreateTextFormat(
+			Font.Name,
+			null,
+			(DWRITE_FONT_WEIGHT)Font.Weight,
+			(DWRITE_FONT_STYLE)Font.Style,
+			DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL,
+			(float)Font.Size,
+			"",
+			&pTextFormat).ThrowOnFailure();
+		IDWriteTextLayout* pTextLayout;
+		engine.pDWriteFactory->CreateTextLayout(
+			Text,
+			(uint)Text.Length,
+			pTextFormat,
+			1000,
+			1000,
+			&pTextLayout).ThrowOnFailure();
+		engine.Window.RenderTarget.pRenderTarget->DrawTextLayout(
+			Vector2.Zero.ToD2DPoint2F(),
+			pTextLayout,
+			brush.GetResource(engine.Window.RenderTarget.pRenderTarget),
+			D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE);
+		fixed (ID2D1Geometry** ppResource = &pResource)
+		{
+			engine.pD2DFactory->CreateRectangleGeometry(new Rect { Position=new(0,0), Size=new(100,100), }.ToD2DRectF(), (ID2D1RectangleGeometry**)ppResource);
+		}
+		/**/
+
+		/** /
 		List<uint> codePointsList = new();
 		for (int i = 0; i < Text.Length; i += char.IsSurrogatePair(Text, i) ? 2 : 1)
 		{
@@ -56,10 +92,11 @@ public partial class TextGeometry : Geometry
 		}
 		pSink->Close().ThrowOnFailure();
 		pSink->Release();
-		*/
+		/**/
 
+		/** /
 		IDWriteTextAnalyzer* pTextAnalyzer;
-		engine.pDWriteFactory->CreateTextAnalyzer(&pTextAnalyzer);
+		engine.pDWriteFactory->CreateTextAnalyzer(&pTextAnalyzer).ThrowOnFailure();
 		PCWSTR pText;
 		fixed (char* pTextChArr = Text)
 		{
@@ -97,7 +134,7 @@ public partial class TextGeometry : Geometry
 				pTextProps,
 				pGlyphIndices,
 				pGlyphProps,
-				&glyphCount);
+				&glyphCount).ThrowOnFailure();
 
 			float[] glyphAdvances = new float[glyphCount];
 			DWRITE_GLYPH_OFFSET[] glyphOffsets = new DWRITE_GLYPH_OFFSET[glyphCount];
@@ -123,45 +160,50 @@ public partial class TextGeometry : Geometry
 					null,
 					0,
 					pGlyphAdvances,
-					pGlyphOffsets);
+					pGlyphOffsets).ThrowOnFailure();
 
 
 				fixed (ID2D1Geometry** ppResource = &pResource)
 				{
-					engine.pD2DFactory->CreatePathGeometry((ID2D1PathGeometry**)ppResource);
+					engine.pD2DFactory->CreatePathGeometry((ID2D1PathGeometry**)ppResource).ThrowOnFailure();
 				}
 				ID2D1GeometrySink* pSink;
 				//ID2D1PathGeometry* pPathGeometry;
 				//engine.pD2DFactory->CreatePathGeometry(&pPathGeometry);
 				//pPathGeometry->Open(&pSink);
-				((ID2D1PathGeometry*)pResource)->Open(&pSink);
+				((ID2D1PathGeometry*)pResource)->Open(&pSink).ThrowOnFailure();
 
-				float penPosition = 0;
-				for (int i = 0; i < glyphCount; i++)
-				{
-					glyphAdvances[i] = float.Floor(glyphAdvances[i]);
-					//float glyphPosition = penPosition + glyphOffsets[i].advanceOffset;
-					//if (i > 0)
-					//{
-					//	penPosition += glyphAdvances[i - 1];
-					//}
-					//float offset = float.Floor(glyphPosition) - glyphPosition;
-					//glyphOffsets[i] = glyphOffsets[i] with { advanceOffset = offset, };
-					//penPosition += glyphAdvances[i];
-				}
+				//DWRITE_GLYPH_METRICS[] glyphMetrics = new DWRITE_GLYPH_METRICS[glyphIndices.Length];
+				//pFontFace->GetDesignGlyphMetrics(glyphIndices, glyphMetrics, false).ThrowOnFailure();
+				//pFontFace->GetMetrics(out var fontFaceMetrics);
 
-				pFontFace->GetGlyphRunOutline((float)Font.Size, pGlyphIndices, pGlyphAdvances, pGlyphOffsets, glyphCount, false, FlowDirection == FlowDirection.RightToLeft, (ID2D1SimplifiedGeometrySink*)pSink);
+				//float penPosition = 0;
+				//for (int i = 0; i < glyphCount; i++)
+				//{
+				//	glyphAdvances[i] = float.Floor(glyphAdvances[i]);
+				//	glyphOffsets[i].advanceOffset = glyphMetrics[i].leftSideBearing / fontFaceMetrics.
+				//	//glyphOffsets[i] = glyphOffsets[i] with
+				//	//{
+				//	//	advanceOffset = float.Floor(glyphOffsets[i].advanceOffset),
+				//	//	ascenderOffset = float.Floor(glyphOffsets[i].ascenderOffset),
+				//	//};
+				//}
+
+				pFontFace->GetGlyphRunOutline(
+					(float)Font.Size,
+					pGlyphIndices,
+					pGlyphAdvances,
+					pGlyphOffsets,
+					glyphCount,
+					false,
+					FlowDirection == FlowDirection.RightToLeft,
+					(ID2D1SimplifiedGeometrySink*)pSink).ThrowOnFailure();
+
 				pSink->Close().ThrowOnFailure();
 				pSink->Release();
-
-				//Transform transform = Transform.PixelIdentity;
-
-				//fixed (ID2D1Geometry** ppResource = &pResource)
-				//{
-				//	engine.pD2DFactory->CreateTransformedGeometry((ID2D1Geometry*)pPathGeometry, transform.ToD2DMatrix3X2F(), (ID2D1TransformedGeometry**)ppResource);
-				//}
 			}
 		}
+		/**/
 	}
 }
 

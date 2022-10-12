@@ -128,7 +128,7 @@ internal class TestScene1 : Node
 						new Fill(new ColorBrush { Color = Colors.White, }),
 					},
 				},
-				Transform = Transform.Identity with { Origin = new(100, 100), },
+				Transform = Transform.PixelIdentity with { Origin = new(100, 100), },
 			}),
 		};
 
