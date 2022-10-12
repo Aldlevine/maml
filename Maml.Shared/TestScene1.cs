@@ -111,25 +111,38 @@ internal class TestScene1 : Node
 			{
 				Graphic = new GeometryGraphic
 				{
-					Geometry = new TextGeometry
+					Geometry = new RectGeometry
 					{
-						Text = "This is one helluva piece of things!",
-						Font = new()
-						{
-							Name = "Segoe UI",
-							// Size = 10.0 * (96.0 / 72.0),
-							Size = 16,
-							Style = FontStyle.Normal,
-							Weight = 400,
-						},
+						Rect = new() { Position = new(-4, 0), Size = new(224, 24), },
 					},
 					DrawLayers = new()
 					{
-						new Stroke(new ColorBrush { Color = Colors.Red, }, 3),
-						new Fill(new ColorBrush { Color = Colors.White, }),
+						new Fill(new ColorBrush { Color = new Color(0x333333ff), }),
 					},
 				},
-				Transform = Transform.Identity with { Origin = new(100.5, 100.5), },
+				Transform = Transform.Identity with { Origin = new(0, 0), },
+				Children = new()
+				{
+					(new GraphicNode
+					{
+						Graphic = new TextGraphic
+						{
+							Text = new Text
+							{
+								String = "This is one helluva piece of things! 😊",
+								Font = new()
+								{
+									Name = "Calibri",
+									Size = 14,
+									Style = FontStyle.Normal,
+									Weight = 400,
+								},
+							},
+							Brush = new ColorBrush { Color = Colors.White, },
+						},
+						Transform = Transform.PixelIdentity,
+					}),
+				}
 			}),
 		};
 

@@ -17,20 +17,16 @@ public partial class RenderTarget : IDisposable
 		switch (geometry)
 		{
 			case RectGeometry g:
-				pRenderTarget->FillRectangle(g.Rect.ToD2DRectF(), fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
+				pRenderTarget->FillRectangle(g.Rect.ToD2DRectF(), fill.Brush.GetResource(pRenderTarget));
 				break;
 			case EllipseGeometry g:
-				pRenderTarget->FillEllipse(g.Ellipse.ToD2DEllipse(), fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
+				pRenderTarget->FillEllipse(g.Ellipse.ToD2DEllipse(), fill.Brush.GetResource(pRenderTarget));
 				break;
 			case LineGeometry g:
 				// We can't fill line geometry
 				break;
 			default:
-				var pResource = geometry.GetResource(Engine.Singleton);
-				//if (pResource != null)
-				{
-					pRenderTarget->FillGeometry(pResource, fill.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget));
-				}
+				pRenderTarget->FillGeometry(geometry.GetResource(Engine.Singleton), fill.Brush.GetResource(pRenderTarget));
 				break;
 		}
 	}
@@ -41,18 +37,23 @@ public partial class RenderTarget : IDisposable
 		switch (geometry)
 		{
 			case RectGeometry g:
-				pRenderTarget->DrawRectangle(g.Rect.ToD2DRectF(), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				pRenderTarget->DrawRectangle(g.Rect.ToD2DRectF(), stroke.Brush.GetResource(pRenderTarget), stroke.Thickness, default);
 				break;
 			case EllipseGeometry g:
-				pRenderTarget->DrawEllipse(g.Ellipse.ToD2DEllipse(), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				pRenderTarget->DrawEllipse(g.Ellipse.ToD2DEllipse(), stroke.Brush.GetResource(pRenderTarget), stroke.Thickness, default);
 				break;
 			case LineGeometry g:
-				pRenderTarget->DrawLine(g.Line.Start.ToD2DPoint2F(), g.Line.End.ToD2DPoint2F(), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				pRenderTarget->DrawLine(g.Line.Start.ToD2DPoint2F(), g.Line.End.ToD2DPoint2F(), stroke.Brush.GetResource(pRenderTarget), stroke.Thickness, default);
 				break;
 			default:
-				pRenderTarget->DrawGeometry(geometry.GetResource(Engine.Singleton), stroke.Brush.GetResource((ID2D1RenderTarget*)pRenderTarget), stroke.Thickness, default);
+				pRenderTarget->DrawGeometry(geometry.GetResource(Engine.Singleton), stroke.Brush.GetResource(pRenderTarget), stroke.Thickness, default);
 				break;
 		}
+	}
+
+	unsafe public override void DrawText(Text text, Brush brush)
+	{
+		pRenderTarget->DrawTextLayout(default, text.GetResource(Engine.Singleton), brush.GetResource(pRenderTarget), D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
 	}
 
 	#endregion

@@ -44,3 +44,29 @@ public partial class GeometryGraphic : Graphic
 		}
 	}
 }
+
+public partial class TextGraphic : Graphic
+{
+	public static BasicProperty<TextGraphic, Text?> TextProperty { get; } = new(null);
+	public Text? Text
+	{
+		get => TextProperty[this].Get();
+		set => TextProperty[this].Set(value);
+	}
+
+	public static BasicProperty<TextGraphic, Brush?> BrushProperty { get; } = new(null);
+	public Brush? Brush
+	{
+		get => BrushProperty[this].Get();
+		set => BrushProperty[this].Set(value);
+	}
+
+	public override void Draw(RenderTargetBase rt, Transform transform)
+	{
+		if (Text == null) { return; }
+		if (Brush == null) { return; }
+
+		rt.SetTransform(transform);
+		rt.DrawText(Text, Brush);
+	}
+}

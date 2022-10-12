@@ -14,6 +14,7 @@ public abstract class RenderTargetBase
 	public abstract void Clear(Color color);
 	public abstract void DrawGeometry(Geometry geometry, Fill fill);
 	public abstract void DrawGeometry(Geometry geometry, Stroke stroke);
+	public abstract void DrawText(Text text, Brush brush);
 
 	// Platform Agnostic
 	public void DrawGeometry(Geometry geometry, DrawLayer drawLayer)

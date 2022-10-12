@@ -27,23 +27,23 @@ public struct Font
 	public FontStyle Style;
 }
 
-public partial class TextGeometry : Geometry
+public partial class Text : Resource
 {
-	public static BasicProperty<TextGeometry, string> TextProperty = new("");
-	public string Text
+	public static BasicProperty<Text, string> StringProperty = new("");
+	public string String
 	{
-		get => TextProperty[this].Get();
-		set => TextProperty[this].Set(value);
+		get => StringProperty[this].Get();
+		set => StringProperty[this].Set(value);
 	}
 
-	public static BasicProperty<TextGeometry, Font> FontProperty = new(default);
+	public static BasicProperty<Text, Font> FontProperty = new(default);
 	public Font Font
 	{
 		get => FontProperty[this].Get();
 		set => FontProperty[this].Set(value);
 	}
 
-	public static BasicProperty<TextGeometry, FlowDirection> FlowDirectionProperty = new(default);
+	public static BasicProperty<Text, FlowDirection> FlowDirectionProperty = new(default);
 	public FlowDirection FlowDirection
 	{
 		get => FlowDirectionProperty[this].Get();
