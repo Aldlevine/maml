@@ -40,7 +40,7 @@ public class SceneTree
 		//var start = DateTime.Now;
 		foreach (var node in Nodes)
 		{
-			if (node is GraphicNode graphicNode)
+			if (node is GraphicNode graphicNode && graphicNode.VisibleInTree)
 			{
 				graphicNode.Draw(renderTarget);
 			}

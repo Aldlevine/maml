@@ -26,11 +26,13 @@ public partial class Node : ObservableObject
 			if (parent != null)
 			{
 				GlobalTransformProperty[this].UndependOn(GlobalTransformProperty[parent]);
+				VisibleProperty[this].UndependOn(VisibleProperty[parent]);
 			}
 			parent = value;
 			if (parent != null)
 			{
 				GlobalTransformProperty[this].DependOn(GlobalTransformProperty[parent]);
+				VisibleProperty[this].DependOn(VisibleProperty[parent]);
 			}
 		}
 	}
@@ -50,6 +52,27 @@ public partial class Node : ObservableObject
 	public override string? ToString() => $"{GetType().Name}#{Name}";
 
 	#region Properties
+	public static BasicProperty<Node, bool> VisibleProperty = new(true);
+	public bool Visible
+	{
+		get => VisibleProperty[this].Get();
+		set => VisibleProperty[this].Set(value);
+	}
+
+	public static ComputedProperty<Node, bool> VisibleInTreeProperty = new()
+	{
+		Get = (Node self) => self.Parent switch
+		{
+			null => self.Visible,
+			_ => self.Parent.VisibleInTree && self.Visible,
+		},
+		Dependencies = (Node self) => new[] { VisibleProperty[self], },
+	};
+	public bool VisibleInTree
+	{
+		get => VisibleInTreeProperty[this].Get();
+	}
+
 	public static BasicProperty<Node, int> ZIndexProperty { get; } = new(0);
 	public int ZIndex
 	{
