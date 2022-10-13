@@ -42,6 +42,11 @@ public partial struct Vector2 : IEquatable<Vector2>
 
 	public static Vector2 operator -(Vector2 v) => new(-v.X, -v.Y);
 
+	public static Vector2 Lerp(Vector2 from, Vector2 to, double t) => new(Unit.Lerp(from.X, to.X, t), Unit.Lerp(from.Y, to.Y, t));
+	public static Vector2 Round(Vector2 v) => new(double.Round(v.X), double.Round(v.Y));
+	public static Vector2 Ceiling(Vector2 v) => new(double.Ceiling(v.X), double.Ceiling(v.Y));
+	public static Vector2 Floor(Vector2 v) => new(double.Floor(v.X), double.Floor(v.Y));
+
 	public double LengthSq() => X * X + Y * Y;
 	public double Length() => System.Math.Sqrt(LengthSq());
 	public Vector2 Normalized()
@@ -49,6 +54,4 @@ public partial struct Vector2 : IEquatable<Vector2>
 		var len = Length();
 		return new(X / len, Y / len);
 	}
-
-	public static Vector2 Lerp(Vector2 from, Vector2 to, double t) => new(Unit.Lerp(from.X, to.X, t), Unit.Lerp(from.Y, to.Y, t));
 }

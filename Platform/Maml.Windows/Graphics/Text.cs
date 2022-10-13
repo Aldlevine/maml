@@ -51,5 +51,9 @@ unsafe public partial class Text : Resource
 		{
 			engine.pDWriteFactory->CreateTextLayout(String, (uint)String.Length, pTextFormat, float.MaxValue, float.MaxValue, ppResource);
 		}
+		pTextFormat->Release();
+
+		pResource->GetMetrics(out var textMetrics);
+		Size = new(textMetrics.width, textMetrics.height);
 	}
 }

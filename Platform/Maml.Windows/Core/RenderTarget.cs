@@ -2,6 +2,7 @@
 using Maml.Math;
 using System;
 using Windows.Win32.Graphics.Direct2D;
+using Windows.Win32.Graphics.DirectWrite;
 
 namespace Maml;
 
@@ -65,6 +66,36 @@ public partial class RenderTarget : IDisposable
 	unsafe internal RenderTarget(ID2D1RenderTarget* pRenderTarget)
 	{
 		this.pRenderTarget = pRenderTarget;
+
+		// setup text rendering params
+		IDWriteRenderingParams* pRenderingParams;
+		Engine.Singleton.pDWriteFactory->CreateRenderingParams(&pRenderingParams);
+
+		// TODO: Should we make rendering mode configurable, or just use defaults?
+		//IDWriteRenderingParams* pRenderingParams;
+		//IDWriteRenderingParams* pDefaultRenderingParams;
+		//Engine.Singleton.pDWriteFactory->CreateRenderingParams(&pDefaultRenderingParams);
+		//Engine.Singleton.pDWriteFactory->CreateCustomRenderingParams(
+		//	pDefaultRenderingParams->GetGamma(),
+		//	pDefaultRenderingParams->GetEnhancedContrast(),
+		//	pDefaultRenderingParams->GetClearTypeLevel(),
+		//	pDefaultRenderingParams->GetPixelGeometry(),
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_ALIASED,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_CLEARTYPE_GDI_CLASSIC,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_CLEARTYPE_GDI_NATURAL,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC,
+		//	DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_DEFAULT,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_GDI_CLASSIC,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_GDI_NATURAL,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_NATURAL,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC,
+		//	//DWRITE_RENDERING_MODE.DWRITE_RENDERING_MODE_OUTLINE,
+		//	&pRenderingParams);
+		//pDefaultRenderingParams->Release();
+
+		pRenderTarget->SetTextRenderingParams(pRenderingParams);
+		pRenderingParams->Release();
 	}
 
 	unsafe protected virtual void Dispose(bool disposing)

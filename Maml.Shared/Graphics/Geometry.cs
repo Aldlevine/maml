@@ -49,15 +49,27 @@ public partial class LineGeometry : Geometry
 
 public partial class RectGeometry : Geometry
 {
-	private Rect rect;
+	//private Rect rect;
+	//public Rect Rect
+	//{
+	//	get => rect;
+	//	set
+	//	{
+	//		rect = value;
+	//		IsDirty = true;
+	//	}
+	//}
+	public static BasicProperty<RectGeometry, Rect> RectProperty = new(default)
+	{
+		Changed = (self) =>
+		{
+			self.IsDirty = true;
+		},
+	};
 	public Rect Rect
 	{
-		get => rect;
-		set
-		{
-			rect = value;
-			IsDirty = true;
-		}
+		get => RectProperty[this].Get();
+		set => RectProperty[this].Set(value);
 	}
 
 	public RectGeometry() : base() { }

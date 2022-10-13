@@ -27,6 +27,39 @@ internal class TestScene1 : Node
 			return new Vector2(side, side);
 		});
 
+		Text text = new Text
+		{
+			String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...",
+			//String = "File	Edit	View	Git	Project	Build	Debug",
+			Font = new()
+			{
+				Name = "Cascadia Mono",
+				Size = 10.0 * (96.0 / 72.0),
+				Style = FontStyle.Normal,
+				Weight = FontWeight.Normal,
+			},
+		};
+
+		Window.PointerDown += (s, e) =>
+		{
+			if (e.Button == Events.PointerButton.Right)
+			{
+				text.String = "Oh My Goodness!!!!!";
+				text.Font = text.Font with { Name = "Segoe Script", Size = 32, Weight = FontWeight.ExtraHeavy, };
+			}
+			else if (e.Button == Events.PointerButton.Left)
+			{
+				text.String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...";
+				text.Font = new()
+				{
+					Name = "Cascadia Mono",
+					Size = 10.0 * (96.0 / 72.0),
+					Style = FontStyle.Normal,
+					Weight = FontWeight.Normal,
+				};
+			}
+		};
+
 		Children = new()
 		{
 			(mainGrid = new LineGrid
@@ -113,36 +146,48 @@ internal class TestScene1 : Node
 				{
 					Geometry = new RectGeometry
 					{
-						Rect = new() { Position = new(-4, 0), Size = new(224, 24), },
+						[RectGeometry.RectProperty] = Text.SizeProperty[text].With<Rect>((size) =>
+						{
+							return new Rect { Position = new(-4.5, -4.5), Size = Vector2.Round(size) + new Vector2(8, 8), };
+						}),
 					},
 					DrawLayers = new()
 					{
 						new Fill(new ColorBrush { Color = new Color(0x333333ff), }),
+						new Stroke(new ColorBrush { Color = Colors.White, }, 1),
 					},
 				},
-				Transform = Transform.Identity with { Origin = new(0, 0), },
+				Transform = Transform.Identity with { Origin = new(8, 8), },
 				Children = new()
 				{
+					//(new GraphicNode
+					//{
+					//	Graphic = new TextGraphic
+					//	{
+					//		Text = text,
+					//		Brush = new ColorBrush { Color = Colors.Green, },
+					//	},
+					//	Transform = Transform.PixelIdentity.Translated(new(-1, 0)),
+					//}),
+					//(new GraphicNode
+					//{
+					//	Graphic = new TextGraphic
+					//	{
+					//		Text = text,
+					//		Brush = new ColorBrush { Color = Colors.Red, },
+					//	},
+					//	Transform = Transform.PixelIdentity.Translated(new(1, 0)),
+					//}),
 					(new GraphicNode
 					{
 						Graphic = new TextGraphic
 						{
-							Text = new Text
-							{
-								String = "This is one helluva piece of things! 😊",
-								Font = new()
-								{
-									Name = "Calibri",
-									Size = 14,
-									Style = FontStyle.Normal,
-									Weight = 400,
-								},
-							},
+							Text = text,
 							Brush = new ColorBrush { Color = Colors.White, },
 						},
-						Transform = Transform.PixelIdentity,
+						Transform = Transform.Identity,
 					}),
-				}
+				},
 			}),
 		};
 
