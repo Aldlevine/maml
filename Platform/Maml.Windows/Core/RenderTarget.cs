@@ -54,7 +54,14 @@ public partial class RenderTarget : IDisposable
 
 	unsafe public override void DrawText(Text text, Brush brush)
 	{
-		pRenderTarget->DrawTextLayout(default, text.GetResource(Engine.Singleton), brush.GetResource(pRenderTarget), D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+		var resource = text.GetResource(Engine.Singleton);
+
+		Rect rect = new Rect { Size = text.Size, };
+		pRenderTarget->PushAxisAlignedClip(rect.ToD2DRectF(), D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED);
+
+		pRenderTarget->DrawTextLayout(default, resource, brush.GetResource(pRenderTarget), D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+
+		pRenderTarget->PopAxisAlignedClip();
 	}
 
 	#endregion
@@ -96,6 +103,8 @@ public partial class RenderTarget : IDisposable
 
 		pRenderTarget->SetTextRenderingParams(pRenderingParams);
 		pRenderingParams->Release();
+
+		pRenderTarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 	}
 
 	unsafe protected virtual void Dispose(bool disposing)

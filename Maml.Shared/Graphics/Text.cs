@@ -34,6 +34,29 @@ public enum FlowDirection
 	RightToLeft,
 }
 
+public enum WrappingMode
+{
+	Normal,
+	None,
+	Character,
+	Word,
+}
+
+public abstract record LineHeight(double Value)
+{
+	public record Absolute(double Value): LineHeight(Value);
+	public record Relative(double Value): LineHeight(Value);
+
+	public static implicit operator LineHeight(double value) => new Absolute(value);
+	public static implicit operator double(LineHeight lineHeight) => lineHeight.Value;
+}
+
+public static class LineheightExtensions
+{
+	public static LineHeight Absolute(this double self) => new LineHeight.Absolute(self);
+	public static LineHeight Relative(this double self) => new LineHeight.Relative(self);
+}
+
 public struct Font
 {
 	public string Name;
@@ -74,41 +97,52 @@ public partial class Text : Resource
 		set => FlowDirectionProperty[this].Set(value);
 	}
 
+	public static BasicProperty<Text, WrappingMode> WrappingModeProperty = new(WrappingMode.Normal)
+	{
+		Changed = (self) => self.IsDirty = true,
+	};
+	public WrappingMode WrappingMode
+	{
+		get => WrappingModeProperty[this].Get();
+		set => WrappingModeProperty[this].Set(value);
+	}
+
+	public static BasicProperty<Text, LineHeight> LineHeightProperty = new(new LineHeight.Relative(1.2))
+	{
+		Changed = (self) => self.IsDirty = true,
+	};
+	public LineHeight LineHeight
+	{
+		get => LineHeightProperty[this].Get();
+		set => LineHeightProperty[this].Set(value);
+	}
+
+	private Vector2 maxSize = new(double.PositiveInfinity, double.PositiveInfinity);
+	public static ComputedProperty<Text, Vector2> MaxSizeProperty = new()
+	{
+		Get = (self) => self.maxSize,
+		Set = (self, value) => self.maxSize = Vector2.Max(value, Vector2.Zero),
+		Changed = (self) => self.IsDirty = true,
+	};
+	public Vector2 MaxSize
+	{
+		get => MaxSizeProperty[this].Get();
+		set => MaxSizeProperty[this].Set(value);
+	}
+
+	// Computed by layout, but not actually computed properties.
 	public static BasicProperty<Text, Vector2> SizeProperty = new(default);
 	public Vector2 Size
 	{
 		get => SizeProperty[this].Get();
 		private set => SizeProperty[this].Set(value);
 	}
+
+	public static BasicProperty<Text, uint> LineCountProperty = new(default);
+	public uint LineCount
+	{
+		get => LineCountProperty[this].Get();
+		private set => LineCountProperty[this].Set(value);
+	}
 }
 
-// public struct TextFormat
-// {
-// 	public Font Font;
-// 	public double LineHeight;
-// 	public FlowDirection FlowDirection;
-// }
-// 
-// public partial class TextLayout : Resource
-// {
-// 	public static BasicProperty<TextLayout, TextFormat> FormatProperty = new(default);
-// 	public TextFormat Format
-// 	{
-// 		get => FormatProperty[this].Get();
-// 		set => FormatProperty[this].Set(value);
-// 	}
-// 
-// 	public static BasicProperty<TextLayout, string> TextProperty = new("");
-// 	public string Text
-// 	{
-// 		get => TextProperty[this].Get();
-// 		set => TextProperty[this].Set(value);
-// 	}
-// 
-// 	public static BasicProperty<TextLayout, Rect> LayoutRectProperty = new(new());
-// 	public Rect LayoutRect
-// 	{
-// 		get => LayoutRectProperty[this].Get();
-// 		set => LayoutRectProperty[this].Set(value);
-// 	}
-// }
