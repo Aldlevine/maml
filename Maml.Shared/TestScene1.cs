@@ -3,6 +3,7 @@ using Maml.Math;
 using Maml.Observable;
 using Maml.Scene;
 using System;
+using Yoh.Text.Segmentation;
 
 namespace Maml;
 
@@ -13,11 +14,18 @@ internal class TestScene1 : Node
 	private Node centeringNode { get; } = default!;
 	private Node rotatingNode { get; } = default!;
 	private Node reticleNode { get; } = default!;
+	private Node twirlyNodeContainer { get; } = default!;
 
 	private Binding<WindowBase, Vector2> gridSizeBinding { get; } = default!;
 
 	public TestScene1() : base()
 	{
+		// TODO: We can use this to perform word breaking
+		//foreach (var boundary in "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!".EnumerateWordBoundaries())
+		//{
+		//	Console.WriteLine(boundary.ToString());
+		//}
+
 		gridSizeBinding =
 		WindowBase.SizeProperty[Window].With((Vector2 size) =>
 		{
@@ -29,7 +37,8 @@ internal class TestScene1 : Node
 
 		Text text = new Text
 		{
-			String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...",
+			String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!",
+			//String = "A Very LongWordThatHasNoBreakingPossibilities",
 			//String = "File	Edit	View	Git	Project	Build	Debug",
 			Font = new()
 			{
@@ -38,6 +47,10 @@ internal class TestScene1 : Node
 				Style = FontStyle.Normal,
 				Weight = FontWeight.Normal,
 			},
+			//MaxSize = new(150, 150),
+			LineHeight = 1.2.Relative(),
+			WrappingMode = WrappingMode.Normal,
+			[Text.MaxSizeProperty] = Window.SizeProperty[Window].With<Vector2>((v) => v - new Vector2(16, 16)),
 		};
 
 		Window.PointerDown += (s, e) =>
@@ -46,10 +59,11 @@ internal class TestScene1 : Node
 			{
 				text.String = "Oh My Goodness!!!!!";
 				text.Font = text.Font with { Name = "Segoe Script", Size = 32, Weight = FontWeight.ExtraHeavy, };
+				text.WrappingMode = WrappingMode.Character;
 			}
 			else if (e.Button == Events.PointerButton.Left)
 			{
-				text.String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...";
+				text.String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!";
 				text.Font = new()
 				{
 					Name = "Cascadia Mono",
@@ -57,6 +71,7 @@ internal class TestScene1 : Node
 					Style = FontStyle.Normal,
 					Weight = FontWeight.Normal,
 				};
+				text.WrappingMode = WrappingMode.Normal;
 			}
 		};
 
@@ -81,6 +96,7 @@ internal class TestScene1 : Node
 
 			(centeringNode = new Node
 			{
+				Visible = false,
 				[OriginProperty] = WindowBase.SizeProperty[Window].With((Vector2 v) => v / 2),
 				Children = new()
 				{
@@ -140,6 +156,11 @@ internal class TestScene1 : Node
 				},
 			}),
 
+			(twirlyNodeContainer = new Node
+			{
+				[Node.VisibleProperty] = Window.SizeProperty[Window].With<bool>((v) => v.X > 500 && v.Y > 500),
+			}),
+
 			(new GraphicNode
 			{
 				Graphic = new GeometryGraphic
@@ -160,24 +181,6 @@ internal class TestScene1 : Node
 				Transform = Transform.Identity with { Origin = new(8, 8), },
 				Children = new()
 				{
-					//(new GraphicNode
-					//{
-					//	Graphic = new TextGraphic
-					//	{
-					//		Text = text,
-					//		Brush = new ColorBrush { Color = Colors.Green, },
-					//	},
-					//	Transform = Transform.PixelIdentity.Translated(new(-1, 0)),
-					//}),
-					//(new GraphicNode
-					//{
-					//	Graphic = new TextGraphic
-					//	{
-					//		Text = text,
-					//		Brush = new ColorBrush { Color = Colors.Red, },
-					//	},
-					//	Transform = Transform.PixelIdentity.Translated(new(1, 0)),
-					//}),
 					(new GraphicNode
 					{
 						Graphic = new TextGraphic
@@ -193,7 +196,7 @@ internal class TestScene1 : Node
 
 		for (int i = 0; i < 100; i++)
 		{
-			Children.Add(new TwirlyNode
+			twirlyNodeContainer.Children.Add(new TwirlyNode
 			{
 				Origin = new(
 					Random.Shared.Next((int)Window.Size.X),
