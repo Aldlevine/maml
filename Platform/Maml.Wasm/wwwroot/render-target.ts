@@ -4,6 +4,37 @@ type RenderTargetInterop = {};
 type Geometry = Path2D;
 type Brush = string | CanvasGradient | CanvasPattern;
 
+enum FontStyle
+{
+	Normal,
+	Oblique,
+	Italic,
+};
+
+enum FlowDirection
+{
+	LeftToRight,
+	RightToLeft,
+};
+
+enum WrappingMode
+{
+	Normal,
+	None,
+	Character,
+	Word,
+};
+
+type Text = {
+	fontName: string,
+	fontSize: number,
+	fontStyle: FontStyle,
+	fontWeight: number,
+	//flowDirection: FlowDirection,
+	lineHeight: number,
+	lines: string[],
+};
+
 enum WasmDrawCommand
 {
 	Clear,
@@ -12,6 +43,7 @@ enum WasmDrawCommand
 	StrokeRect,
 	FillGeometry,
 	StrokeGeometry,
+	FillText,
 };
 
 class RenderTarget {
@@ -23,6 +55,8 @@ class RenderTarget {
 	private currentGeometryId: number = 0;
 	private readonly brushes: { [id: number]: Brush } = {};
 	private currentBrushId: number = 0;
+	private readonly texts: { [id: number]: Text } = {};
+	private currentTextId: number = 0;
 
 	public async init(): Promise<void> {
 		wasm.setModuleImports("render-target.js", this);
@@ -30,7 +64,7 @@ class RenderTarget {
 
 		this.canvases[0] = <HTMLCanvasElement>document.getElementById("canvas");
 		this.contexts[0] = this.canvases[0].getContext("2d", {
-			alpha: true,
+			alpha: false,
 		});
 	}
 
@@ -47,6 +81,14 @@ class RenderTarget {
 						const b = commandBuffer[cmdIdx++];
 						const a = commandBuffer[cmdIdx++];
 						this.clear(ctx, r, g, b, a);
+					}
+					break;
+
+				case WasmDrawCommand.SetTransform:
+					{
+						const matrixArray = new Float64Array(commandBuffer.slice(cmdIdx, cmdIdx + 6));
+						cmdIdx += 6;
+						this.setTransform(ctx, matrixArray);
 					}
 					break;
 
@@ -90,13 +132,11 @@ class RenderTarget {
 					}
 					break;
 
-				case WasmDrawCommand.SetTransform:
+				case WasmDrawCommand.FillText:
 					{
-						// const matrixArray = new Float64Array(commandBuffer, cmdIdx * 8, 6);
-						// const matrixArray = new Float64Array(commandBuffer, cmdIdx * 8, 6);
-						const matrixArray = new Float64Array(commandBuffer.slice(cmdIdx, cmdIdx + 6));
-						cmdIdx += 6;
-						this.setTransform(ctx, matrixArray);
+						const textId = commandBuffer[cmdIdx++];
+						const brushId = commandBuffer[cmdIdx++];
+						this.fillText(ctx, textId, brushId);
 					}
 					break;
 			}
@@ -105,8 +145,15 @@ class RenderTarget {
 
 	private clear(ctx: CanvasRenderingContext2D, r: number, g: number, b: number, a: number): void {
 		ctx.resetTransform();
-		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-		document.body.style.background = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
+		// ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		const color = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
+		ctx.fillStyle = color;
+		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		document.body.style.background = color;
+	}
+
+	private setTransform(ctx: CanvasRenderingContext2D, matrixArray: Float64Array): void {
+		ctx.setTransform(DOMMatrix.fromFloat64Array(matrixArray));
 	}
 
 	private fillGeometry(ctx: CanvasRenderingContext2D, geometryId: number, brushId: number): void {
@@ -131,8 +178,16 @@ class RenderTarget {
 		ctx.strokeRect(x, y, width, height);
 	}
 
-	private setTransform(ctx: CanvasRenderingContext2D, matrixArray: Float64Array): void {
-		ctx.setTransform(DOMMatrix.fromFloat64Array(matrixArray));
+	private fillText(ctx: CanvasRenderingContext2D, textId: number, brushId: number) {
+		ctx.fillStyle = this.brushes[brushId];
+		const text = this.texts[textId];
+
+		ctx.font = `${text.fontWeight} ${text.fontSize}px "${text.fontName}"`;
+		ctx.textBaseline = "top";
+		const baseline = (text.lineHeight - text.fontSize) / 2;
+		for (let i = 0, ii = text.lines.length; i < ii; i++) {
+			ctx.fillText(text.lines[i], 0, baseline + (i * text.lineHeight));
+		}
 	}
 
 	//private clear(id: number, color: string): void {
@@ -252,6 +307,81 @@ class RenderTarget {
 	private makeColorBrush(id: number, color: string): number {
 		this.brushes[this.currentBrushId] = color;
 		return this.currentBrushId++;
+	}
+
+	private releaseText(id: number, textId: number): void {
+		delete this.texts[textId];
+	}
+
+	private makeText(
+		id: number,
+		textSegments: string[],
+		wrappingMode: WrappingMode,
+		lineHeight: number,
+		fontName: string,
+		fontSize: number,
+		fontStyle: FontStyle,
+		fontWeight: number,
+		maxSizeX: number,
+		maxSizeY: number,
+	): Float64Array {
+		const ctx = this.contexts[id];
+		ctx.font = `${fontWeight} ${fontSize}px "${fontName}"`;
+		ctx.textBaseline = "top";
+
+		const lines: string[] = [];
+
+		//if (wrappingMode == WrappingMode.Normal)
+		{
+			let curLine = "";
+			while (textSegments.length > 0) {
+				let next = textSegments.shift();
+				if (next == "\n") {
+					lines.push(curLine);
+					curLine = "";
+					continue;
+				}
+				let metrics = ctx.measureText(curLine + next);
+				if (metrics.width > maxSizeX) {
+					if (curLine == "") {
+						// We have a word that's too long
+						curLine += next;
+						next = "";
+					}
+					curLine = curLine.replace(/ +$/, "");
+					lines.push(curLine);
+					curLine = "";
+					if (next != " ") {
+						curLine += next;
+					}
+				}
+				else {
+					curLine += next;
+				}
+			}
+			if (curLine.length > 0) {
+				lines.push(curLine);
+			}
+		}
+
+		const height: number = lineHeight * lines.length;
+		let width: number = 0;
+		for (let line of lines) {
+			let metrics = ctx.measureText(line);
+			width = Math.max(width, metrics.width);
+		}
+
+		const text: Text = {
+			fontName,
+			fontSize,
+			fontStyle,
+			fontWeight,
+			lineHeight,
+			lines,
+		};
+		this.texts[this.currentTextId] = text;
+
+		return new Float64Array([this.currentTextId++, lines.length, width, height]);
 	}
 }
 

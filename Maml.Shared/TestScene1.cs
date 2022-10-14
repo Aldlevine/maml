@@ -27,7 +27,7 @@ internal class TestScene1 : Node
 		//}
 
 		gridSizeBinding =
-		WindowBase.SizeProperty[Window].With((Vector2 size) =>
+		WindowBase.SizeProperty[Window].With(size =>
 		{
 			var max = double.Max(size.X, size.Y);
 			var side = double.Sqrt(2 * max * max);
@@ -50,7 +50,8 @@ internal class TestScene1 : Node
 			//MaxSize = new(150, 150),
 			LineHeight = 1.2.Relative(),
 			WrappingMode = WrappingMode.Normal,
-			[Text.MaxSizeProperty] = Window.SizeProperty[Window].With<Vector2>((v) => v - new Vector2(16, 16)),
+			[Text.MaxSizeProperty] = Window.SizeProperty[Window].With(size =>
+				size - new Vector2(16, 16)),
 		};
 
 		Window.PointerDown += (s, e) =>
@@ -97,7 +98,7 @@ internal class TestScene1 : Node
 			(centeringNode = new Node
 			{
 				Visible = false,
-				[OriginProperty] = WindowBase.SizeProperty[Window].With((Vector2 v) => v / 2),
+				[OriginProperty] = WindowBase.SizeProperty[Window].With(size => size / 2),
 				Children = new()
 				{
 					(rotatingNode = new Node
@@ -113,7 +114,7 @@ internal class TestScene1 : Node
 									new Stroke(new ColorBrush { Color = Colors.DarkViolet, }, 3),
 								},
 								[LineGrid.SizeProperty] = gridSizeBinding,
-								[OriginProperty] = gridSizeBinding.With((Vector2 v) => v / -2),
+								[OriginProperty] = gridSizeBinding.With(size => size / -2),
 							}),
 						},
 					}),
@@ -158,7 +159,7 @@ internal class TestScene1 : Node
 
 			(twirlyNodeContainer = new Node
 			{
-				[Node.VisibleProperty] = Window.SizeProperty[Window].With<bool>((v) => v.X > 500 && v.Y > 500),
+				[Node.VisibleProperty] = Window.SizeProperty[Window].With(size => size.X > 500 && size.Y > 500),
 			}),
 
 			(new GraphicNode
@@ -167,10 +168,12 @@ internal class TestScene1 : Node
 				{
 					Geometry = new RectGeometry
 					{
-						[RectGeometry.RectProperty] = Text.SizeProperty[text].With<Rect>((size) =>
-						{
-							return new Rect { Position = new(-4.5, -4.5), Size = Vector2.Round(size) + new Vector2(8, 8), };
-						}),
+						[RectGeometry.RectProperty] = Text.SizeProperty[text].With(size =>
+							new Rect
+							{
+								Position = new(-4.5, -4.5),
+								Size = Vector2.Round(size) + new Vector2(8, 8),
+							}),
 					},
 					DrawLayers = new()
 					{

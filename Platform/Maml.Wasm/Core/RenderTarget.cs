@@ -1,8 +1,10 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading;
+using Yoh.Text.Segmentation;
 
 namespace Maml;
 public partial class RenderTarget
@@ -38,6 +40,11 @@ public partial class RenderTarget
 				break;
 		}
 	}
+
+	public override void DrawText(Text text, Brush brush)
+	{
+		FillText(text.GetResource(this), brush.GetResource(this));
+	}
 	#endregion
 
 	#region Internal
@@ -52,6 +59,7 @@ public partial class RenderTarget
 		StrokeRect,
 		FillGeometry,
 		StrokeGeometry,
+		FillText,
 	}
 	internal List<double> DrawCommandBuffer { get; } = new(10_000);
 
@@ -114,6 +122,15 @@ public partial class RenderTarget
 		});
 	}
 
+	private void FillText(int textId, int brushId)
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.FillText,
+			textId, brushId,
+		});
+	}
+
 	[JSImport("processDrawCommands", "render-target.js")]
 	private static partial void ProcessDrawCommands(int canvasId, [JSMarshalAs<JSType.Array<JSType.Number>>] double[] commandBuffer);
 	internal void ProcessDrawCommands(double[] commandBuffer) => ProcessDrawCommands(CanvasId, commandBuffer);
@@ -144,6 +161,48 @@ public partial class RenderTarget
 	[JSImport("makeColorBrush", "render-target.js")]
 	private static partial int MakeColorBrush(int id, string color);
 	internal int MakeColorBrush(Color color) => MakeColorBrush(CanvasId, color.ToCSSColor());
+
+	[JSImport("releaseText", "render-target.js")]
+	private static partial void ReleaseText(int id, int textId);
+	internal void ReleaseText(int textId) => ReleaseText(CanvasId, textId);
+
+	[JSImport("makeText", "render-target.js")]
+	private static partial double[] MakeText(
+		int id,
+		[JSMarshalAs<JSType.Array<JSType.String>>] string[] textSegments,
+		int wrappingMode,
+		double lineHeight,
+		string fontName,
+		double fontSize,
+		int fontStyle,
+		int fontWeight,
+		double maxSizeX,
+		double maxSizeY);
+	internal (int id, uint lineCount, Vector2 size) MakeText(Text text)
+	{
+		List<string> textSegments = new();
+		foreach (var segment in text.String.EnumerateWordBoundaries())
+		{
+			textSegments.Add(segment.ToString());
+		}
+		double lineHeight = text.LineHeight switch
+		{
+			LineHeight.Relative => text.LineHeight.Value * text.Font.Size,
+			_ => text.LineHeight.Value
+		};
+		var data = MakeText(
+			CanvasId,
+			textSegments.ToArray(),
+			(int)text.WrappingMode,
+			lineHeight,
+			text.Font.Name,
+			text.Font.Size,
+			(int)text.Font.Style,
+			(int)text.Font.Weight,
+			text.MaxSize.X,
+			text.MaxSize.Y);
+		return ((int)data[0], (uint)data[1], new Vector2(data[2], data[3]));
+	}
 
 	#endregion
 }

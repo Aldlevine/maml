@@ -5,10 +5,9 @@ namespace Maml.Graphics;
 unsafe public abstract partial class Geometry : Resource
 {
 	internal ID2D1Geometry* pResource;
-	// internal abstract void MakeResource(ID2D1Factory* pFactory);
+
 	internal abstract void MakeResource(Engine engine);
-	// internal ID2D1Geometry* GetResource(ID2D1Factory* pFactory, bool noCache = false)
-	// internal ID2D1Geometry* GetResource(ID2D1Factory* pFactory, bool noCache = false)
+
 	internal ID2D1Geometry* GetResource(Engine engine, bool noCache = false)
 	{
 		if (pResource == null)
