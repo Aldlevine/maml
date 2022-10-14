@@ -15,10 +15,10 @@ class MamlWindow {
             this.interop = yield wasm.getAssemblyExports("Maml.Wasm", "Maml.Window");
             window.onorientationchange =
                 window.onresize = (_evt) => {
-                    this.interop.HandleResize(0, window.innerWidth, window.innerHeight);
+                    this.interop.HandleResize(0, Math.floor(window.innerWidth * devicePixelRatio), Math.floor(window.innerHeight * devicePixelRatio), devicePixelRatio);
                     const canvas = document.getElementById("canvas");
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
+                    canvas.width = window.innerWidth * devicePixelRatio;
+                    canvas.height = window.innerHeight * devicePixelRatio;
                     canvas.style.width = `${window.innerWidth}px`;
                     canvas.style.height = `${window.innerHeight}px`;
                 };

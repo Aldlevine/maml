@@ -72,6 +72,7 @@ class RenderTarget {
 	private processDrawCommands(canvasId: number, commandBuffer: Float64Array): void {
 		let cmdIdx = 0;
 		const ctx = this.contexts[canvasId];
+
 		while (cmdIdx < commandBuffer.length) {
 			let cmd = <WasmDrawCommand>commandBuffer[cmdIdx++];
 			switch (cmd) {
@@ -154,7 +155,12 @@ class RenderTarget {
 	}
 
 	private setTransform(ctx: CanvasRenderingContext2D, matrixArray: Float64Array): void {
-		ctx.setTransform(DOMMatrix.fromFloat64Array(matrixArray));
+		const scale = new DOMMatrix([devicePixelRatio, 0, 0, devicePixelRatio, 0, 0]);
+		ctx.resetTransform();
+		ctx.scale(devicePixelRatio, devicePixelRatio);
+		//ctx.transform(DOMMatrix.fromFloat64Array(matrixArray));
+		ctx.transform(matrixArray[0], matrixArray[1], matrixArray[2], matrixArray[3], matrixArray[4], matrixArray[5]);
+		//ctx.scale(devicePixelRatio, devicePixelRatio);
 	}
 
 	private fillGeometry(ctx: CanvasRenderingContext2D, geometryId: number, brushId: number): void {
@@ -326,7 +332,7 @@ class RenderTarget {
 		maxSizeX: number,
 		maxSizeY: number,
 	): Float64Array {
-		(<any>this.textMeasurer.style).zoom = 1 / devicePixelRatio;
+		//(<any>this.textMeasurer.style).zoom = 1 / devicePixelRatio;
 		this.textMeasurer.style.font = `${fontWeight} ${fontSize}px "${fontName}"`;
 
 		this.textMeasurer.innerText = " ";

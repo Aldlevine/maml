@@ -14,13 +14,13 @@ public abstract class WindowBase : ObservableObject
 	public SceneTree SceneTree { get; init; } = new();
 
 	// TODO: this might need to be implementation specific
-	public static ComputedProperty<WindowBase, Vector2> SizeProperty { get; } = new()
+	public static ComputedProperty<WindowBase, Vector2> PixelSizeProperty { get; } = new()
 	{
-		Get = (window) => window.GetSize(),
+		Get = (window) => window.GetPixelSize(),
 		Cached = false,
 	};
-	public Vector2 Size => SizeProperty[this].Get();
-	protected abstract Vector2 GetSize();
+	public Vector2 PixelSize => PixelSizeProperty[this].Get();
+	protected abstract Vector2 GetPixelSize();
 
 	public static ComputedProperty<WindowBase, double> DpiRatioProperty { get; } = new()
 	{
@@ -28,6 +28,19 @@ public abstract class WindowBase : ObservableObject
 	};
 	public double DpiRatio => DpiRatioProperty[this].Get();
 	protected abstract double GetDpiRatio();
+
+	public static ComputedProperty<WindowBase, Vector2> SizeProperty { get; } = new()
+	{
+		Get = (window) => window.GetPixelSize() / window.GetDpiRatio(),
+		Cached = false,
+		Dependencies = (window) => new Binding[]
+		{
+			PixelSizeProperty[window],
+			DpiRatioProperty[window]
+		},
+	};
+	public Vector2 Size => SizeProperty[this].Get();
+
 
 	public abstract event EventHandler<ResizeEvent>? Resize;
 	public abstract event EventHandler<PointerEvent>? PointerMove;
@@ -66,7 +79,7 @@ public abstract class WindowBase : ObservableObject
 	public WindowBase()
 	{
 		RegisterWindow((Window)this);
-		Engine.Singleton.Animator.NextFrame += (s, e) => SizeProperty[this].SetDirty();
+		Engine.Singleton.Animator.NextFrame += (s, e) => PixelSizeProperty[this].SetDirty();
 	}
 
 	~WindowBase()

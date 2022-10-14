@@ -1,7 +1,7 @@
 ﻿import { wasm } from "./wasm.js";
 
 type MamlWindowInterop = {
-	HandleResize: (id: number, width: number, height: number) => void;
+	HandleResize: (id: number, width: number, height: number, dpi: number) => void;
 	HandlePointerMove: (id: number, x: number, y: number, iButton: number, iButtonMask: number) => void;
 	HandlePointerDown: (id: number, x: number, y: number, iButton: number, iButtonMask: number) => void;
 	HandlePointerUp: (id: number, x: number, y: number, iButton: number, iButtonMask: number) => void;
@@ -21,10 +21,10 @@ class MamlWindow {
 
 		window.onorientationchange =
 		window.onresize = (_evt: UIEvent) => {
-			this.interop.HandleResize(0, window.innerWidth, window.innerHeight);
+			this.interop.HandleResize(0, Math.floor(window.innerWidth * devicePixelRatio), Math.floor(window.innerHeight * devicePixelRatio), devicePixelRatio);
 			const canvas = <HTMLCanvasElement>document.getElementById("canvas");
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
+			canvas.width = window.innerWidth * devicePixelRatio;
+			canvas.height = window.innerHeight * devicePixelRatio;
 			canvas.style.width = `${window.innerWidth}px`;
 			canvas.style.height = `${window.innerHeight}px`;
 		};

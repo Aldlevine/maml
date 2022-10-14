@@ -42,7 +42,7 @@ internal class TestScene1 : Node
 			//String = "File	Edit	View	Git	Project	Build	Debug",
 			Font = new()
 			{
-				Name = "Consolas",
+				Name = "Arial",
 				Size = 10.0 * (96.0 / 72.0),
 				Style = FontStyle.Normal,
 				Weight = FontWeight.Normal,
@@ -67,7 +67,7 @@ internal class TestScene1 : Node
 				text.String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!";
 				text.Font = new()
 				{
-					Name = "Consolas",
+					Name = "Arial",
 					Size = 10.0 * (96.0 / 72.0),
 					Style = FontStyle.Normal,
 					Weight = FontWeight.Normal,
@@ -159,7 +159,7 @@ internal class TestScene1 : Node
 
 			(twirlyNodeContainer = new Node
 			{
-				[Node.VisibleProperty] = Window.SizeProperty[Window].With(size => size.X > 500 && size.Y > 500),
+				[Node.VisibleProperty] = Window.SizeProperty[Window].With(size => size.Y > 500),
 			}),
 
 			(new GraphicNode

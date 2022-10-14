@@ -25,7 +25,7 @@ public partial class Window
 		};
 	}
 
-	protected override Vector2 GetSize()
+	protected override Vector2 GetPixelSize()
 	{
 		GetClientRect(hWnd, out var rc);
 		return new Vector2(rc.right - rc.left, rc.bottom - rc.top);
@@ -142,7 +142,7 @@ public partial class Window
 		D2D1_HWND_RENDER_TARGET_PROPERTIES hWndRenderTargetProps = new()
 		{
 			hwnd = hWnd,
-			pixelSize = Size.ToD2DSizeU(),
+			pixelSize = PixelSize.ToD2DSizeU(),
 			presentOptions = presentMode,
 		};
 
@@ -217,17 +217,17 @@ public partial class Window
 			float dpi = GetDpiForWindow(hWnd);
 			if (syncRenderTarget != null)
 			{
-				((ID2D1HwndRenderTarget*)syncRenderTarget.pRenderTarget)->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
+				((ID2D1HwndRenderTarget*)syncRenderTarget.pRenderTarget)->Resize(PixelSize.ToD2DSizeU()).ThrowOnFailure();
 				((ID2D1HwndRenderTarget*)syncRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
 			}
 			if (immediateRenderTarget != null)
 			{
-				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->Resize(Size.ToD2DSizeU()).ThrowOnFailure();
+				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->Resize(PixelSize.ToD2DSizeU()).ThrowOnFailure();
 				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
 			}
 
-			Resize?.Invoke(this, new ResizeEvent { Size = Size });
-			SizeProperty[this].SetDirty();
+			Resize?.Invoke(this, new ResizeEvent { Size = PixelSize });
+			PixelSizeProperty[this].SetDirty();
 			DpiRatioProperty[this].SetDirty();
 		}
 	}

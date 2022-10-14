@@ -139,7 +139,12 @@ class RenderTarget {
         document.body.style.background = color;
     }
     setTransform(ctx, matrixArray) {
-        ctx.setTransform(DOMMatrix.fromFloat64Array(matrixArray));
+        const scale = new DOMMatrix([devicePixelRatio, 0, 0, devicePixelRatio, 0, 0]);
+        ctx.resetTransform();
+        ctx.scale(devicePixelRatio, devicePixelRatio);
+        //ctx.transform(DOMMatrix.fromFloat64Array(matrixArray));
+        ctx.transform(matrixArray[0], matrixArray[1], matrixArray[2], matrixArray[3], matrixArray[4], matrixArray[5]);
+        //ctx.scale(devicePixelRatio, devicePixelRatio);
     }
     fillGeometry(ctx, geometryId, brushId) {
         ctx.fillStyle = this.brushes[brushId];
@@ -276,7 +281,7 @@ class RenderTarget {
         delete this.texts[textId];
     }
     makeText(id, text, wrappingMode, lineHeight, fontName, fontSize, fontStyle, fontWeight, maxSizeX, maxSizeY) {
-        this.textMeasurer.style.zoom = 1 / devicePixelRatio;
+        //(<any>this.textMeasurer.style).zoom = 1 / devicePixelRatio;
         this.textMeasurer.style.font = `${fontWeight} ${fontSize}px "${fontName}"`;
         this.textMeasurer.innerText = " ";
         const spaceWidth = this.textMeasurer.getClientRects()[0].width;
