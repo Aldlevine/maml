@@ -42,7 +42,7 @@ internal class TestScene1 : Node
 			//String = "File	Edit	View	Git	Project	Build	Debug",
 			Font = new()
 			{
-				Name = "Cascadia Mono",
+				Name = "Consolas",
 				Size = 10.0 * (96.0 / 72.0),
 				Style = FontStyle.Normal,
 				Weight = FontWeight.Normal,
@@ -67,7 +67,7 @@ internal class TestScene1 : Node
 				text.String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!";
 				text.Font = new()
 				{
-					Name = "Cascadia Mono",
+					Name = "Consolas",
 					Size = 10.0 * (96.0 / 72.0),
 					Style = FontStyle.Normal,
 					Weight = FontWeight.Normal,

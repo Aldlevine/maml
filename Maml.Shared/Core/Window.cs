@@ -21,7 +21,13 @@ public abstract class WindowBase : ObservableObject
 	};
 	public Vector2 Size => SizeProperty[this].Get();
 	protected abstract Vector2 GetSize();
-	public abstract double DpiRatio { get; }
+
+	public static ComputedProperty<WindowBase, double> DpiRatioProperty { get; } = new()
+	{
+		Get = (window) => window.GetDpiRatio(),
+	};
+	public double DpiRatio => DpiRatioProperty[this].Get();
+	protected abstract double GetDpiRatio();
 
 	public abstract event EventHandler<ResizeEvent>? Resize;
 	public abstract event EventHandler<PointerEvent>? PointerMove;

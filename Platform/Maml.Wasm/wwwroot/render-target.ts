@@ -50,6 +50,7 @@ class RenderTarget {
 	private interop: RenderTargetInterop;
 	private readonly canvases: { [id: number]: HTMLCanvasElement } = {};
 	private readonly contexts: { [id: number]: CanvasRenderingContext2D } = {};
+	private readonly textMeasurer: HTMLElement = document.getElementById("text-measurer");
 
 	private readonly geometries: { [id: number]: Geometry } = {};
 	private currentGeometryId: number = 0;
@@ -315,7 +316,7 @@ class RenderTarget {
 
 	private makeText(
 		id: number,
-		textSegments: string[],
+		text: string,
 		wrappingMode: WrappingMode,
 		lineHeight: number,
 		fontName: string,
@@ -325,53 +326,76 @@ class RenderTarget {
 		maxSizeX: number,
 		maxSizeY: number,
 	): Float64Array {
-		const ctx = this.contexts[id];
-		ctx.font = `${fontWeight} ${fontSize}px "${fontName}"`;
-		ctx.textBaseline = "top";
+		(<any>this.textMeasurer.style).zoom = 1 / devicePixelRatio;
+		this.textMeasurer.style.font = `${fontWeight} ${fontSize}px "${fontName}"`;
 
-		const lines: string[] = [];
+		this.textMeasurer.innerText = " ";
+		const spaceWidth = this.textMeasurer.getClientRects()[0].width;
 
-		//if (wrappingMode == WrappingMode.Normal)
-		{
-			let curLine = "";
-			while (textSegments.length > 0) {
-				let next = textSegments.shift();
-				if (next == "\n") {
-					lines.push(curLine);
-					curLine = "";
-					continue;
-				}
-				let metrics = ctx.measureText(curLine + next);
-				if (metrics.width > maxSizeX) {
-					if (curLine == "") {
-						// We have a word that's too long
-						curLine += next;
-						next = "";
-					}
-					curLine = curLine.replace(/ +$/, "");
-					lines.push(curLine);
-					curLine = "";
-					if (next != " ") {
-						curLine += next;
-					}
-				}
-				else {
-					curLine += next;
-				}
-			}
-			if (curLine.length > 0) {
-				lines.push(curLine);
+		switch (wrappingMode) {
+			case WrappingMode.None:
+				this.textMeasurer.className = "none";
+				break;
+			case WrappingMode.Normal:
+				this.textMeasurer.className = "normal";
+				break;
+			case WrappingMode.Word:
+				this.textMeasurer.className = "word";
+				break;
+			case WrappingMode.Character:
+				this.textMeasurer.className = "character";
+				// insert zero-width space between each character
+				text = [...text].join("\u200b");
+				break;
+		}
+		
+		this.textMeasurer.style.width = `${maxSizeX}px`;
+		this.textMeasurer.innerText = text;
+		for (let textNode of <any>this.textMeasurer.childNodes) {
+			if (!(textNode instanceof Text)) { continue; }
+			while (textNode.length > 1) {
+				textNode.splitText(textNode.length - 1);
 			}
 		}
 
-		const height: number = lineHeight * lines.length;
-		let width: number = 0;
-		for (let line of lines) {
-			let metrics = ctx.measureText(line);
-			width = Math.max(width, metrics.width);
+		const range = document.createRange();
+		range.selectNodeContents(this.textMeasurer);
+		
+		const lines = [];
+		let curLine = "";
+		let lastTop = 0;
+		let lastRight = 0;
+		let width = 0;
+		for (let t of <any>this.textMeasurer.childNodes) {
+			range.selectNode(t);
+			const rect = range.getClientRects()[0];
+			width = Math.max(rect.right, width);
+			if (rect.top > lastTop) {
+				// new line
+				if (curLine != "") {
+					lines.push(curLine);
+				}
+				curLine = t.textContent;
+			}
+			else {
+				if (rect.left > lastRight) {
+					if (spaceWidth > 0) {
+						const numSpaces = Math.floor((rect.left - lastRight) / spaceWidth);
+						const spaces = Array(numSpaces).fill(" ").join("");
+						curLine += spaces;
+					}
+				}
+				curLine += t.textContent;
+			}
+			
+			lastTop = rect.top;
+			lastRight = rect.right;
+		}
+		if (curLine != "") {
+			lines.push(curLine);
 		}
 
-		const text: Text = {
+		const textObj: Text = {
 			fontName,
 			fontSize,
 			fontStyle,
@@ -379,9 +403,11 @@ class RenderTarget {
 			lineHeight,
 			lines,
 		};
-		this.texts[this.currentTextId] = text;
+		this.texts[this.currentTextId] = textObj;
+		const height = lines.length * lineHeight;
 
 		return new Float64Array([this.currentTextId++, lines.length, width, height]);
+	
 	}
 }
 

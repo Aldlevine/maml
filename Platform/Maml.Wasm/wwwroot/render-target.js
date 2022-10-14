@@ -44,6 +44,7 @@ class RenderTarget {
     constructor() {
         this.canvases = {};
         this.contexts = {};
+        this.textMeasurer = document.getElementById("text-measurer");
         this.geometries = {};
         this.currentGeometryId = 0;
         this.brushes = {};
@@ -274,50 +275,72 @@ class RenderTarget {
     releaseText(id, textId) {
         delete this.texts[textId];
     }
-    makeText(id, textSegments, wrappingMode, lineHeight, fontName, fontSize, fontStyle, fontWeight, maxSizeX, maxSizeY) {
-        const ctx = this.contexts[id];
-        ctx.font = `${fontWeight} ${fontSize}px "${fontName}"`;
-        ctx.textBaseline = "top";
+    makeText(id, text, wrappingMode, lineHeight, fontName, fontSize, fontStyle, fontWeight, maxSizeX, maxSizeY) {
+        this.textMeasurer.style.zoom = 1 / devicePixelRatio;
+        this.textMeasurer.style.font = `${fontWeight} ${fontSize}px "${fontName}"`;
+        this.textMeasurer.innerText = " ";
+        const spaceWidth = this.textMeasurer.getClientRects()[0].width;
+        switch (wrappingMode) {
+            case WrappingMode.None:
+                this.textMeasurer.className = "none";
+                break;
+            case WrappingMode.Normal:
+                this.textMeasurer.className = "normal";
+                break;
+            case WrappingMode.Word:
+                this.textMeasurer.className = "word";
+                break;
+            case WrappingMode.Character:
+                this.textMeasurer.className = "character";
+                // insert zero-width space between each character
+                text = [...text].join("\u200b");
+                break;
+        }
+        this.textMeasurer.style.width = `${maxSizeX}px`;
+        this.textMeasurer.innerText = text;
+        for (let textNode of this.textMeasurer.childNodes) {
+            if (!(textNode instanceof Text)) {
+                continue;
+            }
+            while (textNode.length > 1) {
+                textNode.splitText(textNode.length - 1);
+            }
+        }
+        const range = document.createRange();
+        range.selectNodeContents(this.textMeasurer);
         const lines = [];
-        //if (wrappingMode == WrappingMode.Normal)
-        {
-            let curLine = "";
-            while (textSegments.length > 0) {
-                let next = textSegments.shift();
-                if (next == "\n") {
-                    lines.push(curLine);
-                    curLine = "";
-                    continue;
-                }
-                let metrics = ctx.measureText(curLine + next);
-                if (metrics.width > maxSizeX) {
-                    if (curLine == "") {
-                        // We have a word that's too long
-                        curLine += next;
-                        next = "";
-                    }
-                    curLine = curLine.replace(/ +$/, "");
-                    lines.push(curLine);
-                    curLine = "";
-                    if (next != " ") {
-                        curLine += next;
-                    }
-                }
-                else {
-                    curLine += next;
-                }
-            }
-            if (curLine.length > 0) {
-                lines.push(curLine);
-            }
-        }
-        const height = lineHeight * lines.length;
+        let curLine = "";
+        let lastTop = 0;
+        let lastRight = 0;
         let width = 0;
-        for (let line of lines) {
-            let metrics = ctx.measureText(line);
-            width = Math.max(width, metrics.width);
+        for (let t of this.textMeasurer.childNodes) {
+            range.selectNode(t);
+            const rect = range.getClientRects()[0];
+            width = Math.max(rect.right, width);
+            if (rect.top > lastTop) {
+                // new line
+                if (curLine != "") {
+                    lines.push(curLine);
+                }
+                curLine = t.textContent;
+            }
+            else {
+                if (rect.left > lastRight) {
+                    if (spaceWidth > 0) {
+                        const numSpaces = Math.floor((rect.left - lastRight) / spaceWidth);
+                        const spaces = Array(numSpaces).fill(" ").join("");
+                        curLine += spaces;
+                    }
+                }
+                curLine += t.textContent;
+            }
+            lastTop = rect.top;
+            lastRight = rect.right;
         }
-        const text = {
+        if (curLine != "") {
+            lines.push(curLine);
+        }
+        const textObj = {
             fontName,
             fontSize,
             fontStyle,
@@ -325,7 +348,8 @@ class RenderTarget {
             lineHeight,
             lines,
         };
-        this.texts[this.currentTextId] = text;
+        this.texts[this.currentTextId] = textObj;
+        const height = lines.length * lineHeight;
         return new Float64Array([this.currentTextId++, lines.length, width, height]);
     }
 }

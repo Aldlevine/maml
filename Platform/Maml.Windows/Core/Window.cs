@@ -31,7 +31,7 @@ public partial class Window
 		return new Vector2(rc.right - rc.left, rc.bottom - rc.top);
 	}
 
-	public override double DpiRatio => GetDpiForWindow(hWnd) * stdDpiInv;
+	protected override double GetDpiRatio() => GetDpiForWindow(hWnd) * stdDpiInv;
 
 	public override event EventHandler<ResizeEvent>? Resize;
 	public override event EventHandler<PointerEvent>? PointerMove;
@@ -228,6 +228,7 @@ public partial class Window
 
 			Resize?.Invoke(this, new ResizeEvent { Size = Size });
 			SizeProperty[this].SetDirty();
+			DpiRatioProperty[this].SetDirty();
 		}
 	}
 
