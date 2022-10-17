@@ -13,6 +13,14 @@ public partial struct Rect
 		bottom = (float)(Position.Y + Size.Y),
 	};
 
+	internal RECT ToWindowsRect() => new()
+	{
+		left = (int)Position.X,
+		top = (int)Position.Y,
+		right = (int)End.X,
+		bottom = (int)End.Y,
+	};
+
 	internal Rect(RECT rect)
 	{
 		Position = new(rect.left, rect.top);

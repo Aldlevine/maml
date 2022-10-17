@@ -7,6 +7,8 @@ namespace Maml.Observable;
 public abstract class Binding
 {
 	public abstract void SetDirty();
+	public void SetDirty(object? sender, object evt) => SetDirty();
+
 	public abstract void BindTo(Binding from);
 
 	protected List<Binding> dependTo { get; init; } = new();
@@ -69,8 +71,9 @@ public abstract class Binding<O, T> : Binding<T> where O : ObservableObject
 		var binding = new BasicBinding<O, R>(@object, property);
 		Changed += (s, v) =>
 		{
-			binding.Value = func(v.Value);
-			binding.SetDirty();
+			//binding.Value = func(v.Value);
+			//binding.SetDirty();
+			binding.Set(func(v.Value));
 		};
 		return binding;
 	}
@@ -96,6 +99,7 @@ public abstract class Binding<O, T> : Binding<T> where O : ObservableObject
 		if (Object.TryGetTarget(out var @object))
 		{
 			Property.Changed?.Invoke(@object);
+			@object.EmitChanged(Property);
 		}
 
 		Changed?.Invoke(this, new LazyGet<O, T>(this));
@@ -119,7 +123,21 @@ public class BasicBinding<O, T> : Binding<O, T> where O : ObservableObject
 	{
 		if (!object.Equals(this.Value, value))
 		{
+			{
+				if (Value is ObservableObject o)
+				{
+					o.RemoveDependentBinding(this);
+				}
+			}
+
 			Value = value;
+
+			{
+				if (Value is ObservableObject o)
+				{
+					o.AddDependentBinding(this);
+				}
+			}
 			SetDirty();
 			return true;
 		}

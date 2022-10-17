@@ -29,6 +29,7 @@ public partial class Engine
 	private void Frame(object? sender, FrameEvent e)
 	{
 		// Draw my stuff here
+		Window?.SceneTree.ComputeUpdateRegion(Window!.RenderTarget!);
 		Window?.Update();
 	}
 

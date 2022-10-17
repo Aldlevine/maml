@@ -45,6 +45,11 @@ public partial class RenderTarget
 	{
 		FillText(text.GetResource(this), brush.GetResource(this));
 	}
+
+	public override void PushClip(Rect rect) => InternalPushClip(rect.Position.X, rect.Position.Y, rect.Size.X, rect.Size.Y);
+
+	public override void PopClip() => InternalPopClip();
+
 	#endregion
 
 	#region Internal
@@ -60,6 +65,8 @@ public partial class RenderTarget
 		FillGeometry,
 		StrokeGeometry,
 		FillText,
+		PushClip,
+		PopClip,
 	}
 	internal List<double> DrawCommandBuffer { get; } = new(10_000);
 
@@ -128,6 +135,23 @@ public partial class RenderTarget
 		{
 			(double)WasmDrawCommand.FillText,
 			textId, brushId,
+		});
+	}
+
+	private void InternalPushClip(double x, double y, double w, double h)
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.PushClip,
+			x, y, w, h,
+		});
+	}
+
+	private void InternalPopClip()
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.PopClip,
 		});
 	}
 

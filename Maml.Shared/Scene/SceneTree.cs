@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Maml.Math;
+using System;
 using System.Collections.Generic;
 
 namespace Maml.Scene;
@@ -35,6 +36,28 @@ public class SceneTree
 		}
 	}
 
+	private Rect updateRegion = new Rect();
+	public Rect ComputeUpdateRegion(RenderTarget renderTarget)
+	{
+		updateRegion = new();
+		foreach (var node in Nodes)
+		{
+			if (node is GraphicNode graphicNode && graphicNode.VisibleInTree && graphicNode.NeedsRedraw)
+			{
+				// rects.Add(graphicNode.GetBoundingRect());
+				if (updateRegion.Size == Vector2.Zero)
+				{
+					updateRegion = graphicNode.GetBoundingRect();
+				}
+				else
+				{
+					updateRegion = updateRegion.MergedWith(graphicNode.GetBoundingRect());
+				}
+			}
+		}
+		return updateRegion;
+	}
+
 	public void Draw(RenderTarget renderTarget)
 	{
 		//var start = DateTime.Now;
@@ -42,9 +65,19 @@ public class SceneTree
 		{
 			if (node is GraphicNode graphicNode && graphicNode.VisibleInTree)
 			{
-				graphicNode.Draw(renderTarget);
+				if (graphicNode.GetBoundingRect().Intersects(updateRegion))
+				{
+					graphicNode.Draw(renderTarget);
+					graphicNode.NeedsRedraw = false;
+				}
+				//if (graphicNode.NeedsRedraw)
+				//{
+				//graphicNode.Draw(renderTarget);
+				//graphicNode.NeedsRedraw = false;
+				//}
 			}
 		}
+		updateRegion = new Rect();
 		//Console.WriteLine("SceneTree.Draw Took: {0}ms", (DateTime.Now - start).TotalMilliseconds);
 	}
 }

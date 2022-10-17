@@ -44,6 +44,8 @@ enum WasmDrawCommand
 	FillGeometry,
 	StrokeGeometry,
 	FillText,
+	PushClip,
+	PopClip,
 };
 
 class RenderTarget {
@@ -68,6 +70,8 @@ class RenderTarget {
 			alpha: false,
 		});
 	}
+
+	// Drawing
 
 	private processDrawCommands(canvasId: number, commandBuffer: Float64Array): void {
 		let cmdIdx = 0;
@@ -141,13 +145,28 @@ class RenderTarget {
 						this.fillText(ctx, textId, brushId);
 					}
 					break;
+
+				case WasmDrawCommand.PushClip:
+					{
+						const x = commandBuffer[cmdIdx++];
+						const y = commandBuffer[cmdIdx++];
+						const w = commandBuffer[cmdIdx++];
+						const h = commandBuffer[cmdIdx++];
+						this.pushClip(ctx, x, y, w, h);
+					}
+					break;
+
+				case WasmDrawCommand.PopClip:
+					{
+						this.popClip(ctx);
+					}
+					break;
 			}
 		}
 	}
 
 	private clear(ctx: CanvasRenderingContext2D, r: number, g: number, b: number, a: number): void {
 		ctx.resetTransform();
-		// ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		const color = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
 		ctx.fillStyle = color;
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -155,12 +174,9 @@ class RenderTarget {
 	}
 
 	private setTransform(ctx: CanvasRenderingContext2D, matrixArray: Float64Array): void {
-		const scale = new DOMMatrix([devicePixelRatio, 0, 0, devicePixelRatio, 0, 0]);
 		ctx.resetTransform();
 		ctx.scale(devicePixelRatio, devicePixelRatio);
-		//ctx.transform(DOMMatrix.fromFloat64Array(matrixArray));
 		ctx.transform(matrixArray[0], matrixArray[1], matrixArray[2], matrixArray[3], matrixArray[4], matrixArray[5]);
-		//ctx.scale(devicePixelRatio, devicePixelRatio);
 	}
 
 	private fillGeometry(ctx: CanvasRenderingContext2D, geometryId: number, brushId: number): void {
@@ -197,89 +213,18 @@ class RenderTarget {
 		}
 	}
 
-	//private clear(id: number, color: string): void {
-	//	const canvas = this.canvases[id];
-	//	const ctx = this.contexts[id];
-	//	//ctx.save();
-	//	ctx.resetTransform();
-	//	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	//	document.body.style.background = color;
-	//	//ctx.restore();
-	//}
+	private pushClip(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number): void {
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(x, y, width, height);
+		ctx.clip("nonzero");
+	}
 
-	//private fillRect(id: number, x: number, y: number, width: number, height: number, brushId: number): void {
-	//	const ctx = this.contexts[id];
-	//	//ctx.save();
-	//	ctx.fillStyle = this.brushes[brushId];
-	//	ctx.fillRect(x, y, width, height);
-	//	//ctx.restore();
-	//}
+	private popClip(ctx: CanvasRenderingContext2D): void {
+		ctx.restore();
+	}
 
-	//private fillEllipse(id: number, x: number, y: number, radiusX: number, radiusY: number, brushId: number): void {
-	//	const ctx = this.contexts[id];
-	//	//ctx.save();
-	//	ctx.fillStyle = this.brushes[brushId];
-	//	ctx.beginPath();
-	//	ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
-	//	ctx.fill();
-	//	//ctx.restore();
-	//}
-
-	//private strokeRect(id: number, x: number, y: number, width: number, height: number, brushId: number, thickness: number): void {
-	//	const ctx = this.contexts[id];
-	//	//ctx.save();
-	//	ctx.strokeStyle = this.brushes[brushId];
-	//	ctx.lineWidth = thickness;
-	//	ctx.strokeRect(x, y, width, height);
-	//	//ctx.restore();
-	//}
-
-	//private strokeEllipse(id: number, x: number, y: number, radiusX: number, radiusY: number, brushId: number, thickness: number): void {
-	//	const ctx = this.contexts[id];
-	//	//ctx.save();
-	//	ctx.strokeStyle = this.brushes[brushId];
-	//	ctx.lineWidth = thickness;
-	//	ctx.beginPath();
-	//	ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
-	//	ctx.stroke();
-	//	//ctx.restore();
-	//}
-
-	//private strokeLine(id: number, startX: number, startY: number, endX: number, endY: number, brushId: number, thickness: number): void {
-	//	const ctx = this.contexts[id];
-	//	//ctx.save();
-	//	ctx.strokeStyle = this.brushes[brushId];
-	//	ctx.lineWidth = thickness;
-	//	ctx.beginPath();
-	//	ctx.moveTo(startX, startY);
-	//	ctx.lineTo(endX, endY);
-	//	ctx.stroke();
-	//	//ctx.restore();
-	//}
-
-	//private getTransform(id: number): Float64Array {
-	//	const ctx = this.contexts[id];
-	//	const mat = ctx.getTransform();
-	//	return mat.toFloat64Array();
-	//}
-
-	//private setTransform(id: number, matrixArray: Float64Array): void {
-	//	const ctx = this.contexts[id];
-	//	ctx.setTransform(DOMMatrix.fromFloat64Array(matrixArray));
-	//}
-
-	//private fillGeometry(id: number, geometryId: number, brushId: number): void {
-	//	const ctx = this.contexts[id];
-	//	ctx.fillStyle = this.brushes[brushId];
-	//	ctx.fill(this.geometries[geometryId]);
-	//}
-
-	//private strokeGeometry(id: number, geometryId: number, brushId: number, thickness: number): void {
-	//	const ctx = this.contexts[id];
-	//	ctx.strokeStyle = this.brushes[brushId];
-	//	ctx.lineWidth = thickness;
-	//	ctx.stroke(this.geometries[geometryId]);
-	//}
+	// Resources
 
 	private releaseGeometry(id: number, geometryId: number): void {
 		delete this.geometries[geometryId];
@@ -332,7 +277,6 @@ class RenderTarget {
 		maxSizeX: number,
 		maxSizeY: number,
 	): Float64Array {
-		//(<any>this.textMeasurer.style).zoom = 1 / devicePixelRatio;
 		this.textMeasurer.style.font = `${fontWeight} ${fontSize}px "${fontName}"`;
 
 		this.textMeasurer.innerText = " ";
@@ -413,7 +357,6 @@ class RenderTarget {
 		const height = lines.length * lineHeight;
 
 		return new Float64Array([this.currentTextId++, lines.length, width, height]);
-	
 	}
 }
 

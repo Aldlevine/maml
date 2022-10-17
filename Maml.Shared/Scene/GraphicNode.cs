@@ -1,10 +1,13 @@
 ﻿using Maml.Graphics;
+using Maml.Math;
 using Maml.Observable;
+using System;
 
 namespace Maml.Scene;
 
 public class GraphicNode : Node
 {
+	public bool NeedsRedraw { get; internal set; } = true;
 	public static BasicProperty<GraphicNode, Graphic?> GraphicProperty { get; } = new(null);
 	public Graphic? Graphic
 	{
@@ -13,4 +16,11 @@ public class GraphicNode : Node
 	}
 
 	public virtual void Draw(RenderTarget renderTarget) => Graphic?.Draw(renderTarget, GlobalTransform);
+
+	public virtual Rect GetBoundingRect() => GlobalTransform * Graphic?.GetBoundingRect() ?? new Rect();
+
+	public GraphicNode()
+	{
+		Changed += (s, p) => NeedsRedraw = true;
+	}
 }

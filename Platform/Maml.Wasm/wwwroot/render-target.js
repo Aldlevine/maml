@@ -38,6 +38,8 @@ var WasmDrawCommand;
     WasmDrawCommand[WasmDrawCommand["FillGeometry"] = 4] = "FillGeometry";
     WasmDrawCommand[WasmDrawCommand["StrokeGeometry"] = 5] = "StrokeGeometry";
     WasmDrawCommand[WasmDrawCommand["FillText"] = 6] = "FillText";
+    WasmDrawCommand[WasmDrawCommand["PushClip"] = 7] = "PushClip";
+    WasmDrawCommand[WasmDrawCommand["PopClip"] = 8] = "PopClip";
 })(WasmDrawCommand || (WasmDrawCommand = {}));
 ;
 class RenderTarget {
@@ -62,6 +64,7 @@ class RenderTarget {
             });
         });
     }
+    // Drawing
     processDrawCommands(canvasId, commandBuffer) {
         let cmdIdx = 0;
         const ctx = this.contexts[canvasId];
@@ -127,24 +130,34 @@ class RenderTarget {
                         this.fillText(ctx, textId, brushId);
                     }
                     break;
+                case WasmDrawCommand.PushClip:
+                    {
+                        const x = commandBuffer[cmdIdx++];
+                        const y = commandBuffer[cmdIdx++];
+                        const w = commandBuffer[cmdIdx++];
+                        const h = commandBuffer[cmdIdx++];
+                        this.pushClip(ctx, x, y, w, h);
+                    }
+                    break;
+                case WasmDrawCommand.PopClip:
+                    {
+                        this.popClip(ctx);
+                    }
+                    break;
             }
         }
     }
     clear(ctx, r, g, b, a) {
         ctx.resetTransform();
-        // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         const color = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         document.body.style.background = color;
     }
     setTransform(ctx, matrixArray) {
-        const scale = new DOMMatrix([devicePixelRatio, 0, 0, devicePixelRatio, 0, 0]);
         ctx.resetTransform();
         ctx.scale(devicePixelRatio, devicePixelRatio);
-        //ctx.transform(DOMMatrix.fromFloat64Array(matrixArray));
         ctx.transform(matrixArray[0], matrixArray[1], matrixArray[2], matrixArray[3], matrixArray[4], matrixArray[5]);
-        //ctx.scale(devicePixelRatio, devicePixelRatio);
     }
     fillGeometry(ctx, geometryId, brushId) {
         ctx.fillStyle = this.brushes[brushId];
@@ -174,80 +187,16 @@ class RenderTarget {
             ctx.fillText(text.lines[i], 0, baseline + (i * text.lineHeight));
         }
     }
-    //private clear(id: number, color: string): void {
-    //	const canvas = this.canvases[id];
-    //	const ctx = this.contexts[id];
-    //	//ctx.save();
-    //	ctx.resetTransform();
-    //	ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //	document.body.style.background = color;
-    //	//ctx.restore();
-    //}
-    //private fillRect(id: number, x: number, y: number, width: number, height: number, brushId: number): void {
-    //	const ctx = this.contexts[id];
-    //	//ctx.save();
-    //	ctx.fillStyle = this.brushes[brushId];
-    //	ctx.fillRect(x, y, width, height);
-    //	//ctx.restore();
-    //}
-    //private fillEllipse(id: number, x: number, y: number, radiusX: number, radiusY: number, brushId: number): void {
-    //	const ctx = this.contexts[id];
-    //	//ctx.save();
-    //	ctx.fillStyle = this.brushes[brushId];
-    //	ctx.beginPath();
-    //	ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
-    //	ctx.fill();
-    //	//ctx.restore();
-    //}
-    //private strokeRect(id: number, x: number, y: number, width: number, height: number, brushId: number, thickness: number): void {
-    //	const ctx = this.contexts[id];
-    //	//ctx.save();
-    //	ctx.strokeStyle = this.brushes[brushId];
-    //	ctx.lineWidth = thickness;
-    //	ctx.strokeRect(x, y, width, height);
-    //	//ctx.restore();
-    //}
-    //private strokeEllipse(id: number, x: number, y: number, radiusX: number, radiusY: number, brushId: number, thickness: number): void {
-    //	const ctx = this.contexts[id];
-    //	//ctx.save();
-    //	ctx.strokeStyle = this.brushes[brushId];
-    //	ctx.lineWidth = thickness;
-    //	ctx.beginPath();
-    //	ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
-    //	ctx.stroke();
-    //	//ctx.restore();
-    //}
-    //private strokeLine(id: number, startX: number, startY: number, endX: number, endY: number, brushId: number, thickness: number): void {
-    //	const ctx = this.contexts[id];
-    //	//ctx.save();
-    //	ctx.strokeStyle = this.brushes[brushId];
-    //	ctx.lineWidth = thickness;
-    //	ctx.beginPath();
-    //	ctx.moveTo(startX, startY);
-    //	ctx.lineTo(endX, endY);
-    //	ctx.stroke();
-    //	//ctx.restore();
-    //}
-    //private getTransform(id: number): Float64Array {
-    //	const ctx = this.contexts[id];
-    //	const mat = ctx.getTransform();
-    //	return mat.toFloat64Array();
-    //}
-    //private setTransform(id: number, matrixArray: Float64Array): void {
-    //	const ctx = this.contexts[id];
-    //	ctx.setTransform(DOMMatrix.fromFloat64Array(matrixArray));
-    //}
-    //private fillGeometry(id: number, geometryId: number, brushId: number): void {
-    //	const ctx = this.contexts[id];
-    //	ctx.fillStyle = this.brushes[brushId];
-    //	ctx.fill(this.geometries[geometryId]);
-    //}
-    //private strokeGeometry(id: number, geometryId: number, brushId: number, thickness: number): void {
-    //	const ctx = this.contexts[id];
-    //	ctx.strokeStyle = this.brushes[brushId];
-    //	ctx.lineWidth = thickness;
-    //	ctx.stroke(this.geometries[geometryId]);
-    //}
+    pushClip(ctx, x, y, width, height) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, width, height);
+        ctx.clip("nonzero");
+    }
+    popClip(ctx) {
+        ctx.restore();
+    }
+    // Resources
     releaseGeometry(id, geometryId) {
         delete this.geometries[geometryId];
     }
@@ -281,7 +230,6 @@ class RenderTarget {
         delete this.texts[textId];
     }
     makeText(id, text, wrappingMode, lineHeight, fontName, fontSize, fontStyle, fontWeight, maxSizeX, maxSizeY) {
-        //(<any>this.textMeasurer.style).zoom = 1 / devicePixelRatio;
         this.textMeasurer.style.font = `${fontWeight} ${fontSize}px "${fontName}"`;
         this.textMeasurer.innerText = " ";
         const spaceWidth = this.textMeasurer.getClientRects()[0].width;

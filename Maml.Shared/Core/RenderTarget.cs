@@ -6,7 +6,6 @@ namespace Maml;
 public abstract class RenderTargetBase
 {
 	// Platform Specific
-	//public abstract Transform GetTransform();
 	public abstract void BeginDraw();
 	public abstract void EndDraw();
 	public abstract void SetTransform(Transform transform);
@@ -15,6 +14,9 @@ public abstract class RenderTargetBase
 	public abstract void DrawGeometry(Geometry geometry, Fill fill);
 	public abstract void DrawGeometry(Geometry geometry, Stroke stroke);
 	public abstract void DrawText(Text text, Brush brush);
+
+	public abstract void PushClip(Rect rect);
+	public abstract void PopClip();
 
 	// Platform Agnostic
 	public void DrawGeometry(Geometry geometry, DrawLayer drawLayer)

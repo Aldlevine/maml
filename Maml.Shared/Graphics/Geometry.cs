@@ -3,7 +3,10 @@ using Maml.Observable;
 
 namespace Maml.Graphics;
 
-public abstract partial class Geometry : Resource { }
+public abstract partial class Geometry : Resource
+{
+	public abstract Rect GetBoundingRect();
+}
 
 public partial class EllipseGeometry : Geometry
 {
@@ -24,6 +27,8 @@ public partial class EllipseGeometry : Geometry
 	{
 		Ellipse = ellipseGeometry.Ellipse;
 	}
+
+	public override Rect GetBoundingRect() => new Rect { Position = Ellipse.Center - Ellipse.Radius, Size = Ellipse.Radius, };
 }
 
 public partial class LineGeometry : Geometry
@@ -45,6 +50,7 @@ public partial class LineGeometry : Geometry
 	{
 		Line = lineGeometry.Line;
 	}
+	public override Rect GetBoundingRect() => new Rect { Position = Vector2.Min(Line.Start, Line.End), End = Vector2.Max(Line.Start, Line.End), };
 }
 
 public partial class RectGeometry : Geometry
@@ -78,6 +84,8 @@ public partial class RectGeometry : Geometry
 	{
 		Rect = rectGeometry.Rect;
 	}
+
+	public override Rect GetBoundingRect() => Rect;
 }
 
 //public partial class TextGeometry : Geometry

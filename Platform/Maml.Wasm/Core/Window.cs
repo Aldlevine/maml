@@ -50,7 +50,7 @@ public partial class Window : WindowBase
 		Resize?.Invoke(this, new() { Size = PixelSize, });
 		PixelSizeProperty[this].SetDirty();
 		DpiRatioProperty[this].SetDirty();
-		Update();
+		//Update();
 	}
 
 	private Vector2 previousPointerPosition = Vector2.Zero;

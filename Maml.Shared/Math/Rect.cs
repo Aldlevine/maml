@@ -31,6 +31,15 @@ public partial struct Rect : IShape, IEquatable<Rect>
 		};
 	}
 
+	public Rect MergedWith(in Rect r)
+	{
+		return new()
+		{
+			Position = Vector2.Min(Position, r.Position),
+			End = Vector2.Max(End, r.End),
+		};
+	}
+
 	public bool HasPoint(in Vector2 v)
 	{
 		var begin = Position;
@@ -40,6 +49,24 @@ public partial struct Rect : IShape, IEquatable<Rect>
 		if (v.Y < begin.Y) { return false; }
 		if (v.Y > end.Y) { return false; }
 		return true;
+	}
+
+	public bool Intersects(in Rect r)
+	{
+		return
+			Position.X < r.End.X &&
+			End.X > r.Position.X &&
+			Position.Y < r.End.Y &&
+			End.Y > r.Position.Y;
+	}
+
+	public bool Intersects(in Rect[] rs)
+	{
+		foreach (var r in rs)
+		{
+			if (Intersects(r)) { return true; }
+		}
+		return false;
 	}
 
 	public Rect GetBoundingRect(in Transform transform) => transform * this;

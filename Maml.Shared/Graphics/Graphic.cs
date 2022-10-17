@@ -8,7 +8,7 @@ public abstract partial class Graphic : ObservableObject
 {
 	public abstract void Draw(RenderTargetBase renderTarget, Transform transform);
 
-	// public abstract Rect GetBoundingRect(Transform transform);
+	public abstract Rect GetBoundingRect();
 }
 
 public partial class GeometryGraphic : Graphic
@@ -43,6 +43,8 @@ public partial class GeometryGraphic : Graphic
 			rt.DrawGeometry(Geometry, layer);
 		}
 	}
+
+	public override Rect GetBoundingRect() => Geometry.GetBoundingRect();
 }
 
 public partial class TextGraphic : Graphic
@@ -67,6 +69,10 @@ public partial class TextGraphic : Graphic
 		if (Brush == null) { return; }
 
 		rt.SetTransform(transform);
+		rt.PushClip(new Rect { Size = Text.Size, });
 		rt.DrawText(Text, Brush);
+		rt.PopClip();
 	}
+
+	public override Rect GetBoundingRect() => new Rect { Size = Text.Size, };
 }

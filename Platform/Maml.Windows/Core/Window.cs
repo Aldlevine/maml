@@ -180,7 +180,8 @@ public partial class Window
 	// TODO: Need to abstract out the window update stuff
 	internal void Redraw(bool forceUpdate)
 	{
-		InvalidateRect(hWnd, (RECT?)null, false);
+		//InvalidateRect(hWnd, (RECT?)null, false);
+		InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion(RenderTarget!).ToWindowsRect(), false);
 		if (forceUpdate)
 		{
 			UpdateWindow(hWnd);
@@ -230,6 +231,10 @@ public partial class Window
 			PixelSizeProperty[this].SetDirty();
 			DpiRatioProperty[this].SetDirty();
 		}
+
+		//ImmediateMode = true;
+		//Redraw(true);
+		//ImmediateMode = false;
 	}
 
 	private (LRESULT result, bool wasHandled) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
