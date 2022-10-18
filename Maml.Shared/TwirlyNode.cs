@@ -151,8 +151,8 @@ public class TwirlyNode : Node
 
 			case FrameState.Play:
 				{
-					bigCircles.Transform = bigCircles.Transform.Rotated(evt.Delta.TotalSeconds * 5);
-					smallCircles.Transform = smallCircles.Transform.Rotated(evt.Delta.TotalSeconds * -10);
+					//bigCircles.Transform = bigCircles.Transform.Rotated(evt.Delta.TotalSeconds * 5);
+					//smallCircles.Transform = smallCircles.Transform.Rotated(evt.Delta.TotalSeconds * -10);
 				}
 				break;
 		}

@@ -46,7 +46,7 @@ public partial class Window
 	public override event EventHandler<KeyEvent>? KeyUp;
 	public override event EventHandler<FocusEvent>? Focus;
 	public override event EventHandler<FocusEvent>? Blur;
-	public override event EventHandler<DrawEvent>? Draw;
+	//public override event EventHandler<DrawEvent>? Draw;
 	#endregion
 
 	#region Internal
@@ -182,10 +182,32 @@ public partial class Window
 	}
 
 	// TODO: Need to abstract out the window update stuff
-	internal void Redraw(bool forceUpdate)
+	unsafe internal void Redraw(bool forceUpdate)
 	{
 		//InvalidateRect(hWnd, (RECT?)null, false);
-		InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion().ToWindowsRect(), false);
+		//ComputeUpdates();
+
+		//HRGN combinedHrgn = default;
+		////var updateRegion = SceneTree.ComputeUpdateRegion();
+		//foreach (var rect in SceneTree.updateRegion)
+		//{
+		//	HRGN hRgn = CreateRectRgn((int)rect.Position.X, (int)rect.Position.Y, (int)double.Ceiling(rect.End.X), (int)double.Ceiling(rect.End.Y));
+		//	if (combinedHrgn.IsNull)
+		//	{
+		//		combinedHrgn = hRgn;
+		//	}
+		//	else
+		//	{
+		//		CombineRgn(combinedHrgn, combinedHrgn, hRgn, RGN_COMBINE_MODE.RGN_OR);
+		//		DeleteObject(*(HGDIOBJ*)&hRgn);
+		//	}
+		//}
+		////InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion().ToWindowsRect(), false);
+		//InvalidateRgn(hWnd, combinedHrgn, false);
+		//DeleteObject(*(HGDIOBJ*)&combinedHrgn);
+
+		InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
+
 		if (forceUpdate)
 		{
 			UpdateWindow(hWnd);
@@ -201,7 +223,7 @@ public partial class Window
 
 			RenderTarget!.pRenderTarget->BeginDraw();
 
-			Update();
+			Draw();
 
 			var hr = RenderTarget!.pRenderTarget->EndDraw();
 			if (hr == HRESULT.D2DERR_RECREATE_TARGET)
@@ -237,11 +259,12 @@ public partial class Window
 		}
 
 
-		ImmediateMode = true;
-		SceneTree.updateRegion = new Rect { Size = Size, };
-		InvalidateRect(hWnd, SceneTree.updateRegion.ToWindowsRect(), false);
-		UpdateWindow(hWnd);
-		ImmediateMode = false;
+		//ImmediateMode = true;
+		var rect = new Rect { Size = Size, };
+		PushUpdateRect(rect);
+		//InvalidateRect(hWnd, rect.ToWindowsRect(), false);
+		//UpdateWindow(hWnd);
+		//ImmediateMode = false;
 	}
 
 	private (LRESULT result, bool wasHandled) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)

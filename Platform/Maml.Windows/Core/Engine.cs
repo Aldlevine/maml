@@ -15,11 +15,24 @@ public partial class Engine
 
 	public override void Run()
 	{
-		while (GetMessage(out MSG msg, default, 0, 0))
+		while (true)
 		{
-			TranslateMessage(in msg);
-			DispatchMessage(in msg);
-			Animator.Tick();
+			if (PeekMessage(out MSG msg, default, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE))
+			{
+				if (msg.message == WM_QUIT)
+				{
+					break;
+				}
+
+				TranslateMessage(in msg);
+				DispatchMessage(in msg);
+			}
+			else
+			{
+				Animator.Tick();
+			}
+			//Window.ComputeUpdates();
+			//Window.Redraw(false);
 		}
 	}
 
@@ -48,6 +61,7 @@ public partial class Engine
 	// This should process the scene tree and check for changes before rerawing
 	private void Frame(object? sender, FrameEvent evt)
 	{
+		Window.ComputeSceneUpdateRect();
 		Window.Redraw(false);
 	}
 

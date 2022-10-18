@@ -51,7 +51,7 @@ public abstract class WindowBase : ObservableObject
 	public abstract event EventHandler<KeyEvent>? KeyUp;
 	public abstract event EventHandler<FocusEvent>? Focus;
 	public abstract event EventHandler<FocusEvent>? Blur;
-	public abstract event EventHandler<DrawEvent>? Draw;
+	//public abstract event EventHandler<DrawEvent>? Draw;
 
 	private static int CurrentWindowID { get; set; } = 0;
 	protected int windowID = CurrentWindowID++;
@@ -67,16 +67,54 @@ public abstract class WindowBase : ObservableObject
 		return null;
 	}
 
-	public void Update()
+	internal Rect UpdateRect = new Rect();
+	public void PushUpdateRect(Rect rect)
+	{
+		if (rect.Size == Vector2.Zero)
+		{
+			return;
+		}
+
+		if (UpdateRect.Size == Vector2.Zero)
+		{
+			UpdateRect = rect;
+		}
+		else
+		{
+			UpdateRect = UpdateRect.MergedWith(rect);
+		}
+	}
+
+	public Rect ComputeSceneUpdateRect()
+	{
+		foreach (var node in SceneTree.Nodes)
+		{
+			if (node is GraphicNode graphicNode && graphicNode.NeedsRedraw)
+			{
+				PushUpdateRect(graphicNode.PreviousBoundingRect);
+				PushUpdateRect(graphicNode.PreviousBoundingRect = graphicNode.GetBoundingRect());
+			}
+		}
+		return UpdateRect;
+	}
+
+	public void Draw()
 	{
 		if (RenderTarget == null) { return; }
 		RenderTarget.BeginDraw();
 		RenderTarget.SetTransform(Transform.Identity);
-		RenderTarget.PushClip(SceneTree.updateRegion);
+		RenderTarget.PushClip(new() {
+			Position = Vector2.Floor(UpdateRect.Position),
+			Size = Vector2.Ceiling(UpdateRect.Size),
+		});
 		RenderTarget.Clear(new Color(0x333333ff));
-		SceneTree.Draw(RenderTarget);
+
+		SceneTree.Draw(RenderTarget, UpdateRect);
+
 		RenderTarget.PopClip();
 		RenderTarget.EndDraw();
+
+		UpdateRect = new();
 	}
 
 	public WindowBase()

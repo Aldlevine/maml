@@ -26,13 +26,13 @@ public partial class Node : ObservableObject
 			if (parent != null)
 			{
 				GlobalTransformProperty[this].UndependOn(GlobalTransformProperty[parent]);
-				VisibleProperty[this].UndependOn(VisibleProperty[parent]);
+				VisibleInTreeProperty[this].UndependOn(VisibleInTreeProperty[parent]);
 			}
 			parent = value;
 			if (parent != null)
 			{
 				GlobalTransformProperty[this].DependOn(GlobalTransformProperty[parent]);
-				VisibleProperty[this].DependOn(VisibleProperty[parent]);
+				VisibleInTreeProperty[this].DependOn(VisibleInTreeProperty[parent]);
 			}
 		}
 	}

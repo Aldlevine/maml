@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Maml.Math;
 
@@ -78,7 +79,7 @@ public partial struct Rect : IShape, IEquatable<Rect>
 			End.Y >= r.Position.Y;
 	}
 
-	public bool Intersects(in Rect[] rs)
+	public bool Intersects(in IEnumerable<Rect> rs)
 	{
 		foreach (var r in rs)
 		{

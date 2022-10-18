@@ -1,12 +1,6 @@
 ﻿using Maml.Animation;
-using Maml.Graphics;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Maml;
 
@@ -21,16 +15,7 @@ public partial class Engine
 	{
 		Window = new();
 
-		Animator.Frame += Frame;
-
 		base.Initialize();
-	}
-
-	private void Frame(object? sender, FrameEvent e)
-	{
-		// Draw my stuff here
-		Window?.SceneTree?.ComputeUpdateRegion();
-		Window?.Update();
 	}
 
 	[JSExport]
@@ -39,5 +24,10 @@ public partial class Engine
 	{
 		Singleton.HandleAnimationFrame();
 	}
-	private void HandleAnimationFrame() => Animator.Tick();
+	private void HandleAnimationFrame()
+	{
+		Animator.Tick();
+		Window?.ComputeSceneUpdateRect();
+		Window?.Draw();
+	}
 }

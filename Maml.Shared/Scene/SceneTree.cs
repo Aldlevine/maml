@@ -36,41 +36,39 @@ public class SceneTree
 		}
 	}
 
-	internal Rect updateRegion = new Rect();
-	public Rect ComputeUpdateRegion()
-	{
-		//updateRegion = new();
-		foreach (var node in Nodes)
-		{
-			if (node is GraphicNode graphicNode && graphicNode.NeedsRedraw)
-			{
-				if (updateRegion.Size == Vector2.Zero)
-				{
-					updateRegion = graphicNode.PreviousBoundingRect;
-				}
-				else
-				{
-					updateRegion = updateRegion.MergedWith(graphicNode.PreviousBoundingRect);
-				}
+	//internal Rect updateRegion = new Rect();
+	//public void PushRect(Rect rect)
+	//{
+	//	if (rect.Size == Vector2.Zero)
+	//	{
+	//		return;
+	//	}
 
-				if (updateRegion.Size == Vector2.Zero)
-				{
-					//updateRegion = previousBoundingRects[graphicNode] = graphicNode.GetBoundingRect();
-					graphicNode.PreviousBoundingRect = updateRegion = graphicNode.GetBoundingRect();
-				}
-				else
-				{
-					//updateRegion = updateRegion.MergedWith(previousBoundingRects[graphicNode] = graphicNode.GetBoundingRect());
-					updateRegion = updateRegion.MergedWith(graphicNode.PreviousBoundingRect = graphicNode.GetBoundingRect());
-				}
-			}
-		}
-		return updateRegion;
-	}
+	//	if (updateRegion.Size == Vector2.Zero)
+	//	{
+	//		updateRegion = rect;
+	//	}
+	//	else
+	//	{
+	//		updateRegion = updateRegion.MergedWith(rect);
+	//	}
+	//}
 
-	public void Draw(RenderTarget renderTarget)
+	//public Rect ComputeUpdateRegion()
+	//{
+	//	foreach (var node in Nodes)
+	//	{
+	//		if (node is GraphicNode graphicNode && graphicNode.NeedsRedraw)
+	//		{
+	//			PushRect(graphicNode.PreviousBoundingRect);
+	//			PushRect(graphicNode.PreviousBoundingRect = graphicNode.GetBoundingRect());
+	//		}
+	//	}
+	//	return updateRegion;
+	//}
+
+	public void Draw(RenderTarget renderTarget, Rect updateRegion)
 	{
-		//var start = DateTime.Now;
 		foreach (var node in Nodes)
 		{
 			if (node is GraphicNode graphicNode && graphicNode.VisibleInTree)
@@ -80,14 +78,8 @@ public class SceneTree
 					graphicNode.Draw(renderTarget);
 					graphicNode.NeedsRedraw = false;
 				}
-				//if (graphicNode.NeedsRedraw)
-				//{
-				//graphicNode.Draw(renderTarget);
-				//graphicNode.NeedsRedraw = false;
-				//}
 			}
 		}
-		updateRegion = new Rect();
-		//Console.WriteLine("SceneTree.Draw Took: {0}ms", (DateTime.Now - start).TotalMilliseconds);
+		//updateRegion = new();
 	}
 }

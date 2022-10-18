@@ -18,7 +18,7 @@ public partial class Window : WindowBase
 	public override event EventHandler<KeyEvent>? KeyUp;
 	public override event EventHandler<FocusEvent>? Focus;
 	public override event EventHandler<FocusEvent>? Blur;
-	public override event EventHandler<DrawEvent>? Draw;
+	//public override event EventHandler<DrawEvent>? Draw;
 
 	private Vector2 windowSize = baseWindowSize;
 	protected override Vector2 GetPixelSize() => windowSize;
@@ -50,8 +50,7 @@ public partial class Window : WindowBase
 		Resize?.Invoke(this, new() { Size = PixelSize, });
 		PixelSizeProperty[this].SetDirty();
 		DpiRatioProperty[this].SetDirty();
-		SceneTree.updateRegion = new Rect { Size = Size, };
-		//Update();
+		PushUpdateRect(new Rect { Size = Size, });
 	}
 
 	private Vector2 previousPointerPosition = Vector2.Zero;

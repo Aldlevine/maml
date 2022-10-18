@@ -7,7 +7,6 @@ namespace Maml.Graphics;
 public abstract partial class Graphic : ObservableObject
 {
 	public abstract void Draw(RenderTargetBase renderTarget, Transform transform);
-
 	public abstract Rect GetBoundingRect();
 }
 
@@ -60,8 +59,9 @@ public partial class GeometryGraphic : Graphic
 				maxThickness = int.Max(maxThickness, s.Thickness);
 			}
 		}
-		rect.Position -= maxThickness;
-		rect.Size += maxThickness * 2;
+		rect = rect
+			.ExpandedTo(rect.Position - (maxThickness + 1))
+			.ExpandedTo(rect.End + (maxThickness + 1) * 2);
 		return rect;
 	}
 }

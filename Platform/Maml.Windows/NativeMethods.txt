@@ -13,6 +13,8 @@ Windows.Win32.Foundation
 Windows.Win32.UI.WindowsAndMessaging
 WNDPROC
 DwmSetWindowAttribute
+CreateRectRgn
+CombineRgn
 
 // Windows.Win32.Graphics.Direct2D
 D2D1CreateFactory

@@ -20,26 +20,18 @@ internal class TestScene1 : Node
 
 	public TestScene1() : base()
 	{
-		// TODO: We can use this to perform word breaking
-		//foreach (var boundary in "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!".EnumerateWordBoundaries())
+		//gridSizeBinding =
+		//WindowBase.SizeProperty[Window].With(size =>
 		//{
-		//	Console.WriteLine(boundary.ToString());
-		//}
-
-		gridSizeBinding =
-		WindowBase.SizeProperty[Window].With(size =>
-		{
-			var max = double.Max(size.X, size.Y);
-			var side = double.Sqrt(2 * max * max);
-			side = double.Ceiling(side / rotatingGrid.MinorSpacing.X * 2) * rotatingGrid.MinorSpacing.X * 2;
-			return new Vector2(side, side);
-		});
+		//	var max = double.Max(size.X, size.Y);
+		//	var side = double.Sqrt(2 * max * max);
+		//	side = double.Ceiling(side / rotatingGrid.MinorSpacing.X * 2) * rotatingGrid.MinorSpacing.X * 2;
+		//	return new Vector2(side, side);
+		//});
 
 		Text text = new Text
 		{
 			String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!",
-			//String = "A Very LongWordThatHasNoBreakingPossibilities",
-			//String = "File	Edit	View	Git	Project	Build	Debug",
 			Font = new()
 			{
 				Name = "Arial",
@@ -95,67 +87,67 @@ internal class TestScene1 : Node
 				[LineGrid.SizeProperty] = WindowBase.SizeProperty[Window],
 			}),
 
-			(centeringNode = new Node
-			{
-				Visible = false,
-				[OriginProperty] = WindowBase.SizeProperty[Window].With(size => size / 2),
-				Children = new()
-				{
-					(rotatingNode = new Node
-					{
-						Children = new()
-						{
-							(rotatingGrid = new LineGrid
-							{
-								MinorSpacing = new(40, 40),
-								MajorInterval = new(10000, 10000),
-								LineDrawLayersMinor = new()
-								{
-									new Stroke(new ColorBrush { Color = Colors.DarkViolet, }, 3),
-								},
-								[LineGrid.SizeProperty] = gridSizeBinding,
-								[OriginProperty] = gridSizeBinding.With(size => size / -2),
-							}),
-						},
-					}),
+			//(centeringNode = new Node
+			//{
+			//	Visible = false,
+			//	[OriginProperty] = WindowBase.SizeProperty[Window].With(size => size / 2),
+			//	Children = new()
+			//	{
+			//		(rotatingNode = new Node
+			//		{
+			//			Children = new()
+			//			{
+			//				(rotatingGrid = new LineGrid
+			//				{
+			//					MinorSpacing = new(40, 40),
+			//					MajorInterval = new(10000, 10000),
+			//					LineDrawLayersMinor = new()
+			//					{
+			//						new Stroke(new ColorBrush { Color = Colors.DarkViolet, }, 3),
+			//					},
+			//					[LineGrid.SizeProperty] = gridSizeBinding,
+			//					[OriginProperty] = gridSizeBinding.With(size => size / -2),
+			//				}),
+			//			},
+			//		}),
 
-					(reticleNode = new Node
-					{
-						Children = new()
-						{
-							(new GraphicNode
-							{
-								Graphic = new GeometryGraphic
-								{
-									Geometry = new EllipseGeometry
-									{
-										Ellipse = new() { Radius = new(13, 13), },
-									},
-									DrawLayers = new()
-									{
-										new Stroke(new ColorBrush { Color = Colors.AntiqueWhite, }, 3),
-									},
-								},
-							}),
-							(new GraphicNode
-							{
-								Graphic = new GeometryGraphic
-								{
-									Geometry = new EllipseGeometry
-									{
-										Ellipse = new() { Radius = new(11, 11), },
-									},
-									DrawLayers = new()
-									{
-										new Fill(new ColorBrush { Color = Colors.Red with { A = 0.5f, }, }),
-										new Stroke(new ColorBrush { Color = Colors.Red, }, 3),
-									},
-								},
-							}),
-						},
-					}),
-				},
-			}),
+			//		(reticleNode = new Node
+			//		{
+			//			Children = new()
+			//			{
+			//				(new GraphicNode
+			//				{
+			//					Graphic = new GeometryGraphic
+			//					{
+			//						Geometry = new EllipseGeometry
+			//						{
+			//							Ellipse = new() { Radius = new(13, 13), },
+			//						},
+			//						DrawLayers = new()
+			//						{
+			//							new Stroke(new ColorBrush { Color = Colors.AntiqueWhite, }, 3),
+			//						},
+			//					},
+			//				}),
+			//				(new GraphicNode
+			//				{
+			//					Graphic = new GeometryGraphic
+			//					{
+			//						Geometry = new EllipseGeometry
+			//						{
+			//							Ellipse = new() { Radius = new(11, 11), },
+			//						},
+			//						DrawLayers = new()
+			//						{
+			//							new Fill(new ColorBrush { Color = Colors.Red with { A = 0.5f, }, }),
+			//							new Stroke(new ColorBrush { Color = Colors.Red, }, 3),
+			//						},
+			//					},
+			//				}),
+			//			},
+			//		}),
+			//	},
+			//}),
 
 			(twirlyNodeContainer = new Node
 			{
@@ -207,19 +199,19 @@ internal class TestScene1 : Node
 			});
 		}
 
-		DateTime startTick = DateTime.Now;
-		Animator.Frame += (s, e) =>
-		{
-			switch (e.FrameState)
-			{
-				case Animation.FrameState.Enter:
-					startTick = e.Tick;
-					break;
-				case Animation.FrameState.Play:
-					rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
-					break;
-			}
-		};
+		//DateTime startTick = DateTime.Now;
+		//Animator.Frame += (s, e) =>
+		//{
+		//	switch (e.FrameState)
+		//	{
+		//		case Animation.FrameState.Enter:
+		//			startTick = e.Tick;
+		//			break;
+		//		case Animation.FrameState.Play:
+		//			rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
+		//			break;
+		//	}
+		//};
 
 	}
 }
