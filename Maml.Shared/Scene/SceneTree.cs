@@ -67,7 +67,8 @@ public class SceneTree
 	//	return updateRegion;
 	//}
 
-	public void Draw(RenderTarget renderTarget, Rect updateRegion)
+	//public void Draw(RenderTarget renderTarget, Rect updateRegion)
+	public void Draw(RenderTarget renderTarget, List<Rect> updateRegion)
 	{
 		foreach (var node in Nodes)
 		{

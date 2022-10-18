@@ -17,6 +17,8 @@ public abstract class RenderTargetBase
 
 	public abstract void PushClip(Rect rect);
 	public abstract void PopClip();
+	public abstract void PushLayer(Rect[] rect);
+	public abstract void PopLayer();
 
 	// Platform Agnostic
 	public void DrawGeometry(Geometry geometry, DrawLayer drawLayer)

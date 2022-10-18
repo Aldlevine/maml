@@ -1,7 +1,9 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
 using System;
+using System.Collections.Generic;
 using Windows.Win32.Graphics.Direct2D;
+using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.DirectWrite;
 
 namespace Maml;
@@ -12,6 +14,12 @@ public partial class RenderTarget : IDisposable
 	public override void BeginDraw() { }
 	public override void EndDraw() { }
 	unsafe public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
+	unsafe public void ClearRect(Color color, Rect rect)
+	{
+		Brush brush = new ColorBrush { Color = color, };
+		pRenderTarget->FillRectangle(rect.ToD2DRectF(), brush.GetResource(pRenderTarget));
+		//pRenderTarget->Clear(color.ToD2DColorF());
+	}
 	unsafe public override void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
 	unsafe public override void DrawGeometry(Geometry geometry, Fill fill)
 	{
@@ -63,9 +71,54 @@ public partial class RenderTarget : IDisposable
 		pRenderTarget->PushAxisAlignedClip(rect.ToD2DRectF(), D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED);
 	}
 
+
 	unsafe public override void PopClip()
 	{
 		pRenderTarget->PopAxisAlignedClip();
+	}
+
+	public override unsafe void PushLayer(Rect[] rect)
+	{
+		ID2D1Layer* pLayer;
+		pRenderTarget->CreateLayer((D2D_SIZE_F?)null, &pLayer);
+
+		ID2D1Geometry*[] geometries = new ID2D1Geometry*[rect.Length];
+		//foreach (var r in rect)
+		for (int i = 0; i < rect.Length; i++)
+		{
+			ID2D1RectangleGeometry* geo;
+			Engine.Singleton.pD2DFactory->CreateRectangleGeometry(rect[i].ToD2DRectF(), &geo).ThrowOnFailure();
+			geometries[i] = (ID2D1Geometry*)geo;
+		}
+		ID2D1GeometryGroup* geometryGroup;
+		fixed (ID2D1Geometry** pGeometries = geometries)
+		{
+			Engine.Singleton.pD2DFactory->CreateGeometryGroup(Windows.Win32.Graphics.Direct2D.Common.D2D1_FILL_MODE.D2D1_FILL_MODE_ALTERNATE, pGeometries, (uint)geometries.Length, &geometryGroup).ThrowOnFailure();
+		}
+		geometryGroup->GetBounds(Transform.Identity.ToD2DMatrix3X2F(), out var bounds);
+		D2D1_LAYER_PARAMETERS layerParams = new()
+		{
+			geometricMask = (ID2D1Geometry*)geometryGroup,
+			contentBounds = bounds,
+			layerOptions = D2D1_LAYER_OPTIONS.D2D1_LAYER_OPTIONS_INITIALIZE_FOR_CLEARTYPE,
+			maskAntialiasMode = D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED,
+			maskTransform = Transform.Identity.ToD2DMatrix3X2F(),
+			opacity = 1,
+			opacityBrush = null,
+		};
+		pRenderTarget->PushLayer(layerParams, null);
+
+		//pLayer->Release();
+		geometryGroup->Release();
+		foreach (var geometry in geometries)
+		{
+			geometry->Release();
+		}
+	}
+
+	public override unsafe void PopLayer()
+	{
+		pRenderTarget->PopLayer();
 	}
 
 	#endregion
