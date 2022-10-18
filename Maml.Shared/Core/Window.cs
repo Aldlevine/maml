@@ -67,8 +67,7 @@ public abstract class WindowBase : ObservableObject
 		return null;
 	}
 
-	//internal Rect UpdateRect = new Rect();
-	internal List<Rect> UpdateRect = new();
+	internal Rect UpdateRect = new Rect();
 	public void PushUpdateRect(Rect rect)
 	{
 		if (rect.Size == Vector2.Zero)
@@ -76,42 +75,17 @@ public abstract class WindowBase : ObservableObject
 			return;
 		}
 
-		//if (UpdateRect.Size == Vector2.Zero)
-		//{
-		//	UpdateRect = rect;
-		//}
-		//else
-		//{
-		//	UpdateRect = UpdateRect.MergedWith(rect);
-		//}
-
-		//foreach (var r in UpdateRect)
-		//{
-		//	if (r.Intersects(rect))
-		//	{
-		//		mergedRect = r.MergedWith(rect);
-		//		break;
-		//	}
-		//}
-		rect.Position = Vector2.Floor(rect.Position);
-		rect.Size = Vector2.Ceiling(rect.Size);
-
-		for (int i = 0; i < UpdateRect.Count; i++)
+		if (UpdateRect.Size == Vector2.Zero)
 		{
-			var r = UpdateRect[i];
-			if (r.Intersects(rect))
-			{
-				rect = rect.MergedWith(r);
-				UpdateRect.RemoveAt(i);
-				i--;
-			}
+			UpdateRect = rect;
 		}
-
-		UpdateRect.Add(rect);
+		else
+		{
+			UpdateRect = UpdateRect.MergedWith(rect);
+		}
 	}
 
-	//public Rect ComputeSceneUpdateRect()
-	public List<Rect> ComputeSceneUpdateRect()
+	public Rect ComputeSceneUpdateRect()
 	{
 		foreach (var node in SceneTree.Nodes)
 		{
@@ -129,28 +103,15 @@ public abstract class WindowBase : ObservableObject
 		if (RenderTarget == null) { return; }
 		RenderTarget.BeginDraw();
 		RenderTarget.SetTransform(Transform.Identity);
-		//RenderTarget.PushClip(new() {
-		//	Position = Vector2.Floor(UpdateRect.Position),
-		//	Size = Vector2.Ceiling(UpdateRect.Size),
-		//});
-
-		if (UpdateRect.Count > 0)
-		{
-			RenderTarget.PushLayer(UpdateRect.ToArray());
-			foreach (var rect in UpdateRect)
-			{
-				RenderTarget.ClearRect(rect, new Color(0x333333ff));
-			}
-		}
-
-		//RenderTarget.Clear(new Color(0x333333ff));
+		RenderTarget.PushClip(new() {
+			Position = Vector2.Floor(UpdateRect.Position),
+			Size = Vector2.Ceiling(UpdateRect.Size),
+		});
+		RenderTarget.Clear(new Color(0x333333ff));
 
 		SceneTree.Draw(RenderTarget, UpdateRect);
 
-		if (UpdateRect.Count > 0)
-		{
-			RenderTarget.PopLayer();
-		}
+		RenderTarget.PopClip();
 		RenderTarget.EndDraw();
 
 		UpdateRect = new();

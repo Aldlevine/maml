@@ -187,26 +187,26 @@ public partial class Window
 		//InvalidateRect(hWnd, (RECT?)null, false);
 		//ComputeUpdates();
 
-		HRGN combinedHrgn = default;
-		//var updateRegion = SceneTree.ComputeUpdateRegion();
-		foreach (var rect in UpdateRect)
-		{
-			HRGN hRgn = CreateRectRgn((int)rect.Position.X, (int)rect.Position.Y, (int)double.Ceiling(rect.End.X), (int)double.Ceiling(rect.End.Y));
-			if (combinedHrgn.IsNull)
-			{
-				combinedHrgn = hRgn;
-			}
-			else
-			{
-				CombineRgn(combinedHrgn, combinedHrgn, hRgn, RGN_COMBINE_MODE.RGN_OR);
-				DeleteObject(*(HGDIOBJ*)&hRgn);
-			}
-		}
-		//InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion().ToWindowsRect(), false);
-		InvalidateRgn(hWnd, combinedHrgn, false);
-		DeleteObject(*(HGDIOBJ*)&combinedHrgn);
+		//HRGN combinedHrgn = default;
+		////var updateRegion = SceneTree.ComputeUpdateRegion();
+		//foreach (var rect in SceneTree.updateRegion)
+		//{
+		//	HRGN hRgn = CreateRectRgn((int)rect.Position.X, (int)rect.Position.Y, (int)double.Ceiling(rect.End.X), (int)double.Ceiling(rect.End.Y));
+		//	if (combinedHrgn.IsNull)
+		//	{
+		//		combinedHrgn = hRgn;
+		//	}
+		//	else
+		//	{
+		//		CombineRgn(combinedHrgn, combinedHrgn, hRgn, RGN_COMBINE_MODE.RGN_OR);
+		//		DeleteObject(*(HGDIOBJ*)&hRgn);
+		//	}
+		//}
+		////InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion().ToWindowsRect(), false);
+		//InvalidateRgn(hWnd, combinedHrgn, false);
+		//DeleteObject(*(HGDIOBJ*)&combinedHrgn);
 
-		//InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
+		InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
 
 		if (forceUpdate)
 		{
