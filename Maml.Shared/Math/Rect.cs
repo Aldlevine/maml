@@ -40,6 +40,24 @@ public partial struct Rect : IShape, IEquatable<Rect>
 		};
 	}
 
+	public Rect GrownBy(in Vector2 amount)
+	{
+		return new()
+		{
+			Position = Position - amount,
+			End = End + amount,
+		};
+	}
+
+	public Rect GrownBy(double amount)
+	{
+		return new()
+		{
+			Position = Position - amount,
+			End = End + amount,
+		};
+	}
+
 	public bool HasPoint(in Vector2 v)
 	{
 		var begin = Position;
@@ -54,10 +72,10 @@ public partial struct Rect : IShape, IEquatable<Rect>
 	public bool Intersects(in Rect r)
 	{
 		return
-			Position.X < r.End.X &&
-			End.X > r.Position.X &&
-			Position.Y < r.End.Y &&
-			End.Y > r.Position.Y;
+			Position.X <= r.End.X &&
+			End.X >= r.Position.X &&
+			Position.Y <= r.End.Y &&
+			End.Y >= r.Position.Y;
 	}
 
 	public bool Intersects(in Rect[] rs)

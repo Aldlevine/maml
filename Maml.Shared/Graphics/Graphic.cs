@@ -44,7 +44,26 @@ public partial class GeometryGraphic : Graphic
 		}
 	}
 
-	public override Rect GetBoundingRect() => Geometry.GetBoundingRect();
+	public override Rect GetBoundingRect()
+	{
+		if (Geometry == null)
+		{
+			return new();
+		}
+
+		var rect = Geometry.GetBoundingRect();
+		var maxThickness = 0;
+		foreach (var drawLayer in DrawLayers)
+		{
+			if (drawLayer is Stroke s)
+			{
+				maxThickness = int.Max(maxThickness, s.Thickness);
+			}
+		}
+		rect.Position -= maxThickness;
+		rect.Size += maxThickness * 2;
+		return rect;
+	}
 }
 
 public partial class TextGraphic : Graphic

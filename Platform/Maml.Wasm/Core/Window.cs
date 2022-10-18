@@ -50,6 +50,7 @@ public partial class Window : WindowBase
 		Resize?.Invoke(this, new() { Size = PixelSize, });
 		PixelSizeProperty[this].SetDirty();
 		DpiRatioProperty[this].SetDirty();
+		SceneTree.updateRegion = new Rect { Size = Size, };
 		//Update();
 	}
 

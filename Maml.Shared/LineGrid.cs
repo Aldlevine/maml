@@ -120,6 +120,8 @@ public class LineGrid : Node
 
 	private void UpdateGrid()
 	{
+		if (!VisibleInTree) { return; }
+
 		Children.Clear();
 
 		lineGeoX.Line = new Line { Start = new(0, 0), End = new(0, Size.Y), };

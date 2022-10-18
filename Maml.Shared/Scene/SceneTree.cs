@@ -36,22 +36,32 @@ public class SceneTree
 		}
 	}
 
-	private Rect updateRegion = new Rect();
-	public Rect ComputeUpdateRegion(RenderTarget renderTarget)
+	internal Rect updateRegion = new Rect();
+	public Rect ComputeUpdateRegion()
 	{
-		updateRegion = new();
+		//updateRegion = new();
 		foreach (var node in Nodes)
 		{
-			if (node is GraphicNode graphicNode && graphicNode.VisibleInTree && graphicNode.NeedsRedraw)
+			if (node is GraphicNode graphicNode && graphicNode.NeedsRedraw)
 			{
-				// rects.Add(graphicNode.GetBoundingRect());
 				if (updateRegion.Size == Vector2.Zero)
 				{
-					updateRegion = graphicNode.GetBoundingRect();
+					updateRegion = graphicNode.PreviousBoundingRect;
 				}
 				else
 				{
-					updateRegion = updateRegion.MergedWith(graphicNode.GetBoundingRect());
+					updateRegion = updateRegion.MergedWith(graphicNode.PreviousBoundingRect);
+				}
+
+				if (updateRegion.Size == Vector2.Zero)
+				{
+					//updateRegion = previousBoundingRects[graphicNode] = graphicNode.GetBoundingRect();
+					graphicNode.PreviousBoundingRect = updateRegion = graphicNode.GetBoundingRect();
+				}
+				else
+				{
+					//updateRegion = updateRegion.MergedWith(previousBoundingRects[graphicNode] = graphicNode.GetBoundingRect());
+					updateRegion = updateRegion.MergedWith(graphicNode.PreviousBoundingRect = graphicNode.GetBoundingRect());
 				}
 			}
 		}

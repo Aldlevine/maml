@@ -71,8 +71,11 @@ public abstract class WindowBase : ObservableObject
 	{
 		if (RenderTarget == null) { return; }
 		RenderTarget.BeginDraw();
+		RenderTarget.SetTransform(Transform.Identity);
+		RenderTarget.PushClip(SceneTree.updateRegion);
 		RenderTarget.Clear(new Color(0x333333ff));
 		SceneTree.Draw(RenderTarget);
+		RenderTarget.PopClip();
 		RenderTarget.EndDraw();
 	}
 

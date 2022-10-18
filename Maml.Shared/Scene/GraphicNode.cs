@@ -17,7 +17,8 @@ public class GraphicNode : Node
 
 	public virtual void Draw(RenderTarget renderTarget) => Graphic?.Draw(renderTarget, GlobalTransform);
 
-	public virtual Rect GetBoundingRect() => GlobalTransform * Graphic?.GetBoundingRect() ?? new Rect();
+	internal Rect PreviousBoundingRect = new();
+	public virtual Rect GetBoundingRect() => GlobalTransform * Graphic?.GetBoundingRect().GrownBy(10) ?? new Rect();
 
 	public GraphicNode()
 	{

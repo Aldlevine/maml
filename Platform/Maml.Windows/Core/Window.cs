@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
+using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.Graphics.Imaging;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 using static Maml.Utils.Bits;
@@ -20,8 +22,10 @@ public partial class Window
 	{
 		get => ImmediateMode switch
 		{
-			true => immediateRenderTarget,
-			false => syncRenderTarget,
+			//true => immediateRenderTarget,
+			//false => syncRenderTarget,
+			//_ => syncRenderTarget,
+			_ => immediateRenderTarget,
 		};
 	}
 
@@ -181,7 +185,7 @@ public partial class Window
 	internal void Redraw(bool forceUpdate)
 	{
 		//InvalidateRect(hWnd, (RECT?)null, false);
-		InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion(RenderTarget!).ToWindowsRect(), false);
+		InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion().ToWindowsRect(), false);
 		if (forceUpdate)
 		{
 			UpdateWindow(hWnd);
@@ -232,9 +236,12 @@ public partial class Window
 			DpiRatioProperty[this].SetDirty();
 		}
 
-		//ImmediateMode = true;
-		//Redraw(true);
-		//ImmediateMode = false;
+
+		ImmediateMode = true;
+		SceneTree.updateRegion = new Rect { Size = Size, };
+		InvalidateRect(hWnd, SceneTree.updateRegion.ToWindowsRect(), false);
+		UpdateWindow(hWnd);
+		ImmediateMode = false;
 	}
 
 	private (LRESULT result, bool wasHandled) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
@@ -295,6 +302,7 @@ public partial class Window
 			case WM_DISPLAYCHANGE:
 				{
 					InvalidateRect(hWnd, (RECT?)null, false);
+					//Redraw(false);
 				}
 				wasHandled = true;
 				break;
