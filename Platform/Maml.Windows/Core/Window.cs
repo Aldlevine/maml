@@ -24,8 +24,8 @@ public partial class Window
 		{
 			//true => immediateRenderTarget,
 			//false => syncRenderTarget,
-			//_ => syncRenderTarget,
-			_ => immediateRenderTarget,
+			_ => syncRenderTarget,
+			//_ => immediateRenderTarget,
 		};
 	}
 
@@ -79,6 +79,7 @@ public partial class Window
 				cbWndExtra = 0,
 				hInstance = GetModuleHandle(szNull),
 				hbrBackground = new HBRUSH(new IntPtr(6)),
+				//hbrBackground = CreateSolidBrush(new COLORREF(0x333333ff)),
 				lpszMenuName = szNull,
 				lpszClassName = szClassName,
 			};
@@ -181,36 +182,17 @@ public partial class Window
 		// Somehow need to notify Geometries and Brushes to release their stuff...
 	}
 
-	// TODO: Need to abstract out the window update stuff
-	unsafe internal void Redraw(bool forceUpdate)
+	unsafe internal void Redraw()
 	{
-		//InvalidateRect(hWnd, (RECT?)null, false);
-		//ComputeUpdates();
-
-		//HRGN combinedHrgn = default;
-		////var updateRegion = SceneTree.ComputeUpdateRegion();
-		//foreach (var rect in SceneTree.updateRegion)
-		//{
-		//	HRGN hRgn = CreateRectRgn((int)rect.Position.X, (int)rect.Position.Y, (int)double.Ceiling(rect.End.X), (int)double.Ceiling(rect.End.Y));
-		//	if (combinedHrgn.IsNull)
-		//	{
-		//		combinedHrgn = hRgn;
-		//	}
-		//	else
-		//	{
-		//		CombineRgn(combinedHrgn, combinedHrgn, hRgn, RGN_COMBINE_MODE.RGN_OR);
-		//		DeleteObject(*(HGDIOBJ*)&hRgn);
-		//	}
-		//}
-		////InvalidateRect(hWnd, SceneTree.ComputeUpdateRegion().ToWindowsRect(), false);
-		//InvalidateRgn(hWnd, combinedHrgn, false);
-		//DeleteObject(*(HGDIOBJ*)&combinedHrgn);
-
-		InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
-
-		if (forceUpdate)
+		if (UpdateRect.Size != Vector2.Zero)
 		{
-			UpdateWindow(hWnd);
+			InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
+			//InvalidateRect(hWnd, (RECT*)null, false);
+		}
+		else
+		{
+			// We need to do SOMETHING here, otherwise we spin out of control
+			InvalidateRect(hWnd, new Rect { Size = Vector2.One }.ToWindowsRect(), false);
 		}
 	}
 
@@ -239,7 +221,7 @@ public partial class Window
 
 	unsafe internal void HandleResize()
 	{
-		lock (Engine.Singleton.EventMutex)
+		//lock (Engine.Singleton.EventMutex)
 		{
 			float dpi = GetDpiForWindow(hWnd);
 			if (syncRenderTarget != null)
@@ -253,18 +235,16 @@ public partial class Window
 				((ID2D1HwndRenderTarget*)immediateRenderTarget.pRenderTarget)->SetDpi(dpi, dpi);
 			}
 
-			Resize?.Invoke(this, new ResizeEvent { Size = PixelSize });
 			PixelSizeProperty[this].SetDirty();
 			DpiRatioProperty[this].SetDirty();
+
+			Resize?.Invoke(this, new ResizeEvent { Size = PixelSize });
+
+			PushUpdateRect(new Rect { Size = Size, });
+
+			Redraw();
+			UpdateWindow(hWnd);
 		}
-
-
-		//ImmediateMode = true;
-		var rect = new Rect { Size = Size, };
-		PushUpdateRect(rect);
-		//InvalidateRect(hWnd, rect.ToWindowsRect(), false);
-		//UpdateWindow(hWnd);
-		//ImmediateMode = false;
 	}
 
 	private (LRESULT result, bool wasHandled) HandleMessage(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
@@ -324,8 +304,7 @@ public partial class Window
 
 			case WM_DISPLAYCHANGE:
 				{
-					InvalidateRect(hWnd, (RECT?)null, false);
-					//Redraw(false);
+					PushUpdateRect(new Rect { Size = Size, });
 				}
 				wasHandled = true;
 				break;
@@ -355,10 +334,7 @@ public partial class Window
 			case WM_POINTERDOWN:
 			case WM_POINTERUP:
 				{
-					ImmediateMode = true;
 					HandlePointer(wParam, lParam);
-					Redraw(true);
-					ImmediateMode = false;
 				}
 				wasHandled = true;
 				break;

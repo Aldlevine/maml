@@ -103,7 +103,8 @@ public abstract class WindowBase : ObservableObject
 		if (RenderTarget == null) { return; }
 		RenderTarget.BeginDraw();
 		RenderTarget.SetTransform(Transform.Identity);
-		RenderTarget.PushClip(new() {
+		RenderTarget.PushClip(new()
+		{
 			Position = Vector2.Floor(UpdateRect.Position),
 			Size = Vector2.Ceiling(UpdateRect.Size),
 		});

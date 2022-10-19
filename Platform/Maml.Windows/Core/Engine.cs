@@ -1,5 +1,8 @@
 ﻿using Maml.Animation;
+using Maml.Math;
+using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.DirectWrite;
 using Windows.Win32.System.Com;
@@ -17,22 +20,18 @@ public partial class Engine
 	{
 		while (true)
 		{
-			if (PeekMessage(out MSG msg, default, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE))
+			while (PeekMessage(out MSG msg, default, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE))
 			{
 				if (msg.message == WM_QUIT)
 				{
-					break;
+					return;
 				}
 
 				TranslateMessage(in msg);
 				DispatchMessage(in msg);
 			}
-			else
-			{
-				Animator.Tick();
-			}
-			//Window.ComputeUpdates();
-			//Window.Redraw(false);
+
+			Animator.Tick();
 		}
 	}
 
@@ -62,7 +61,11 @@ public partial class Engine
 	private void Frame(object? sender, FrameEvent evt)
 	{
 		Window.ComputeSceneUpdateRect();
-		Window.Redraw(false);
+		Window.Redraw();
+		//if (Window.ImmediateMode)
+		//{
+		//	UpdateWindow(Window.hWnd);
+		//}
 	}
 
 	public override void Dispose()

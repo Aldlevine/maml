@@ -68,12 +68,33 @@ public partial class RenderTarget : IDisposable
 	unsafe public override void PushClip(Rect rect)
 	{
 		pRenderTarget->PushAxisAlignedClip(rect.ToD2DRectF(), D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED);
+
+		//ID2D1Layer* pLayer;
+		//pRenderTarget->CreateLayer((D2D_SIZE_F?)null, &pLayer);
+
+		//ID2D1RectangleGeometry* geo;
+		//Engine.Singleton.pD2DFactory->CreateRectangleGeometry(rect.ToD2DRectF(), &geo).ThrowOnFailure();
+
+		//D2D1_LAYER_PARAMETERS layerParams = new()
+		//{
+		//	geometricMask = (ID2D1Geometry*)geo,
+		//	contentBounds = rect.ToD2DRectF(),
+		//	layerOptions = D2D1_LAYER_OPTIONS.D2D1_LAYER_OPTIONS_INITIALIZE_FOR_CLEARTYPE,
+		//	maskAntialiasMode = D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED,
+		//	maskTransform = Transform.Identity.ToD2DMatrix3X2F(),
+		//	opacity = 1,
+		//	opacityBrush = null,
+		//};
+		//pRenderTarget->PushLayer(layerParams, null);
+
+		//geo->Release();
 	}
 
 
 	unsafe public override void PopClip()
 	{
 		pRenderTarget->PopAxisAlignedClip();
+		//pRenderTarget->PopLayer();
 	}
 
 	public override unsafe void PushLayer(Rect[] rect)

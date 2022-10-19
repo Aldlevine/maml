@@ -90,6 +90,7 @@ internal class TestScene1 : Node
 			//(centeringNode = new Node
 			//{
 			//	Visible = false,
+			//	//[Node.VisibleProperty] = Window.SizeProperty[Window].With(size => size.Y > 500),
 			//	[OriginProperty] = WindowBase.SizeProperty[Window].With(size => size / 2),
 			//	Children = new()
 			//	{
@@ -151,7 +152,7 @@ internal class TestScene1 : Node
 
 			(twirlyNodeContainer = new Node
 			{
-				[Node.VisibleProperty] = Window.SizeProperty[Window].With(size => size.Y > 500),
+				//[Node.VisibleProperty] = Window.SizeProperty[Window].With(size => size.Y > 500),
 			}),
 
 			(new GraphicNode
