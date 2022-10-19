@@ -30,6 +30,10 @@ class MamlWindow {
 		};
 		window.onresize(null);
 
+		window.oncontextmenu = (evt: PointerEvent) => {
+			evt.preventDefault();
+		};
+
 		window.onpointermove = (evt: PointerEvent) => {
 			this.interop.HandlePointerMove(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
 		};

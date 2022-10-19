@@ -23,6 +23,9 @@ class MamlWindow {
                     canvas.style.height = `${window.innerHeight}px`;
                 };
             window.onresize(null);
+            window.oncontextmenu = (evt) => {
+                evt.preventDefault();
+            };
             window.onpointermove = (evt) => {
                 this.interop.HandlePointerMove(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
             };
