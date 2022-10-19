@@ -14,11 +14,10 @@ public partial class RenderTarget : IDisposable
 	public override void BeginDraw() { }
 	public override void EndDraw() { }
 	unsafe public override void Clear(Color color) => pRenderTarget->Clear(color.ToD2DColorF());
-	unsafe public void ClearRect(Color color, Rect rect)
+	unsafe public override void ClearRect(Rect rect, Color color)
 	{
 		Brush brush = new ColorBrush { Color = color, };
 		pRenderTarget->FillRectangle(rect.ToD2DRectF(), brush.GetResource(pRenderTarget));
-		//pRenderTarget->Clear(color.ToD2DColorF());
 	}
 	unsafe public override void SetTransform(Transform transform) => pRenderTarget->SetTransform(transform.ToD2DMatrix3X2F());
 	unsafe public override void DrawGeometry(Geometry geometry, Fill fill)

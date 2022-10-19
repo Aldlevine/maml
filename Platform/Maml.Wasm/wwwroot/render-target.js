@@ -32,14 +32,17 @@ var WrappingMode;
 var WasmDrawCommand;
 (function (WasmDrawCommand) {
     WasmDrawCommand[WasmDrawCommand["Clear"] = 0] = "Clear";
-    WasmDrawCommand[WasmDrawCommand["SetTransform"] = 1] = "SetTransform";
-    WasmDrawCommand[WasmDrawCommand["FillRect"] = 2] = "FillRect";
-    WasmDrawCommand[WasmDrawCommand["StrokeRect"] = 3] = "StrokeRect";
-    WasmDrawCommand[WasmDrawCommand["FillGeometry"] = 4] = "FillGeometry";
-    WasmDrawCommand[WasmDrawCommand["StrokeGeometry"] = 5] = "StrokeGeometry";
-    WasmDrawCommand[WasmDrawCommand["FillText"] = 6] = "FillText";
-    WasmDrawCommand[WasmDrawCommand["PushClip"] = 7] = "PushClip";
-    WasmDrawCommand[WasmDrawCommand["PopClip"] = 8] = "PopClip";
+    WasmDrawCommand[WasmDrawCommand["ClearRect"] = 1] = "ClearRect";
+    WasmDrawCommand[WasmDrawCommand["SetTransform"] = 2] = "SetTransform";
+    WasmDrawCommand[WasmDrawCommand["FillRect"] = 3] = "FillRect";
+    WasmDrawCommand[WasmDrawCommand["StrokeRect"] = 4] = "StrokeRect";
+    WasmDrawCommand[WasmDrawCommand["FillGeometry"] = 5] = "FillGeometry";
+    WasmDrawCommand[WasmDrawCommand["StrokeGeometry"] = 6] = "StrokeGeometry";
+    WasmDrawCommand[WasmDrawCommand["FillText"] = 7] = "FillText";
+    WasmDrawCommand[WasmDrawCommand["PushClip"] = 8] = "PushClip";
+    WasmDrawCommand[WasmDrawCommand["PopClip"] = 9] = "PopClip";
+    WasmDrawCommand[WasmDrawCommand["PushLayer"] = 10] = "PushLayer";
+    WasmDrawCommand[WasmDrawCommand["PopLayer"] = 11] = "PopLayer";
 })(WasmDrawCommand || (WasmDrawCommand = {}));
 ;
 class RenderTarget {
@@ -78,6 +81,19 @@ class RenderTarget {
                         const b = commandBuffer[cmdIdx++];
                         const a = commandBuffer[cmdIdx++];
                         this.clear(ctx, r, g, b, a);
+                    }
+                    break;
+                case WasmDrawCommand.ClearRect:
+                    {
+                        const x = commandBuffer[cmdIdx++];
+                        const y = commandBuffer[cmdIdx++];
+                        const w = commandBuffer[cmdIdx++];
+                        const h = commandBuffer[cmdIdx++];
+                        const r = commandBuffer[cmdIdx++];
+                        const g = commandBuffer[cmdIdx++];
+                        const b = commandBuffer[cmdIdx++];
+                        const a = commandBuffer[cmdIdx++];
+                        this.clearRect(ctx, x, y, w, h, r, g, b, a);
                     }
                     break;
                 case WasmDrawCommand.SetTransform:
@@ -144,6 +160,29 @@ class RenderTarget {
                         this.popClip(ctx);
                     }
                     break;
+                case WasmDrawCommand.PushLayer:
+                    {
+                        const numRects = commandBuffer[cmdIdx++];
+                        const rects = [];
+                        for (var i = 0; i < numRects; i++) {
+                            var rect = commandBuffer.slice(cmdIdx, cmdIdx + 4);
+                            cmdIdx += 4;
+                            rects.push(rect);
+                        }
+                        //	const x = commandBuffer[cmdIdx++];
+                        //	const y = commandBuffer[cmdIdx++];
+                        //	const w = commandBuffer[cmdIdx++];
+                        //	const h = commandBuffer[cmdIdx++];
+                        //	this.pushClip(ctx, x, y, w, h);
+                        this.pushLayer(ctx, rects);
+                    }
+                    break;
+                case WasmDrawCommand.PopLayer:
+                    {
+                        //this.popClip(ctx);
+                        this.popLayer(ctx);
+                    }
+                    break;
             }
         }
     }
@@ -152,6 +191,14 @@ class RenderTarget {
         const color = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        document.body.style.background = color;
+    }
+    clearRect(ctx, x, y, w, h, r, g, b, a) {
+        ctx.resetTransform();
+        ctx.scale(devicePixelRatio, devicePixelRatio);
+        const color = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, w, h);
         document.body.style.background = color;
     }
     setTransform(ctx, matrixArray) {
@@ -194,6 +241,18 @@ class RenderTarget {
         ctx.clip("nonzero");
     }
     popClip(ctx) {
+        ctx.restore();
+    }
+    pushLayer(ctx, rects) {
+        ctx.save();
+        ctx.beginPath();
+        // ctx.rect(x, y, width, height);
+        for (let rect of rects) {
+            ctx.rect.apply(ctx, rect);
+        }
+        ctx.clip("nonzero");
+    }
+    popLayer(ctx) {
         ctx.restore();
     }
     // Resources

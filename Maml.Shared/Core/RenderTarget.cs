@@ -11,6 +11,7 @@ public abstract class RenderTargetBase
 	public abstract void SetTransform(Transform transform);
 
 	public abstract void Clear(Color color);
+	public abstract void ClearRect(Rect rect, Color color);
 	public abstract void DrawGeometry(Geometry geometry, Fill fill);
 	public abstract void DrawGeometry(Geometry geometry, Stroke stroke);
 	public abstract void DrawText(Text text, Brush brush);

@@ -137,9 +137,9 @@ public abstract class WindowBase : ObservableObject
 		if (UpdateRect.Count > 0)
 		{
 			RenderTarget.PushLayer(UpdateRect.ToArray());
-			foreach (var r in UpdateRect)
+			foreach (var rect in UpdateRect)
 			{
-				RenderTarget.ClearRect(new Color(0x333333ff), r);
+				RenderTarget.ClearRect(rect, new Color(0x333333ff));
 			}
 		}
 

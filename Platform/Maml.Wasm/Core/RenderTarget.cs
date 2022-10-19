@@ -11,6 +11,7 @@ public partial class RenderTarget
 {
 	#region Abstract
 	public override void Clear(Color color) => InternalClear(color);
+	public override void ClearRect(Rect rect, Color color) => InternalClearRect(rect, color);
 	public override void SetTransform(Transform transform) => InternalSetTransform(transform);
 	public override void DrawGeometry(Geometry geometry, Fill fill)
 	{
@@ -50,6 +51,10 @@ public partial class RenderTarget
 
 	public override void PopClip() => InternalPopClip();
 
+	public override void PushLayer(Rect[] rects) => InternalPushLayer(rects);
+
+	public override void PopLayer() => InternalPopLayer();
+
 	#endregion
 
 	#region Internal
@@ -59,6 +64,7 @@ public partial class RenderTarget
 	private enum WasmDrawCommand
 	{
 		Clear,
+		ClearRect,
 		SetTransform,
 		FillRect,
 		StrokeRect,
@@ -67,6 +73,8 @@ public partial class RenderTarget
 		FillText,
 		PushClip,
 		PopClip,
+		PushLayer,
+		PopLayer,
 	}
 	internal List<double> DrawCommandBuffer { get; } = new(10_000);
 
@@ -85,6 +93,16 @@ public partial class RenderTarget
 		DrawCommandBuffer.AddRange(new double[]
 		{
 			(double)WasmDrawCommand.Clear,
+			color.R, color.G, color.B, color.A,
+		});
+	}
+
+	private void InternalClearRect(Rect rect, Color color)
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.ClearRect,
+			rect.Position.X, rect.Position.Y, rect.Size.X, rect.Size.Y,
 			color.R, color.G, color.B, color.A,
 		});
 	}
@@ -152,6 +170,27 @@ public partial class RenderTarget
 		DrawCommandBuffer.AddRange(new double[]
 		{
 			(double)WasmDrawCommand.PopClip,
+		});
+	}
+
+	private void InternalPushLayer(Rect[] rects)
+	{
+		DrawCommandBuffer.Add((double)WasmDrawCommand.PushLayer);
+		DrawCommandBuffer.Add(rects.Length);
+		foreach (var rect in rects)
+		{
+			DrawCommandBuffer.Add(rect.Position.X);
+			DrawCommandBuffer.Add(rect.Position.Y);
+			DrawCommandBuffer.Add(rect.Size.X);
+			DrawCommandBuffer.Add(rect.Size.Y);
+		}
+	}
+
+	private void InternalPopLayer()
+	{
+		DrawCommandBuffer.AddRange(new double[]
+		{
+			(double)WasmDrawCommand.PopLayer,
 		});
 	}
 

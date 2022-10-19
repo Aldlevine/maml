@@ -38,6 +38,7 @@ type Text = {
 enum WasmDrawCommand
 {
 	Clear,
+	ClearRect,
 	SetTransform,
 	FillRect,
 	StrokeRect,
@@ -46,6 +47,8 @@ enum WasmDrawCommand
 	FillText,
 	PushClip,
 	PopClip,
+	PushLayer,
+	PopLayer,
 };
 
 class RenderTarget {
@@ -87,6 +90,20 @@ class RenderTarget {
 						const b = commandBuffer[cmdIdx++];
 						const a = commandBuffer[cmdIdx++];
 						this.clear(ctx, r, g, b, a);
+					}
+					break;
+
+				case WasmDrawCommand.ClearRect:
+					{
+						const x = commandBuffer[cmdIdx++];
+						const y = commandBuffer[cmdIdx++];
+						const w = commandBuffer[cmdIdx++];
+						const h = commandBuffer[cmdIdx++];
+						const r = commandBuffer[cmdIdx++];
+						const g = commandBuffer[cmdIdx++];
+						const b = commandBuffer[cmdIdx++];
+						const a = commandBuffer[cmdIdx++];
+						this.clearRect(ctx, x, y, w, h, r, g, b, a);
 					}
 					break;
 
@@ -161,6 +178,31 @@ class RenderTarget {
 						this.popClip(ctx);
 					}
 					break;
+
+				case WasmDrawCommand.PushLayer:
+					{
+						const numRects = commandBuffer[cmdIdx++];
+						const rects: Float64Array[] = [];
+						for (var i = 0; i < numRects; i++) {
+							var rect = commandBuffer.slice(cmdIdx, cmdIdx + 4);
+							cmdIdx += 4;
+							rects.push(rect);
+						}
+					//	const x = commandBuffer[cmdIdx++];
+					//	const y = commandBuffer[cmdIdx++];
+					//	const w = commandBuffer[cmdIdx++];
+					//	const h = commandBuffer[cmdIdx++];
+					//	this.pushClip(ctx, x, y, w, h);
+						this.pushLayer(ctx, rects);
+					}
+					break;
+
+				case WasmDrawCommand.PopLayer:
+					{
+						//this.popClip(ctx);
+						this.popLayer(ctx);
+					}
+					break;
 			}
 		}
 	}
@@ -170,6 +212,15 @@ class RenderTarget {
 		const color = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
 		ctx.fillStyle = color;
 		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		document.body.style.background = color;
+	}
+
+	private clearRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number, g: number, b: number, a: number): void {
+		ctx.resetTransform();
+		ctx.scale(devicePixelRatio, devicePixelRatio);
+		const color = `rgba(${r * 255},${g * 255},${b * 255},${a})`;
+		ctx.fillStyle = color;
+		ctx.fillRect(x, y, w, h);
 		document.body.style.background = color;
 	}
 
@@ -221,6 +272,21 @@ class RenderTarget {
 	}
 
 	private popClip(ctx: CanvasRenderingContext2D): void {
+		ctx.restore();
+	}
+
+	private pushLayer(ctx: CanvasRenderingContext2D, rects: Float64Array[]): void {
+		ctx.save();
+		ctx.beginPath();
+		// ctx.rect(x, y, width, height);
+		for (let rect of rects) {
+			ctx.rect.apply(ctx, rect);
+		}
+
+		ctx.clip("nonzero");
+	}
+
+	private popLayer(ctx: CanvasRenderingContext2D): void {
 		ctx.restore();
 	}
 
