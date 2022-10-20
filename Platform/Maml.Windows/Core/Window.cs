@@ -3,6 +3,7 @@ using Maml.Math;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Direct2D.Common;
@@ -184,15 +185,15 @@ public partial class Window
 
 	unsafe internal void Redraw()
 	{
-		if (UpdateRect.Size != Vector2.Zero)
+		// if (UpdateRect.Size != Vector2.Zero)
+		if (UpdateRect.Size != Vector2.Zero && UpdateRect.Intersects(new Rect { Size = Size, }))
 		{
 			InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
-			//InvalidateRect(hWnd, (RECT*)null, false);
 		}
 		else
 		{
 			// We need to do SOMETHING here, otherwise we spin out of control
-			InvalidateRect(hWnd, new Rect { Size = Vector2.One }.ToWindowsRect(), false);
+			Thread.Sleep(1);
 		}
 	}
 
@@ -221,7 +222,7 @@ public partial class Window
 
 	unsafe internal void HandleResize()
 	{
-		//lock (Engine.Singleton.EventMutex)
+		lock (Engine.Singleton.EventMutex)
 		{
 			float dpi = GetDpiForWindow(hWnd);
 			if (syncRenderTarget != null)

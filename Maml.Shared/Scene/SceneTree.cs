@@ -71,15 +71,14 @@ public class SceneTree
 	{
 		foreach (var node in Nodes)
 		{
-			if (node is GraphicNode graphicNode && graphicNode.VisibleInTree)
+			if (node is GraphicNode graphicNode)
 			{
-				if (graphicNode.GetBoundingRect().Intersects(updateRegion))
+				if (graphicNode.VisibleInTree && graphicNode.GetBoundingRect().Intersects(updateRegion))
 				{
 					graphicNode.Draw(renderTarget);
 					graphicNode.NeedsRedraw = false;
 				}
 			}
 		}
-		//updateRegion = new();
 	}
 }

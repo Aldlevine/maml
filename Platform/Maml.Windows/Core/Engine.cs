@@ -62,10 +62,11 @@ public partial class Engine
 	{
 		Window.ComputeSceneUpdateRect();
 		Window.Redraw();
-		//if (Window.ImmediateMode)
-		//{
-		//	UpdateWindow(Window.hWnd);
-		//}
+
+		if (!Animator.IsTicking)
+		{
+			UpdateWindow(Window.hWnd);
+		}
 	}
 
 	public override void Dispose()
