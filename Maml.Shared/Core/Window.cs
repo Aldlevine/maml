@@ -70,7 +70,7 @@ public abstract class WindowBase : ObservableObject
 	internal Rect UpdateRect = new Rect();
 	public void PushUpdateRect(Rect rect)
 	{
-		if (rect.Size == Vector2.Zero)
+		if (rect.Size == Vector2.Zero || !rect.Intersects(new Rect { Size = Size, }))
 		{
 			return;
 		}

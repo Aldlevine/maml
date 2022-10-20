@@ -92,19 +92,19 @@ public class TwirlyNode : Node
 	}
 
 	#region Resources
-	private static List<DrawLayer> defaultDrawLayers { get; } = new()
+	private static DrawLayer[] defaultDrawLayers { get; } = new[]
 	{
 		new Stroke(new ColorBrush { Color = Colors.DarkOrange }, 7),
 		new Stroke(new ColorBrush { Color = Colors.HotPink }, 3),
 	};
 
-	private static List<DrawLayer> selectedDrawLayers { get; } = new()
+	private static DrawLayer[] selectedDrawLayers { get; } = new[]
 	{
 		new Stroke(new ColorBrush { Color = Colors.PaleGreen }, 7),
 		new Stroke(new ColorBrush { Color = Colors.DarkGoldenrod }, 3),
 	};
 
-	private List<DrawLayer> animatedDrawLayers { get; } = new()
+	private DrawLayer[] animatedDrawLayers { get; } = new[]
 	{
 		defaultDrawLayers[0] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[0].Brush)},
 		defaultDrawLayers[1] with { Brush = new ColorBrush((ColorBrush)defaultDrawLayers[1].Brush)},
@@ -116,17 +116,13 @@ public class TwirlyNode : Node
 	};
 
 	private GeometryGraphic hitRectGfx { get; }
-	private List<DrawLayer> hitRectVisible { get; } = new() { };
-	private List<DrawLayer> hitRectHidden { get; } = new() { };
+	private DrawLayer[] hitRectVisible { get; } = Array.Empty<DrawLayer>();
+	private DrawLayer[] hitRectHidden { get; } = Array.Empty<DrawLayer>();
 
 	private GeometryGraphic baseGfx { get; } = new()
 	{
 		Geometry = baseGeo,
-		DrawLayers = new()
-		{
-			defaultDrawLayers[0],
-			defaultDrawLayers[1],
-		},
+		DrawLayers = defaultDrawLayers,
 	};
 
 	#endregion
@@ -151,8 +147,8 @@ public class TwirlyNode : Node
 
 			case FrameState.Play:
 				{
-					//bigCircles.Transform = bigCircles.Transform.Rotated(evt.Delta.TotalSeconds * 5);
-					//smallCircles.Transform = smallCircles.Transform.Rotated(evt.Delta.TotalSeconds * -10);
+					bigCircles.Transform = bigCircles.Transform.Rotated(evt.Delta.TotalSeconds * 5);
+					smallCircles.Transform = smallCircles.Transform.Rotated(evt.Delta.TotalSeconds * -10);
 				}
 				break;
 		}
@@ -180,11 +176,11 @@ public class TwirlyNode : Node
 
 			case FrameState.Play:
 				{
-					// var t = double.Sin((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
-					var t = Unit.Triangle((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
-					var targetScale = Vector2.Lerp(minScale, maxScale, t);
-					var scale = Vector2.Lerp(Transform.Scale, targetScale, double.Clamp(evt.Delta.TotalSeconds * 10, 0, 1));
-					Transform = Transform with { Scale = scale, };
+					//// var t = double.Sin((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
+					//var t = Unit.Triangle((evt.Tick - pulseTick).TotalSeconds * 5 + pulsePhase) * 0.5 + 0.5;
+					//var targetScale = Vector2.Lerp(minScale, maxScale, t);
+					//var scale = Vector2.Lerp(Transform.Scale, targetScale, double.Clamp(evt.Delta.TotalSeconds * 10, 0, 1));
+					//Transform = Transform with { Scale = scale, };
 				}
 				break;
 		}
@@ -225,26 +221,33 @@ public class TwirlyNode : Node
 		{
 			case FrameState.Enter:
 				{
-					baseGfx.DrawLayers.Clear();
-					baseGfx.DrawLayers.AddRange(animatedDrawLayers);
+					baseGfx.DrawLayers = animatedDrawLayers;
 				}
 				break;
 
 			case FrameState.Exit:
 				{
-					baseGfx.DrawLayers.Clear();
-					baseGfx.DrawLayers.AddRange(defaultDrawLayers);
+					baseGfx.DrawLayers = defaultDrawLayers;
 				}
 				break;
 
 			case FrameState.Play:
 				{
-					for (int i = 0; i < animatedDrawLayers.Count; i++)
+					bool changed = false;
+					for (int i = 0; i < animatedDrawLayers.Length; i++)
 					{
 						if (animatedDrawLayers[i].Brush is not ColorBrush animatedBrush) { continue; }
 						if (defaultDrawLayers[i].Brush is not ColorBrush) { continue; }
 						if (selectedDrawLayers[i].Brush is not ColorBrush selectedBrush) { continue; }
 						animatedBrush.Color = Color.Lerp(animatedBrush.Color, selectedBrush.Color, double.Clamp(evt.Delta.TotalSeconds * 7.5, 0, 1));
+						if (Color.ApproxEqual(animatedBrush.Color, selectedBrush.Color, 0.1))
+						{
+							changed = true;
+						}
+					}
+					if (changed)
+					{
+						baseGfx[GeometryGraphic.DrawLayersProperty].SetDirty();
 					}
 				}
 				break;
@@ -257,26 +260,33 @@ public class TwirlyNode : Node
 		{
 			case FrameState.Enter:
 				{
-					baseGfx.DrawLayers.Clear();
-					baseGfx.DrawLayers.AddRange(animatedDrawLayers);
+					baseGfx.DrawLayers = animatedDrawLayers;
 				}
 				break;
 
 			case FrameState.Exit:
 				{
-					baseGfx.DrawLayers.Clear();
-					baseGfx.DrawLayers.AddRange(defaultDrawLayers);
+					baseGfx.DrawLayers = defaultDrawLayers;
 				}
 				break;
 
 			case FrameState.Play:
 				{
-					for (int i = 0; i < animatedDrawLayers.Count; i++)
+					bool changed = false;
+					for (int i = 0; i < animatedDrawLayers.Length; i++)
 					{
 						if (animatedDrawLayers[i].Brush is not ColorBrush animatedBrush) { continue; }
 						if (defaultDrawLayers[i].Brush is not ColorBrush defaultBrush) { continue; }
 						if (selectedDrawLayers[i].Brush is not ColorBrush) { continue; }
 						animatedBrush.Color = Color.Lerp(animatedBrush.Color, defaultBrush.Color, double.Clamp(evt.Delta.TotalSeconds * 0.125, 0, 1));
+						if (!Color.ApproxEqual(animatedBrush.Color, defaultBrush.Color, 0.1))
+						{
+							changed = true;
+						}
+					}
+					if (changed)
+					{
+						baseGfx[GeometryGraphic.DrawLayersProperty].SetDirty();
 					}
 				}
 				break;

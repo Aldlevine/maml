@@ -25,7 +25,8 @@ internal class TestScene1 : Node
 		{
 			var max = double.Max(size.X, size.Y);
 			var side = double.Sqrt(2 * max * max);
-			side = double.Ceiling(side / rotatingGrid.MinorSpacing.X * 2) * rotatingGrid.MinorSpacing.X * 2;
+			//var side = max;
+			side = double.Ceiling(side / (rotatingGrid.MinorSpacing.X * 2)) * (rotatingGrid.MinorSpacing.X * 2);
 			return new Vector2(side, side);
 		});
 
@@ -74,12 +75,12 @@ internal class TestScene1 : Node
 			{
 				MinorSpacing = new(20, 20),
 				MajorInterval = new(5, 5),
-				LineDrawLayersMajor = new()
+				LineDrawLayersMajor = new DrawLayer[]
 				{
 					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.25f } }, 3),
 					new Stroke(new ColorBrush { Color = Colors.Lime with { A = 0.25f } }, 1),
 				},
-				LineDrawLayersMinor = new()
+				LineDrawLayersMinor = new DrawLayer[]
 				{
 					new Stroke(new ColorBrush { Color = Colors.BlueViolet with { A = 0.25f } }, 1),
 				},
@@ -102,7 +103,7 @@ internal class TestScene1 : Node
 							{
 								MinorSpacing = new(40, 40),
 								MajorInterval = new(10000, 10000),
-								LineDrawLayersMinor = new()
+								LineDrawLayersMinor = new DrawLayer[]
 								{
 									new Stroke(new ColorBrush { Color = Colors.DarkViolet, }, 3),
 								},
@@ -124,7 +125,7 @@ internal class TestScene1 : Node
 									{
 										Ellipse = new() { Radius = new(13, 13), },
 									},
-									DrawLayers = new()
+									DrawLayers = new[]
 									{
 										new Stroke(new ColorBrush { Color = Colors.AntiqueWhite, }, 3),
 									},
@@ -138,7 +139,7 @@ internal class TestScene1 : Node
 									{
 										Ellipse = new() { Radius = new(11, 11), },
 									},
-									DrawLayers = new()
+									DrawLayers = new DrawLayer[]
 									{
 										new Fill(new ColorBrush { Color = Colors.Red with { A = 0.5f, }, }),
 										new Stroke(new ColorBrush { Color = Colors.Red, }, 3),
@@ -168,7 +169,7 @@ internal class TestScene1 : Node
 								Size = Vector2.Round(size) + new Vector2(8, 8),
 							}),
 					},
-					DrawLayers = new()
+					DrawLayers = new DrawLayer[]
 					{
 						new Fill(new ColorBrush { Color = new Color(0x333333ff), }),
 						new Stroke(new ColorBrush { Color = Colors.White, }, 1),

@@ -9,12 +9,12 @@ namespace Maml;
 public class LineGrid : Node
 {
 	#region Resources
-	private readonly static List<DrawLayer> lineDrawLayersMinor = new()
+	private readonly static DrawLayer[] lineDrawLayersMinor = new[]
 	{
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.25f } }, 1),
 	};
 
-	private readonly static List<DrawLayer> lineDrawLayersMajor = new()
+	private readonly static DrawLayer[] lineDrawLayersMajor = new[]
 	{
 		new Stroke(new ColorBrush { Color = new Color(0x666666ff) with { A = 0.5f } }, 1),
 	};
@@ -75,15 +75,15 @@ public class LineGrid : Node
 		set => SizeProperty[this].Set(value);
 	}
 
-	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMinorProperty { get; } = new(lineDrawLayersMinor);
-	public List<DrawLayer> LineDrawLayersMinor
+	public static BasicProperty<LineGrid, DrawLayer[]> LineDrawLayersMinorProperty { get; } = new(lineDrawLayersMinor);
+	public DrawLayer[] LineDrawLayersMinor
 	{
 		get => LineDrawLayersMinorProperty[this].Get();
 		set => LineDrawLayersMinorProperty[this].Set(value);
 	}
 
-	public static BasicProperty<LineGrid, List<DrawLayer>> LineDrawLayersMajorProperty { get; } = new(lineDrawLayersMajor);
-	public List<DrawLayer> LineDrawLayersMajor
+	public static BasicProperty<LineGrid, DrawLayer[]> LineDrawLayersMajorProperty { get; } = new(lineDrawLayersMajor);
+	public DrawLayer[] LineDrawLayersMajor
 	{
 		get => LineDrawLayersMajorProperty[this].Get();
 		set => LineDrawLayersMajorProperty[this].Set(value);
@@ -107,6 +107,7 @@ public class LineGrid : Node
 		SizeProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
 		MinorSpacingProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
 		MajorIntervalProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
+		VisibleInTreeProperty[this].Changed += (s, v) => Engine.QueueDeferred(UpdateGrid);
 		//Engine.QueueDeferred(UpdateGrid);
 	}
 

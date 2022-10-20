@@ -45,8 +45,8 @@ class MamlWindow {
             this.updateSize();
         });
     }
-    updateSize() {
-        if (this.width != window.innerWidth || this.height != window.innerHeight || this.dpiRatio != window.devicePixelRatio) {
+    updateSize(force = false) {
+        if (force || this.width != window.innerWidth || this.height != window.innerHeight || this.dpiRatio != window.devicePixelRatio) {
             this.width = window.innerWidth;
             this.height = window.innerHeight;
             this.dpiRatio = window.devicePixelRatio;

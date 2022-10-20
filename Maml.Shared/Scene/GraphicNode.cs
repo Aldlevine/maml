@@ -24,7 +24,7 @@ public class GraphicNode : Node
 	{
 		Changed += (s, p) =>
 		{
-			NeedsRedraw = (p == Node.VisibleInTreeProperty) || VisibleInTree;
+			NeedsRedraw = (p != Node.VisibleInTreeProperty) && VisibleInTree;
 		};
 	}
 }

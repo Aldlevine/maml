@@ -8,14 +8,26 @@ public partial class Engine
 {
 	public override void Run()
 	{
-		// This might be a noop because everything is handled though static interop
+		// All we need is to handle the first tick/draw
+		// Everything else is hooked up through JS
+		Animator.Tick();
+		Window?.PushUpdateRect(new Math.Rect { Size = Math.Vector2.One * 1000, });
+		Window?.Draw();
 	}
 
 	public override void Initialize()
 	{
 		Window = new();
 
+		Animator.Frame += Frame;
+
 		base.Initialize();
+	}
+
+	private void Frame(object? source, FrameEvent evt)
+	{
+		Window?.ComputeSceneUpdateRect();
+		Window?.Draw();
 	}
 
 	[JSExport]
@@ -24,10 +36,5 @@ public partial class Engine
 	{
 		Singleton.HandleAnimationFrame();
 	}
-	private void HandleAnimationFrame()
-	{
-		Animator.Tick();
-		Window?.ComputeSceneUpdateRect();
-		Window?.Draw();
-	}
+	private void HandleAnimationFrame() => Animator.Tick();
 }

@@ -55,8 +55,8 @@ class MamlWindow {
 	private width: number = -1;
 	private height: number = -1;
 	private dpiRatio: number = -1;
-	public updateSize(): void {
-		if (this.width != window.innerWidth || this.height != window.innerHeight || this.dpiRatio != window.devicePixelRatio) {
+	public updateSize(force: boolean = false): void {
+		if (force || this.width != window.innerWidth || this.height != window.innerHeight || this.dpiRatio != window.devicePixelRatio) {
 			this.width = window.innerWidth;
 			this.height = window.innerHeight;
 			this.dpiRatio = window.devicePixelRatio;

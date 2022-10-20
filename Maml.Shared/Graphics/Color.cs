@@ -37,6 +37,12 @@ public partial struct Color : IEquatable<Color>
 		A = (float)Unit.Lerp(lhs.A, rhs.A, t),
 	};
 
+	public static bool ApproxEqual(in Color lhs, in Color rhs, double epsilon = Unit.Epsilon) =>
+		Unit.ApproxEqual(lhs.R, rhs.R, epsilon) &&
+		Unit.ApproxEqual(lhs.G, rhs.G, epsilon) &&
+		Unit.ApproxEqual(lhs.B, rhs.B, epsilon) &&
+		Unit.ApproxEqual(lhs.A, rhs.A, epsilon);
+
 	public override bool Equals(object? obj) => obj is Color color && Equals(color);
 	public bool Equals(Color other) => R == other.R && G == other.G && B == other.B && A == other.A;
 	public override int GetHashCode() => HashCode.Combine(R, G, B, A);

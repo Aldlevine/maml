@@ -62,7 +62,6 @@ public partial class Window : WindowBase
 		if (changed)
 		{
 			Resize?.Invoke(this, new() { Size = PixelSize, });
-			Engine.Singleton.ProcessDeferred();
 			PushUpdateRect(new Rect { Size = Size, });
 		}
 	}

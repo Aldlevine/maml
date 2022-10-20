@@ -125,15 +125,17 @@ public partial class Text : Resource
 		{
 			//if (self.String == null) { return; }
 			var lines = self.String.Split('\n').Length;
+			var lineHeight = self.LineHeight switch
+			{
+				LineHeight.Relative => self.LineHeight.Value * self.Font.Size,
+				_ => self.LineHeight.Value,
+			};
+
 			if (
 			(self.Size.X >= value.X && value.X < self.maxSize.X) ||
 			(self.Size.Y >= value.Y && value.Y < self.maxSize.Y) ||
 			(self.LineCount > lines && self.Size.X <= value.X && value.X > self.maxSize.X) ||
-			(self.LineCount > lines && self.Size.Y <= value.Y && value.Y > self.maxSize.Y)
-			//(value.X < self.maxSize.X && value.X < self.Size.X) ||
-			//(value.Y < self.maxSize.Y && value.Y < self.Size.Y) ||
-			//(value.X > self.maxSize.X && value.X > self.Size.X) ||
-			//(value.Y > self.maxSize.Y && value.Y > self.Size.Y)
+			(self.LineCount * lineHeight > self.Size.Y && self.Size.Y <= value.Y && value.Y > self.maxSize.Y)
 			)
 			{
 				self.IsDirty = true;

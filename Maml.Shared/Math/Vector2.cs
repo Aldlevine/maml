@@ -49,6 +49,7 @@ public partial struct Vector2 : IEquatable<Vector2>
 	public static Vector2 Min(Vector2 lhs, Vector2 rhs) => new(double.Min(lhs.X, rhs.X), double.Min(lhs.Y, rhs.Y));
 	public static Vector2 Max(Vector2 lhs, Vector2 rhs) => new(double.Max(lhs.X, rhs.X), double.Max(lhs.Y, rhs.Y));
 	public static Vector2 Clamp(Vector2 lhs, Vector2 min, Vector2 max) => new(double.Clamp(lhs.X, min.X, max.X), double.Clamp(lhs.Y, min.Y, max.Y));
+	public static bool ApproxEqual(Vector2 lhs, Vector2 rhs, double epsilon = Unit.Epsilon) => Unit.ApproxEqual(lhs.X, rhs.X, epsilon) && Unit.ApproxEqual(lhs.Y, rhs.Y, epsilon);
 
 	public double LengthSq() => X * X + Y * Y;
 	public double Length() => System.Math.Sqrt(LengthSq());
