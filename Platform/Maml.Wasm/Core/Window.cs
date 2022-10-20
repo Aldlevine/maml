@@ -3,6 +3,7 @@ using Maml.Math;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices.JavaScript;
+using System.Threading.Tasks;
 
 namespace Maml;
 public partial class Window : WindowBase
@@ -40,17 +41,30 @@ public partial class Window : WindowBase
 	{
 		baseWindowSize = new(width, height);
 		baseDpiRatio = dpiRatio;
-		GetWindow(windowID)?.HandleResize(width, height, dpiRatio);
+		GetWindow(windowID)?.HandleResize(new(width, height), dpiRatio);
 	}
 
-	private void HandleResize(int width, int height, double dpiRatio)
+	private void HandleResize(Vector2 windowSize, double dpiRatio)
 	{
-		windowSize = new(width, height);
-		this.dpiRatio = dpiRatio;
-		Resize?.Invoke(this, new() { Size = PixelSize, });
-		PixelSizeProperty[this].SetDirty();
-		DpiRatioProperty[this].SetDirty();
-		PushUpdateRect(new Rect { Size = Size, });
+		bool changed = false;
+		if (this.windowSize != windowSize)
+		{
+			this.windowSize = windowSize;
+			PixelSizeProperty[this].SetDirty();
+			changed = true;
+		}
+		if (this.dpiRatio != dpiRatio)
+		{
+			this.dpiRatio = dpiRatio;
+			DpiRatioProperty[this].SetDirty();
+			changed = true;
+		}
+		if (changed)
+		{
+			Resize?.Invoke(this, new() { Size = PixelSize, });
+			Engine.Singleton.ProcessDeferred();
+			PushUpdateRect(new Rect { Size = Size, });
+		}
 	}
 
 	private Vector2 previousPointerPosition = Vector2.Zero;

@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { wasm } from "./wasm.js";
+import { mamlWindow } from "./window.js";
 class Engine {
     constructor() {
         this.boundFrameRequestCallback = this.frameRequestCallback.bind(this);
@@ -20,6 +21,7 @@ class Engine {
         });
     }
     frameRequestCallback() {
+        mamlWindow.updateSize();
         this.interop.HandleAnimationFrame(0);
         requestAnimationFrame(this.boundFrameRequestCallback);
     }

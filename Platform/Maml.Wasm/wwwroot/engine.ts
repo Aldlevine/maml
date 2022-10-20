@@ -1,4 +1,5 @@
 ﻿import { wasm } from "./wasm.js";
+import { mamlWindow } from "./window.js";
 
 type EngineInterop = {
 	HandleAnimationFrame: (id: number) => void;
@@ -15,6 +16,7 @@ class Engine {
 	}
 
 	private frameRequestCallback(): void {
+		mamlWindow.updateSize();
 		this.interop.HandleAnimationFrame(0);
 		requestAnimationFrame(this.boundFrameRequestCallback);
 	}

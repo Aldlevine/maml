@@ -9,20 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { wasm } from "./wasm.js";
 class MamlWindow {
+    constructor() {
+        this.canvas = document.getElementById("canvas");
+        this.width = -1;
+        this.height = -1;
+        this.dpiRatio = -1;
+    }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             wasm.setModuleImports("window.js", this);
             this.interop = yield wasm.getAssemblyExports("Maml.Wasm", "Maml.Window");
-            window.onorientationchange =
-                window.onresize = (_evt) => {
-                    this.interop.HandleResize(0, Math.floor(window.innerWidth * devicePixelRatio), Math.floor(window.innerHeight * devicePixelRatio), devicePixelRatio);
-                    const canvas = document.getElementById("canvas");
-                    canvas.width = window.innerWidth * devicePixelRatio;
-                    canvas.height = window.innerHeight * devicePixelRatio;
-                    canvas.style.width = `${window.innerWidth}px`;
-                    canvas.style.height = `${window.innerHeight}px`;
-                };
-            window.onresize(null);
+            //window.onorientationchange =
+            //window.onresize = (_evt: UIEvent) => {
+            //	this.interop.HandleResize(0, Math.floor(window.innerWidth * devicePixelRatio), Math.floor(window.innerHeight * devicePixelRatio), devicePixelRatio);
+            //	const width = window.innerWidth;
+            //	const height = window.innerHeight;
+            //	this.canvas.width = width * devicePixelRatio;
+            //	this.canvas.height = height * devicePixelRatio;
+            //	this.canvas.style.width = `${width}px`;
+            //	this.canvas.style.height = `${height}px`;
+            //};
+            //window.onresize(null);
             window.oncontextmenu = (evt) => {
                 evt.preventDefault();
             };
@@ -35,7 +42,20 @@ class MamlWindow {
             window.onpointerup = (evt) => {
                 this.interop.HandlePointerUp(0, evt.clientX, evt.clientY, evt.button, evt.buttons);
             };
+            this.updateSize();
         });
+    }
+    updateSize() {
+        if (this.width != window.innerWidth || this.height != window.innerHeight || this.dpiRatio != window.devicePixelRatio) {
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            this.dpiRatio = window.devicePixelRatio;
+            this.canvas.width = Math.ceil(this.width * this.dpiRatio);
+            this.canvas.height = Math.ceil(this.height * this.dpiRatio);
+            this.canvas.style.width = `${this.width}px`;
+            this.canvas.style.height = `${this.height}px`;
+            this.interop.HandleResize(0, Math.ceil(this.width * this.dpiRatio), Math.ceil(this.height * this.dpiRatio), this.dpiRatio);
+        }
     }
 }
 export const mamlWindow = new MamlWindow();

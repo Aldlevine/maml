@@ -121,8 +121,32 @@ public partial class Text : Resource
 	public static ComputedProperty<Text, Vector2> MaxSizeProperty = new()
 	{
 		Get = (self) => self.maxSize,
-		Set = (self, value) => self.maxSize = Vector2.Max(value, Vector2.Zero),
-		Changed = (self) => self.IsDirty = true,
+		Set = (self, value) =>
+		{
+			//if (self.String == null) { return; }
+			var lines = self.String.Split('\n').Length;
+			if (
+			(self.Size.X >= value.X && value.X < self.maxSize.X) ||
+			(self.Size.Y >= value.Y && value.Y < self.maxSize.Y) ||
+			(self.LineCount > lines && self.Size.X <= value.X && value.X > self.maxSize.X) ||
+			(self.LineCount > lines && self.Size.Y <= value.Y && value.Y > self.maxSize.Y)
+			//(value.X < self.maxSize.X && value.X < self.Size.X) ||
+			//(value.Y < self.maxSize.Y && value.Y < self.Size.Y) ||
+			//(value.X > self.maxSize.X && value.X > self.Size.X) ||
+			//(value.Y > self.maxSize.Y && value.Y > self.Size.Y)
+			)
+			{
+				self.IsDirty = true;
+			}
+			self.maxSize = Vector2.Max(value, Vector2.Zero);
+		},
+		//Changed = (self) =>
+		//{
+		//	if (self.maxSize.X < self.Size.X || self.maxSize.Y < self.Size.Y)
+		//	{
+		//		self.IsDirty = true;
+		//	}
+		//},
 	};
 	public Vector2 MaxSize
 	{
