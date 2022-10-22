@@ -43,7 +43,7 @@ public abstract class Binding<T> : Binding
 	{
 		boundFrom.Add(from);
 		from.boundTo.Add(this);
-		Set(from.Value);
+		Set(from.Get(true));
 	}
 
 	public void UnbindFrom(Binding<T> from)
@@ -60,21 +60,45 @@ public abstract class Binding<O, T> : Binding<T> where O : ObservableObject
 
 	public override event EventHandler<LazyGet<T>>? Changed;
 
-	// TODO: Do we need to keep a ref around??
 	public Binding<O, R> With<R>(Func<T, R> func)
 	{
 		if (!Object.TryGetTarget(out var @object))
 		{
 			throw new NullReferenceException();
 		}
-		var property = new BasicProperty<O, R>(default!);
-		var binding = new BasicBinding<O, R>(@object, property);
-		Changed += (s, v) =>
+
+		// TODO: The dependent binding needs to point to the new binding
+		// not the parent binding, because we don't want to screw up the
+		// parent's existing dependencies
+		ObservableObject? currentDependency = null;
+		Binding<O, R> binding = null!;
+		var property = new ComputedProperty<O, R>
 		{
-			//binding.Value = func(v.Value);
-			//binding.SetDirty();
-			binding.Set(func(v.Value));
+			Get = (self) =>
+			{
+				currentDependency?.RemoveDependentBinding(this);
+
+				var obj = Get();
+				if (obj is ObservableObject o)
+				{
+					currentDependency = o;
+					currentDependency?.AddDependentBinding(this);
+				}
+				return func(obj);
+			},
+			Dependencies = (self) => new[] { this, },
+			Cached = false,
 		};
+
+		binding = property.GetBinding(@object);
+
+		var obj = Get();
+		if (obj is ObservableObject o)
+		{
+			currentDependency = o;
+			currentDependency?.AddDependentBinding(this);
+		}
+
 		return binding;
 	}
 
@@ -156,7 +180,8 @@ public class ComputedBinding<O, T> : Binding<O, T> where O : ObservableObject
 	{
 		Object = new(@object);
 		ComputedProperty = property;
-		Value = default!;
+		//Value = default!;
+		Value = Get();
 
 		if (ComputedProperty.Dependencies != null)
 		{
