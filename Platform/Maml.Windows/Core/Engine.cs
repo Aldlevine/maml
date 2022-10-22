@@ -18,6 +18,8 @@ public partial class Engine
 
 	public override void Run()
 	{
+		Window.PushUpdateRect(new Rect { Size = Window.Size, });
+
 		while (true)
 		{
 			while (PeekMessage(out MSG msg, default, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE))
@@ -52,7 +54,7 @@ public partial class Engine
 		Window.RegisterWindowClass();
 		Window = new Window();
 
-		Animator.Frame += Frame;
+		Animator.LateFrame += Frame;
 
 		base.Initialize();
 	}
@@ -60,6 +62,7 @@ public partial class Engine
 	// This should process the scene tree and check for changes before rerawing
 	private void Frame(object? sender, FrameEvent evt)
 	{
+		ProcessDeferred();
 		Window.ComputeSceneUpdateRect();
 		Window.Redraw();
 

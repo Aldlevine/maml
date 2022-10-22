@@ -63,6 +63,7 @@ public class Animator
 	}
 
 	public event EventHandler<FrameEvent>? NextFrame;
+	internal event EventHandler<FrameEvent>? LateFrame;
 
 	public bool IsTicking => tickerEvent.IsSet;
 
@@ -87,16 +88,18 @@ public class Animator
 				Delta = delta,
 			};
 
-			frame?.Invoke(this, evt);
-			//Parallel.ForEach(frame.GetInvocationList(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
-
-			NextFrame?.Invoke(this, evt);
-			//Parallel.ForEach(NextFrame?.GetInvocationList() ?? Array.Empty<EventHandler<FrameEvent>>(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
+			Parallel.ForEach(NextFrame?.GetInvocationList() ?? Array.Empty<EventHandler<FrameEvent>>(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
+			//NextFrame?.Invoke(this, evt);
 			NextFrame = null;
+
+			Parallel.ForEach(frame.GetInvocationList(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
+			//frame?.Invoke(this, evt);
 
 			lastTick = tick;
 
-			Engine.Singleton.ProcessDeferred();
+			LateFrame?.Invoke(this, evt);
+
+			//Engine.Singleton.ProcessDeferred();
 
 			//Engine.Singleton.EventMutex.ReleaseMutex();
 		}

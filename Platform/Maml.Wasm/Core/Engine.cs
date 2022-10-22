@@ -11,7 +11,7 @@ public partial class Engine
 		// All we need is to handle the first tick/draw
 		// Everything else is hooked up through JS
 		Animator.Tick();
-		Window?.PushUpdateRect(new Math.Rect { Size = Math.Vector2.One * 1000, });
+		Window?.PushUpdateRect(new Math.Rect { Size = Math.Vector2.One * 100_000, });
 		Window?.Draw();
 	}
 
@@ -19,13 +19,14 @@ public partial class Engine
 	{
 		Window = new();
 
-		Animator.Frame += Frame;
+		Animator.LateFrame += Frame;
 
 		base.Initialize();
 	}
 
 	private void Frame(object? source, FrameEvent evt)
 	{
+		ProcessDeferred();
 		Window?.ComputeSceneUpdateRect();
 		Window?.Draw();
 	}
