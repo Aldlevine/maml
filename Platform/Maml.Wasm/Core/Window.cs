@@ -87,7 +87,6 @@ public partial class Window : WindowBase
 			ButtonMask = buttonMask,
 		});
 		previousPointerPosition = position;
-		//Update();
 	}
 
 	[JSExport]

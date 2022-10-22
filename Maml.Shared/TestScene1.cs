@@ -18,19 +18,9 @@ internal class TestScene1 : Node
 
 	private Binding<WindowBase, Vector2> gridSizeBinding { get; } = default!;
 
-	public TestScene1() : base()
+	private static Text[] texts =
 	{
-		gridSizeBinding =
-		WindowBase.SizeProperty[Window].With(size =>
-		{
-			var max = double.Max(size.X, size.Y);
-			var side = double.Sqrt(2 * max * max);
-			//var side = max;
-			side = double.Ceiling(side / (rotatingGrid.MinorSpacing.X * 2)) * (rotatingGrid.MinorSpacing.X * 2);
-			return new Vector2(side, side);
-		});
-
-		Text text = new Text
+		new Text
 		{
 			String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!",
 			Font = new()
@@ -40,34 +30,83 @@ internal class TestScene1 : Node
 				Style = FontStyle.Normal,
 				Weight = FontWeight.Normal,
 			},
-			//MaxSize = new(150, 150),
 			LineHeight = 1.2.Relative(),
 			WrappingMode = WrappingMode.Normal,
 			[Text.MaxSizeProperty] = Window.SizeProperty[Window].With(size =>
 				size - new Vector2(16, 16)),
-		};
+		},
 
-		Window.PointerDown += (s, e) =>
+		new Text
 		{
-			if (e.Button == Events.PointerButton.Right)
+			String = "Oh My Goodness!!!!!",
+			Font = new()
 			{
-				text.String = "Oh My Goodness!!!!!";
-				text.Font = text.Font with { Name = "Segoe Script", Size = 32, Weight = FontWeight.ExtraHeavy, };
-				text.WrappingMode = WrappingMode.Character;
-			}
-			else if (e.Button == Events.PointerButton.Left)
+				Name = "Segoe Script",
+				Size = 32,
+				Style = FontStyle.Normal,
+				Weight = FontWeight.ExtraHeavy,
+			},
+			LineHeight = 1.2.Relative(),
+			WrappingMode = WrappingMode.Character,
+			[Text.MaxSizeProperty] = Window.SizeProperty[Window].With(size =>
+				size - new Vector2(16, 16)),
+		},
+	};
+
+	private int textIdx = 0;
+
+	private static BasicProperty<TestScene1, Text> textProp = new(texts[0]);
+	private Text text
+	{
+		get => textProp[this].Get();
+		set => textProp[this].Set(value);
+	}
+
+	private static ComputedProperty<TestScene1, Rect> textBoxRectProp = new()
+	{
+		Get = self => new Rect
+		{
+			Position = new(-4.5, -4.5),
+			Size = Vector2.Round(self.text.Size) + new Vector2(8, 8),
+		},
+		Dependencies = self => new[]
+		{
+			textProp[self],
+		},
+	};
+	private Rect texpBoxRect
+	{
+		get => textBoxRectProp[this].Get();
+	}
+
+
+	private void ToggleText()
+	{
+		textIdx = (textIdx + 1) % texts.Length;
+		text = texts[textIdx];
+	}
+
+	public TestScene1() : base()
+	{
+		gridSizeBinding =
+		WindowBase.SizeProperty[Window].With(size =>
+		{
+			var max = double.Max(size.X, size.Y);
+			var side = double.Sqrt(2 * max * max);
+			//var side = max;
+			if (rotatingGrid != null)
 			{
-				text.String = "This is one helluva piece of things! 😊🔫\nAlso, this is cool...\nAnd even cooler still!!!!!!";
-				text.Font = new()
-				{
-					Name = "Arial",
-					Size = 10.0 * (96.0 / 72.0),
-					Style = FontStyle.Normal,
-					Weight = FontWeight.Normal,
-				};
-				text.WrappingMode = WrappingMode.Normal;
+				side = double.Ceiling(side / (rotatingGrid.MinorSpacing.X * 2)) * (rotatingGrid.MinorSpacing.X * 2);
 			}
-		};
+			return new Vector2(side, side);
+		});
+
+		Binding<TestScene1, Rect> textBoxRect = textProp[this].With<Rect>(t =>
+			new Rect
+			{
+				Position = new(-4.5, -4.5),
+				Size = Vector2.Round(t.Size) + new Vector2(8, 8),
+			});
 
 		Children = new()
 		{
@@ -158,16 +197,14 @@ internal class TestScene1 : Node
 
 			(new GraphicNode
 			{
+				[Node.HitShapeProperty] = textBoxRectProp[this].With<IShape>(r => r),
+				//HitShape = new Rect { Size = new(1000, 1000), },
+				OnPointerDown = (s, e) => ToggleText(),
 				Graphic = new GeometryGraphic
 				{
 					Geometry = new RectGeometry
 					{
-						[RectGeometry.RectProperty] = Text.SizeProperty[text].With(size =>
-							new Rect
-							{
-								Position = new(-4.5, -4.5),
-								Size = Vector2.Round(size) + new Vector2(8, 8),
-							}),
+						[RectGeometry.RectProperty] = textBoxRectProp[this],
 					},
 					DrawLayers = new DrawLayer[]
 					{
@@ -182,7 +219,9 @@ internal class TestScene1 : Node
 					{
 						Graphic = new TextGraphic
 						{
-							Text = text,
+							//Text = text,
+							//[TextGraphic.TextProperty] = textIdxProp[this].With<Text>(i => texts[i]),
+							[TextGraphic.TextProperty] = textProp[this],
 							Brush = new ColorBrush { Color = Colors.White, },
 						},
 						Transform = Transform.Identity,

@@ -129,7 +129,9 @@ public partial class Window
 			HWND.Null,
 			0,
 			0,
-			(int)System.Math.Ceiling(1440.0),
+			//(int)System.Math.Ceiling(1440.0),
+			//(int)System.Math.Ceiling(810.0),
+			(int)System.Math.Ceiling(500.0),
 			(int)System.Math.Ceiling(810.0),
 			SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
 		ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_NORMAL);
