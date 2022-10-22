@@ -102,5 +102,5 @@ public partial class TextGraphic : Graphic
 		rt.PopClip();
 	}
 
-	public override Rect GetBoundingRect() => new Rect { Size = Text.Size, };
+	public override Rect GetBoundingRect() => new Rect { Size = Text?.Size ?? Vector2.Zero, };
 }
