@@ -57,16 +57,17 @@ class MamlWindow {
 	private dpiRatio: number = -1;
 	public updateSize(force: boolean = false): void {
 		if (force || this.width != window.innerWidth || this.height != window.innerHeight || this.dpiRatio != window.devicePixelRatio) {
-			this.width = window.innerWidth;
-			this.height = window.innerHeight;
-			this.dpiRatio = window.devicePixelRatio;
-
-			this.canvas.width = Math.ceil(this.width * this.dpiRatio);
-			this.canvas.height = Math.ceil(this.height * this.dpiRatio);
-			this.canvas.style.width = `${this.width}px`;
-			this.canvas.style.height = `${this.height}px`;
-			this.interop.HandleResize(0, Math.ceil(this.width * this.dpiRatio), Math.ceil(this.height * this.dpiRatio), this.dpiRatio);
+			this.canvas.width = Math.ceil(window.innerWidth * window.devicePixelRatio);
+			this.canvas.height = Math.ceil(window.innerHeight * window.devicePixelRatio);
+			this.canvas.style.width = `${window.innerWidth}px`;
+			this.canvas.style.height = `${window.innerHeight}px`;
 		}
+
+		this.width = window.innerWidth;
+		this.height = window.innerHeight;
+		this.dpiRatio = window.devicePixelRatio;
+
+		this.interop.HandleResize(0, Math.ceil(this.width * this.dpiRatio), Math.ceil(this.height * this.dpiRatio), this.dpiRatio);
 	}
 }
 
