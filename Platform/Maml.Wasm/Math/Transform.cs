@@ -4,7 +4,7 @@ public partial struct Transform
 {
 	unsafe internal Transform(double[] matrixArray)
 	{
-		fixed(double* pMatrixArray = matrixArray)
+		fixed (double* pMatrixArray = matrixArray)
 		{
 			matrix = *(System.Numerics.Matrix3x2*)&pMatrixArray;
 		}

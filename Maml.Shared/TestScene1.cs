@@ -3,7 +3,6 @@ using Maml.Math;
 using Maml.Observable;
 using Maml.Scene;
 using System;
-using Yoh.Text.Segmentation;
 
 namespace Maml;
 
@@ -93,7 +92,6 @@ internal class TestScene1 : Node
 		{
 			var max = double.Max(size.X, size.Y);
 			var side = double.Sqrt(2 * max * max);
-			//var side = max;
 			if (rotatingGrid != null)
 			{
 				side = double.Ceiling(side / (rotatingGrid.MinorSpacing.X * 2)) * (rotatingGrid.MinorSpacing.X * 2);
@@ -129,7 +127,6 @@ internal class TestScene1 : Node
 
 			(centeringNode = new Node
 			{
-				//Visible = false,
 				[Node.VisibleProperty] = Window.SizeProperty[Window].With(size => size.X > 500),
 				[OriginProperty] = WindowBase.SizeProperty[Window].With(size => size / 2),
 				Children = new()
@@ -198,7 +195,6 @@ internal class TestScene1 : Node
 			(new GraphicNode
 			{
 				[Node.HitShapeProperty] = textBoxRectProp[this].With<IShape>(r => r),
-				//HitShape = new Rect { Size = new(1000, 1000), },
 				OnPointerDown = (s, e) => ToggleText(),
 				Graphic = new GeometryGraphic
 				{
@@ -219,8 +215,6 @@ internal class TestScene1 : Node
 					{
 						Graphic = new TextGraphic
 						{
-							//Text = text,
-							//[TextGraphic.TextProperty] = textIdxProp[this].With<Text>(i => texts[i]),
 							[TextGraphic.TextProperty] = textProp[this],
 							Brush = new ColorBrush { Color = Colors.White, },
 						},

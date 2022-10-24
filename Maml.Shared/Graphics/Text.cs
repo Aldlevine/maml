@@ -1,8 +1,5 @@
 ﻿using Maml.Math;
 using Maml.Observable;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Maml.Graphics;
 
@@ -44,8 +41,8 @@ public enum WrappingMode
 
 public abstract record LineHeight(double Value)
 {
-	public record Absolute(double Value): LineHeight(Value);
-	public record Relative(double Value): LineHeight(Value);
+	public record Absolute(double Value) : LineHeight(Value);
+	public record Relative(double Value) : LineHeight(Value);
 
 	public static implicit operator LineHeight(double value) => new Absolute(value);
 	public static implicit operator double(LineHeight lineHeight) => lineHeight.Value;
@@ -123,7 +120,6 @@ public partial class Text : Resource
 		Get = (self) => self.maxSize,
 		Set = (self, value) =>
 		{
-			//if (self.String == null) { return; }
 			var lines = self.String.Split('\n').Length;
 			var lineHeight = self.LineHeight switch
 			{
@@ -142,13 +138,6 @@ public partial class Text : Resource
 			}
 			self.maxSize = Vector2.Max(value, Vector2.Zero);
 		},
-		//Changed = (self) =>
-		//{
-		//	if (self.maxSize.X < self.Size.X || self.maxSize.Y < self.Size.Y)
-		//	{
-		//		self.IsDirty = true;
-		//	}
-		//},
 	};
 	public Vector2 MaxSize
 	{
@@ -157,6 +146,7 @@ public partial class Text : Resource
 	}
 
 	// Computed by layout, but not actually computed properties.
+
 	public static BasicProperty<Text, Vector2> SizeProperty = new(default);
 	public Vector2 Size
 	{

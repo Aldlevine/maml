@@ -37,24 +37,15 @@ unsafe public abstract partial class Geometry : Resource
 
 public partial class RectGeometry : Geometry
 {
-	internal override void MakeResource(RenderTarget renderTarget)
-	{
-		iResource = renderTarget.MakeRectGeometry(Rect);
-	}
+	internal override void MakeResource(RenderTarget renderTarget) => iResource = renderTarget.MakeRectGeometry(Rect);
 }
 
 public partial class EllipseGeometry : Geometry
 {
-	internal override void MakeResource(RenderTarget renderTarget)
-	{
-		iResource = renderTarget.MakeEllipseGeometry(Ellipse);
-	}
+	internal override void MakeResource(RenderTarget renderTarget) => iResource = renderTarget.MakeEllipseGeometry(Ellipse);
 }
 
 public partial class LineGeometry : Geometry
 {
-	internal override void MakeResource(RenderTarget renderTarget)
-	{
-		iResource = renderTarget.MakeLineGeometry(Line);
-	}
+	internal override void MakeResource(RenderTarget renderTarget) => iResource = renderTarget.MakeLineGeometry(Line);
 }

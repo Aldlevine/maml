@@ -76,7 +76,6 @@ public class Animator
 		if (frame == null) { return; }
 
 		lock (Engine.Singleton.EventMutex)
-		//if (Engine.Singleton.EventMutex.WaitOne(0))
 		{
 			tick = DateTime.Now;
 			delta = tick - lastTick;
@@ -89,19 +88,13 @@ public class Animator
 			};
 
 			Parallel.ForEach(NextFrame?.GetInvocationList() ?? Array.Empty<EventHandler<FrameEvent>>(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
-			//NextFrame?.Invoke(this, evt);
 			NextFrame = null;
 
 			Parallel.ForEach(frame.GetInvocationList(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
-			//frame?.Invoke(this, evt);
-
-			lastTick = tick;
 
 			LateFrame?.Invoke(this, evt);
 
-			//Engine.Singleton.ProcessDeferred();
-
-			//Engine.Singleton.EventMutex.ReleaseMutex();
+			lastTick = tick;
 		}
 	}
 

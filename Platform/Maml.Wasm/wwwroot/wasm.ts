@@ -1,8 +1,6 @@
 ﻿import createDotnetRuntime from "./dotnet.js";
 
 class Wasm {
-// public
-
 	public async init() : Promise<void> {
 		try {
 			const { getAssemblyExports, setModuleImports, runMain } = await createDotnetRuntime({});
@@ -32,8 +30,6 @@ class Wasm {
 	public async run(mainAssembly: string, ...args: string[]): Promise<number> {
 		return this._runMain(mainAssembly, args);
 	}
-
-// private
 
 	// fn pointers
 	private _getAssemblyExports: (assemblyName: string) => Promise<any>;

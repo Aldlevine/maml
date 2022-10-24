@@ -24,10 +24,7 @@ public class ObservableObject
 	internal HashSet<Property> boundProperties { get; } = new();
 
 	internal ConcurrentDictionary<int, WeakReference<Binding>> dependentBindings { get; } = new();
-	internal void RemoveDependentBinding(Binding binding)
-	{
-		dependentBindings.Remove(binding.GetHashCode(), out var _);
-	}
+	internal void RemoveDependentBinding(Binding binding) => dependentBindings.Remove(binding.GetHashCode(), out var _);
 
 	internal void AddDependentBinding(Binding binding)
 	{

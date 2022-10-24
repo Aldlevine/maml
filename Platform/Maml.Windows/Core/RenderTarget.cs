@@ -74,7 +74,6 @@ public partial class RenderTarget : IDisposable
 	unsafe public override void PopClip()
 	{
 		pRenderTarget->PopAxisAlignedClip();
-		//pRenderTarget->PopLayer();
 	}
 
 	// TODO: If we want this to work with cleartype, we need to use D2DDeviceContext directly

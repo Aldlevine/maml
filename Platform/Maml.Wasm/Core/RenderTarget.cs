@@ -1,10 +1,7 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices.JavaScript;
-using System.Threading;
-using Yoh.Text.Segmentation;
 
 namespace Maml;
 public partial class RenderTarget
@@ -224,7 +221,7 @@ public partial class RenderTarget
 	[JSImport("makeColorBrush", "render-target.js")]
 	private static partial int MakeColorBrush(int id, string color);
 	internal int MakeColorBrush(Color color) => MakeColorBrush(CanvasId, color.ToCSSColor());
-	
+
 
 	[JSImport("releaseText", "render-target.js")]
 	private static partial void ReleaseText(int id, int textId);
@@ -233,7 +230,6 @@ public partial class RenderTarget
 	[JSImport("makeText", "render-target.js")]
 	private static partial double[] MakeText(
 		int id,
-		//[JSMarshalAs<JSType.Array<JSType.String>>] string[] textSegments,
 		string text,
 		int wrappingMode,
 		double lineHeight,
@@ -245,11 +241,6 @@ public partial class RenderTarget
 		double maxSizeY);
 	internal (int id, uint lineCount, Vector2 size) MakeText(Text text)
 	{
-		//List<string> textSegments = new();
-		//foreach (var segment in text.String.EnumerateWordBoundaries())
-		//{
-		//	textSegments.Add(segment.ToString());
-		//}
 		double lineHeight = text.LineHeight switch
 		{
 			LineHeight.Relative => text.LineHeight.Value * text.Font.Size,
@@ -257,7 +248,6 @@ public partial class RenderTarget
 		};
 		var data = MakeText(
 			CanvasId,
-			//textSegments.ToArray(),
 			text.String,
 			(int)text.WrappingMode,
 			lineHeight,

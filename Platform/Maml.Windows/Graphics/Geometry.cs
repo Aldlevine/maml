@@ -1,5 +1,4 @@
-﻿using System;
-using Windows.Win32.Graphics.Direct2D;
+﻿using Windows.Win32.Graphics.Direct2D;
 
 namespace Maml.Graphics;
 

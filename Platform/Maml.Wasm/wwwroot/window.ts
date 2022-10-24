@@ -21,18 +21,6 @@ class MamlWindow {
 		wasm.setModuleImports("window.js", this);
 		this.interop = await wasm.getAssemblyExports<MamlWindowInterop>("Maml.Wasm", "Maml.Window");
 
-		//window.onorientationchange =
-		//window.onresize = (_evt: UIEvent) => {
-		//	this.interop.HandleResize(0, Math.floor(window.innerWidth * devicePixelRatio), Math.floor(window.innerHeight * devicePixelRatio), devicePixelRatio);
-		//	const width = window.innerWidth;
-		//	const height = window.innerHeight;
-		//	this.canvas.width = width * devicePixelRatio;
-		//	this.canvas.height = height * devicePixelRatio;
-		//	this.canvas.style.width = `${width}px`;
-		//	this.canvas.style.height = `${height}px`;
-		//};
-		//window.onresize(null);
-
 		window.oncontextmenu = (evt: PointerEvent) => {
 			evt.preventDefault();
 		};

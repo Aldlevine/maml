@@ -2,7 +2,6 @@
 using Maml.Math;
 using Maml.Observable;
 using Maml.Scene;
-using System.Collections.Generic;
 
 namespace Maml;
 

@@ -3,7 +3,6 @@ using Maml.Math;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices.JavaScript;
-using System.Threading.Tasks;
 
 namespace Maml;
 public partial class Window : WindowBase
@@ -19,7 +18,6 @@ public partial class Window : WindowBase
 	public override event EventHandler<KeyEvent>? KeyUp;
 	public override event EventHandler<FocusEvent>? Focus;
 	public override event EventHandler<FocusEvent>? Blur;
-	//public override event EventHandler<DrawEvent>? Draw;
 
 	private Vector2 windowSize = baseWindowSize;
 	protected override Vector2 GetPixelSize() => windowSize;
@@ -107,7 +105,6 @@ public partial class Window : WindowBase
 			ButtonMask = buttonMask,
 		});
 		previousPointerPosition = position;
-		//Update();
 	}
 
 	[JSExport]
@@ -128,7 +125,6 @@ public partial class Window : WindowBase
 			ButtonMask = buttonMask,
 		});
 		previousPointerPosition = position;
-		//Update();
 	}
 
 	private static PointerButton jsButtonToPointerButton(int iButton)

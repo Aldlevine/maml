@@ -188,18 +188,12 @@ class RenderTarget {
 							cmdIdx += 4;
 							rects.push(rect);
 						}
-					//	const x = commandBuffer[cmdIdx++];
-					//	const y = commandBuffer[cmdIdx++];
-					//	const w = commandBuffer[cmdIdx++];
-					//	const h = commandBuffer[cmdIdx++];
-					//	this.pushClip(ctx, x, y, w, h);
 						this.pushLayer(ctx, rects);
 					}
 					break;
 
 				case WasmDrawCommand.PopLayer:
 					{
-						//this.popClip(ctx);
 						this.popLayer(ctx);
 					}
 					break;
@@ -278,7 +272,6 @@ class RenderTarget {
 	private pushLayer(ctx: CanvasRenderingContext2D, rects: Float64Array[]): void {
 		ctx.save();
 		ctx.beginPath();
-		// ctx.rect(x, y, width, height);
 		for (let rect of rects) {
 			ctx.rect.apply(ctx, rect);
 		}

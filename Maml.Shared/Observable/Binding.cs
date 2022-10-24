@@ -7,7 +7,7 @@ namespace Maml.Observable;
 public abstract class Binding
 {
 	public abstract void SetDirty();
-	public void SetDirty(object? sender, object evt) => SetDirty();
+	public void SetDirty(object? _1 /* sender */, object _2 /* evt */) => SetDirty();
 
 	public abstract void BindTo(Binding from);
 
@@ -180,7 +180,6 @@ public class ComputedBinding<O, T> : Binding<O, T> where O : ObservableObject
 	{
 		Object = new(@object);
 		ComputedProperty = property;
-		//Value = default!;
 		Value = Get();
 
 		if (ComputedProperty.Dependencies != null)

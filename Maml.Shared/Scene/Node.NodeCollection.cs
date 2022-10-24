@@ -52,7 +52,6 @@ partial class Node
 			((ICollection<Node>)list).Add(item);
 		}
 
-		// public void Clear() => ((ICollection<Node>)list).Clear();
 		public void Clear()
 		{
 			foreach (var item in list)

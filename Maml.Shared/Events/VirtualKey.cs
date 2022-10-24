@@ -1,6 +1,6 @@
 ﻿namespace Maml.Events;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "Values match Mircorosft's VK list")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "Values match Microsoft's VK list")]
 public enum VirtualKey
 {
 	A = 65,

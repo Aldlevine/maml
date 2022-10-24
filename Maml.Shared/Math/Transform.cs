@@ -93,12 +93,11 @@ public partial struct Transform : IEquatable<Transform>
 		new(0, 1),
 		new(0.5f, 0.5f));
 
-	//public Transform Translated(Vector2 offset) => new Transform { Origin = offset } * this;//this with { Origin = Origin + offset, };
 	public Transform Translated(Vector2 offset) => this with { Origin = Origin + offset, };
 
-	public Transform Scaled(Vector2 scale) => new Transform { Scale = scale } * this;//this with { Scale = Scale * scale, };
+	public Transform Scaled(Vector2 scale) => new Transform { Scale = scale } * this;
 
-	public Transform Rotated(double rotation) => new Transform { Rotation = rotation } * this;// this with { Rotation = Rotation + rotation, };
+	public Transform Rotated(double rotation) => new Transform { Rotation = rotation } * this;
 
 	public Transform Inverse()
 	{
@@ -116,20 +115,8 @@ public partial struct Transform : IEquatable<Transform>
 	{
 		return new()
 		{
-			// matrix = lhs.matrix * rhs.matrix,
 			matrix = rhs.matrix * lhs.matrix,
 		};
-		//double x0 = lhs.tdotx(rhs.X);
-		//double x1 = lhs.tdoty(rhs.X);
-		//double y0 = lhs.tdotx(rhs.Y);
-		//double y1 = lhs.tdoty(rhs.Y);
-
-		//return new()
-		//{
-		//	X = new(x0, x1),
-		//	Y = new(y0, y1),
-		//	Origin = lhs * rhs.Origin,
-		//};
 	}
 
 	public static Vector2 operator *(Transform lhs, Vector2 rhs) => new Vector2(lhs.tdotx(rhs), lhs.tdoty(rhs)) + lhs.Origin;
@@ -154,8 +141,6 @@ public partial struct Transform : IEquatable<Transform>
 	public bool Equals(Transform other) => matrix.Equals(other.matrix);
 	public override int GetHashCode() => HashCode.Combine(matrix);
 
-
 	private double tdotx(in Vector2 v) => X.X * v.X + Y.X * v.Y;
 	private double tdoty(in Vector2 v) => X.Y * v.X + Y.Y * v.Y;
-
 }

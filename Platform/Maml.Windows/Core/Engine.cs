@@ -1,8 +1,6 @@
 ﻿using Maml.Animation;
 using Maml.Math;
-using System;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.DirectWrite;
 using Windows.Win32.System.Com;
@@ -59,7 +57,6 @@ public partial class Engine
 		base.Initialize();
 	}
 
-	// This should process the scene tree and check for changes before rerawing
 	private void Frame(object? sender, FrameEvent evt)
 	{
 		ProcessDeferred();

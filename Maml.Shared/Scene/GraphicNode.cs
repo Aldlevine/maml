@@ -1,7 +1,6 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
 using Maml.Observable;
-using System;
 
 namespace Maml.Scene;
 
@@ -22,9 +21,6 @@ public class GraphicNode : Node
 
 	public GraphicNode()
 	{
-		Changed += (s, p) =>
-		{
-			NeedsRedraw = (p != Node.VisibleInTreeProperty) && VisibleInTree;
-		};
+		Changed += (s, p) => NeedsRedraw = (p != Node.VisibleInTreeProperty) && VisibleInTree;
 	}
 }

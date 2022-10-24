@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Maml.Graphics;
+﻿namespace Maml.Graphics;
 public partial class Brush : Resource
 {
 	internal int? iResource = null;

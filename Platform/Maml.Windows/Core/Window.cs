@@ -1,15 +1,11 @@
 ﻿using Maml.Events;
-using Maml.Graphics;
 using Maml.Math;
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
-using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.Graphics.Imaging;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 using static Maml.Utils.Bits;
@@ -48,7 +44,6 @@ public partial class Window
 	public override event EventHandler<KeyEvent>? KeyUp;
 	public override event EventHandler<FocusEvent>? Focus;
 	public override event EventHandler<FocusEvent>? Blur;
-	//public override event EventHandler<DrawEvent>? Draw;
 	#endregion
 
 	#region Internal
@@ -80,8 +75,8 @@ public partial class Window
 				cbSize = (uint)Marshal.SizeOf<WNDCLASSEXW>(),
 				cbWndExtra = 0,
 				hInstance = GetModuleHandle(szNull),
-				hbrBackground = new HBRUSH(new IntPtr(6)),
-				//hbrBackground = CreateSolidBrush(new COLORREF(0x333333ff)),
+				//hbrBackground = new HBRUSH(new IntPtr(6)),
+				hbrBackground = CreateSolidBrush(new COLORREF(0x333333ff)),
 				lpszMenuName = szNull,
 				lpszClassName = szClassName,
 			};

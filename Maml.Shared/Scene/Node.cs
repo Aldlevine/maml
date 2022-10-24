@@ -68,10 +68,7 @@ public partial class Node : ObservableObject
 		},
 		Dependencies = (Node self) => new[] { VisibleProperty[self], },
 	};
-	public bool VisibleInTree
-	{
-		get => VisibleInTreeProperty[this].Get();
-	}
+	public bool VisibleInTree => VisibleInTreeProperty[this].Get();
 
 	public static BasicProperty<Node, int> ZIndexProperty { get; } = new(0);
 	public int ZIndex

@@ -10,16 +10,16 @@ public abstract partial class Geometry : Resource
 
 public partial class EllipseGeometry : Geometry
 {
-	private Ellipse ellipse;
+	public static BasicProperty<EllipseGeometry, Ellipse> EllipseProperty { get; } = new(default)
+	{
+		Changed = (self) => self.IsDirty = true,
+	};
 	public Ellipse Ellipse
 	{
-		get => ellipse;
-		set
-		{
-			ellipse = value;
-			IsDirty = true;
-		}
+		get => EllipseProperty[this].Get();
+		set => EllipseProperty[this].Set(value);
 	}
+
 
 	public EllipseGeometry() : base() { }
 
@@ -28,20 +28,19 @@ public partial class EllipseGeometry : Geometry
 		Ellipse = ellipseGeometry.Ellipse;
 	}
 
-	public override Rect GetBoundingRect() => new Rect { Position = Ellipse.Center - Ellipse.Radius, Size = Ellipse.Radius, };
+	public override Rect GetBoundingRect() => new() { Position = Ellipse.Center - Ellipse.Radius, Size = Ellipse.Radius, };
 }
 
 public partial class LineGeometry : Geometry
 {
-	private Line line;
+	public static BasicProperty<LineGeometry, Line> LineProperty { get; } = new(default)
+	{
+		Changed = (self) => self.IsDirty = true,
+	};
 	public Line Line
 	{
-		get => line;
-		set
-		{
-			line = value;
-			IsDirty = true;
-		}
+		get => LineProperty[this].Get();
+		set => LineProperty[this].Set(value);
 	}
 
 	public LineGeometry() : base() { }
@@ -50,27 +49,14 @@ public partial class LineGeometry : Geometry
 	{
 		Line = lineGeometry.Line;
 	}
-	public override Rect GetBoundingRect() => new Rect { Position = Vector2.Min(Line.Start, Line.End), End = Vector2.Max(Line.Start, Line.End), };
+	public override Rect GetBoundingRect() => new() { Position = Vector2.Min(Line.Start, Line.End), End = Vector2.Max(Line.Start, Line.End), };
 }
 
 public partial class RectGeometry : Geometry
 {
-	//private Rect rect;
-	//public Rect Rect
-	//{
-	//	get => rect;
-	//	set
-	//	{
-	//		rect = value;
-	//		IsDirty = true;
-	//	}
-	//}
-	public static BasicProperty<RectGeometry, Rect> RectProperty = new(default)
+	public static BasicProperty<RectGeometry, Rect> RectProperty { get; } = new(default)
 	{
-		Changed = (self) =>
-		{
-			self.IsDirty = true;
-		},
+		Changed = (self) => self.IsDirty = true,
 	};
 	public Rect Rect
 	{
@@ -88,19 +74,3 @@ public partial class RectGeometry : Geometry
 	public override Rect GetBoundingRect() => Rect;
 }
 
-//public partial class TextGeometry : Geometry
-//{
-//	public static BasicProperty<TextGeometry, string> TextProperty = new("");
-//	public string Text
-//	{
-//		get => TextProperty[this].Get();
-//		set => TextProperty[this].Set(value);
-//	}
-
-//	public static BasicProperty<TextGeometry, Vector2> MaxSizeProperty = new(Vector2.Zero);
-//	public Vector2 MaxSize
-//	{
-//		get => MaxSizeProperty[this].Get();
-//		set => MaxSizeProperty[this].Set(value);
-//	}
-//}

@@ -51,7 +51,6 @@ public abstract class WindowBase : ObservableObject
 	public abstract event EventHandler<KeyEvent>? KeyUp;
 	public abstract event EventHandler<FocusEvent>? Focus;
 	public abstract event EventHandler<FocusEvent>? Blur;
-	//public abstract event EventHandler<DrawEvent>? Draw;
 
 	private static int CurrentWindowID { get; set; } = 0;
 	protected int windowID = CurrentWindowID++;
@@ -67,7 +66,7 @@ public abstract class WindowBase : ObservableObject
 		return null;
 	}
 
-	internal List<Rect> UpdateRegion = new List<Rect>();
+	internal List<Rect> UpdateRegion = new();
 	public void PushUpdateRect(Rect rect)
 	{
 		//if (rect.Size == Vector2.Zero || !rect.Intersects(new Rect { Size = Size, }))

@@ -1,7 +1,6 @@
 ﻿using Maml.Math;
 using Maml.Observable;
 using System;
-using System.Collections.Generic;
 
 namespace Maml.Graphics;
 
@@ -20,9 +19,6 @@ public partial class GeometryGraphic : Graphic
 		set => GeometryProperty[this].Set(value);
 	}
 
-	// TODO: Emit Changed
-	//public List<DrawLayer> DrawLayers { get; set; } = new();
-	//public DrawLayer[] DrawLayers { get; set; } = Array.Empty<DrawLayer>();
 	public static BasicProperty<GeometryGraphic, DrawLayer[]> DrawLayersProperty { get; } = new(Array.Empty<DrawLayer>());
 	public DrawLayer[] DrawLayers
 	{
@@ -41,7 +37,6 @@ public partial class GeometryGraphic : Graphic
 	public override void Draw(RenderTargetBase rt, Transform transform)
 	{
 		if (Geometry == null) { return; }
-		//if (DrawLayers.Count == 0) { return; }
 		if (DrawLayers.Length == 0) { return; }
 
 		rt.SetTransform(transform);
@@ -102,5 +97,5 @@ public partial class TextGraphic : Graphic
 		rt.PopClip();
 	}
 
-	public override Rect GetBoundingRect() => new Rect { Size = Text?.Size ?? Vector2.Zero, };
+	public override Rect GetBoundingRect() => new() { Size = Text?.Size ?? Vector2.Zero, };
 }

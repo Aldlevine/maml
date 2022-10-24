@@ -4,7 +4,6 @@ using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
 using System;
-using System.Collections.Generic;
 
 namespace Maml;
 
@@ -14,9 +13,9 @@ public class TwirlyNode : Node
 	private Node smallCircles { get; }
 	public TwirlyNode()
 	{
-		PointerDown += OnPointerDown;
-		PointerEnter += OnPointerEnter;
-		PointerExit += OnPointerExit;
+		PointerDown += HandlePointerDown;
+		PointerEnter += HandlePointerEnter;
+		PointerExit += HandlePointerExit;
 
 		HitShape = new Ellipse()
 		{
@@ -154,23 +153,23 @@ public class TwirlyNode : Node
 		}
 	}
 
-	private static readonly Vector2 minScale = Vector2.One;
-	private static readonly Vector2 maxScale = new(2, 2);
-	private double pulsePhase = Random.Shared.NextDouble() * double.Tau;
-	private DateTime pulseTick = DateTime.Now;
+	//private static readonly Vector2 minScale = Vector2.One;
+	//private static readonly Vector2 maxScale = new(2, 2);
+	//private double pulsePhase = Random.Shared.NextDouble() * double.Tau;
+	//private DateTime pulseTick = DateTime.Now;
 	private void Pulse(object? sender, FrameEvent evt)
 	{
 		switch (evt.FrameState)
 		{
 			case FrameState.Enter:
 				{
-					pulseTick = evt.Tick;
+					//pulseTick = evt.Tick;
 				}
 				break;
 
 			case FrameState.Exit:
 				{
-					pulsePhase = 0;
+					//pulsePhase = 0;
 				}
 				break;
 
@@ -295,12 +294,12 @@ public class TwirlyNode : Node
 	#endregion
 
 	#region Events
-	private void OnPointerDown(object? sender, PointerEvent evt)
+	private void HandlePointerDown(object? sender, PointerEvent evt)
 	{
 		if (evt.Button == PointerButton.Left)
 		{
-			Window.PointerUp += OnPointerUp;
-			Window.PointerMove += OnPointerMove;
+			Window.PointerUp += HandlePointerUp;
+			Window.PointerMove += HandlePointerMove;
 
 			// Remove animations
 			Animator.Frame -= Pulse;
@@ -315,14 +314,14 @@ public class TwirlyNode : Node
 		}
 	}
 
-	private void OnPointerMove(object? sender, PointerEvent evt) => GlobalTransform = GlobalTransform.Translated(evt.PositionDelta);
+	private void HandlePointerMove(object? sender, PointerEvent evt) => GlobalTransform = GlobalTransform.Translated(evt.PositionDelta);
 
-	private void OnPointerUp(object? sender, PointerEvent evt)
+	private void HandlePointerUp(object? sender, PointerEvent evt)
 	{
 		if (evt.Button == PointerButton.Left)
 		{
-			Window.PointerUp -= OnPointerUp;
-			Window.PointerMove -= OnPointerMove;
+			Window.PointerUp -= HandlePointerUp;
+			Window.PointerMove -= HandlePointerMove;
 
 			// Remove animations
 			Animator.Frame -= Spin;
@@ -335,7 +334,7 @@ public class TwirlyNode : Node
 		}
 	}
 
-	private void OnPointerEnter(object? sender, PointerEvent evt)
+	private void HandlePointerEnter(object? sender, PointerEvent evt)
 	{
 		if ((evt.ButtonMask & PointerButton.Left) > 0)
 		{
@@ -344,7 +343,7 @@ public class TwirlyNode : Node
 		}
 	}
 
-	private void OnPointerExit(object? sender, PointerEvent evt)
+	private void HandlePointerExit(object? sender, PointerEvent evt)
 	{
 		Animator.Frame -= ShowSelect;
 		Animator.Frame += HideSelect;
