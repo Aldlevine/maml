@@ -36,38 +36,8 @@ public class SceneTree
 		}
 	}
 
-	//internal Rect updateRegion = new Rect();
-	//public void PushRect(Rect rect)
-	//{
-	//	if (rect.Size == Vector2.Zero)
-	//	{
-	//		return;
-	//	}
-
-	//	if (updateRegion.Size == Vector2.Zero)
-	//	{
-	//		updateRegion = rect;
-	//	}
-	//	else
-	//	{
-	//		updateRegion = updateRegion.MergedWith(rect);
-	//	}
-	//}
-
-	//public Rect ComputeUpdateRegion()
-	//{
-	//	foreach (var node in Nodes)
-	//	{
-	//		if (node is GraphicNode graphicNode && graphicNode.NeedsRedraw)
-	//		{
-	//			PushRect(graphicNode.PreviousBoundingRect);
-	//			PushRect(graphicNode.PreviousBoundingRect = graphicNode.GetBoundingRect());
-	//		}
-	//	}
-	//	return updateRegion;
-	//}
-
 	public void Draw(RenderTarget renderTarget, Rect updateRegion)
+	//public void Draw(RenderTarget renderTarget, IEnumerable<Rect> updateRegion)
 	{
 		foreach (var node in Nodes)
 		{

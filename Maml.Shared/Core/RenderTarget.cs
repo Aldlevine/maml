@@ -1,5 +1,6 @@
 ﻿using Maml.Graphics;
 using Maml.Math;
+using System.Collections.Generic;
 
 namespace Maml;
 
@@ -18,7 +19,7 @@ public abstract class RenderTargetBase
 
 	public abstract void PushClip(Rect rect);
 	public abstract void PopClip();
-	public abstract void PushLayer(Rect[] rect);
+	public abstract void PushLayer(IList<Rect> rect);
 	public abstract void PopLayer();
 
 	// Platform Agnostic

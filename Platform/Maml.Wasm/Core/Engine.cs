@@ -27,7 +27,7 @@ public partial class Engine
 	private void Frame(object? source, FrameEvent evt)
 	{
 		ProcessDeferred();
-		Window?.ComputeSceneUpdateRect();
+		Window?.ComputeSceneUpdateRegion();
 		Window?.Draw();
 	}
 

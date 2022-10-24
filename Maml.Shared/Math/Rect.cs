@@ -32,6 +32,27 @@ public partial struct Rect : IShape, IEquatable<Rect>
 		};
 	}
 
+	public static Rect Merge(params Rect[] rects)
+	{
+		if (rects.Length == 0)
+		{
+			return new();
+		}
+		Vector2 position = rects[0].Position;
+		Vector2 end = rects[0].End;
+		for (int i = 1, ii = rects.Length; i < ii; i++)
+		{
+			position = Vector2.Min(position, rects[i].Position);
+			end = Vector2.Max(end, rects[i].End);
+		}
+
+		return new()
+		{
+			Position = position,
+			End = end,
+		};
+	}
+
 	public Rect MergedWith(in Rect r)
 	{
 		return new()

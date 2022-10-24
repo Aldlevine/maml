@@ -1,4 +1,5 @@
 ﻿using Maml.Events;
+using Maml.Graphics;
 using Maml.Math;
 using System;
 using System.Collections.Generic;
@@ -187,10 +188,17 @@ public partial class Window
 
 	unsafe internal void Redraw()
 	{
-		// if (UpdateRect.Size != Vector2.Zero)
-		if (UpdateRect.Size != Vector2.Zero && UpdateRect.Intersects(new Rect { Size = Size, }))
+		//if (UpdateRect.Size != Vector2.Zero && UpdateRect.Intersects(new Rect { Size = Size, }))
+		//{
+		//	InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
+		//}
+		if (UpdateRegion.Count > 0)
 		{
-			InvalidateRect(hWnd, UpdateRect.ToWindowsRect(), false);
+			//foreach (var rect in UpdateRegion)
+			//{
+			//	InvalidateRect(hWnd, rect.ToWindowsRect(), false);
+			//}
+			InvalidateRect(hWnd, Rect.Merge(UpdateRegion.ToArray()).ToWindowsRect(), false);
 		}
 		else
 		{
@@ -208,6 +216,7 @@ public partial class Window
 
 			RenderTarget!.pRenderTarget->BeginDraw();
 
+			var updateRect = Rect.Merge(UpdateRegion.ToArray());
 			Draw();
 
 			var hr = RenderTarget!.pRenderTarget->EndDraw();

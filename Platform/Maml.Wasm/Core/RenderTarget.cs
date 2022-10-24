@@ -51,7 +51,7 @@ public partial class RenderTarget
 
 	public override void PopClip() => InternalPopClip();
 
-	public override void PushLayer(Rect[] rects) => InternalPushLayer(rects);
+	public override void PushLayer(IList<Rect> rects) => InternalPushLayer(rects);
 
 	public override void PopLayer() => InternalPopLayer();
 
@@ -173,10 +173,10 @@ public partial class RenderTarget
 		});
 	}
 
-	private void InternalPushLayer(Rect[] rects)
+	private void InternalPushLayer(IList<Rect> rects)
 	{
 		DrawCommandBuffer.Add((double)WasmDrawCommand.PushLayer);
-		DrawCommandBuffer.Add(rects.Length);
+		DrawCommandBuffer.Add(rects.Count);
 		foreach (var rect in rects)
 		{
 			DrawCommandBuffer.Add(rect.Position.X);

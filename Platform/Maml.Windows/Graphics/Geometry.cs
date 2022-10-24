@@ -1,4 +1,5 @@
-﻿using Windows.Win32.Graphics.Direct2D;
+﻿using System;
+using Windows.Win32.Graphics.Direct2D;
 
 namespace Maml.Graphics;
 
@@ -26,7 +27,10 @@ unsafe public abstract partial class Geometry : Resource
 	}
 	protected override void FreeResources()
 	{
-		pResource->Release();
+		if (pResource != null)
+		{
+			pResource->Release();
+		}
 	}
 }
 

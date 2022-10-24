@@ -1,13 +1,5 @@
 ﻿using Maml.Math;
 using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Direct2D;
-using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.DirectWrite;
 
 namespace Maml.Graphics;

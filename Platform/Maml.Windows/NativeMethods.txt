@@ -24,6 +24,7 @@ ID2D1Factory
 ID2D1HwndRenderTarget
 ID2D1SolidColorBrush
 ID2D1GeometryRealization
+D2D1_LAYER_PARAMETERS1
 
 // Windows.Win32.Graphics.DirectWrite
 DWriteCreateFactory

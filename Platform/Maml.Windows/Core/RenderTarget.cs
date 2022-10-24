@@ -68,26 +68,6 @@ public partial class RenderTarget : IDisposable
 	unsafe public override void PushClip(Rect rect)
 	{
 		pRenderTarget->PushAxisAlignedClip(rect.ToD2DRectF(), D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED);
-
-		//ID2D1Layer* pLayer;
-		//pRenderTarget->CreateLayer((D2D_SIZE_F?)null, &pLayer);
-
-		//ID2D1RectangleGeometry* geo;
-		//Engine.Singleton.pD2DFactory->CreateRectangleGeometry(rect.ToD2DRectF(), &geo).ThrowOnFailure();
-
-		//D2D1_LAYER_PARAMETERS layerParams = new()
-		//{
-		//	geometricMask = (ID2D1Geometry*)geo,
-		//	contentBounds = rect.ToD2DRectF(),
-		//	layerOptions = D2D1_LAYER_OPTIONS.D2D1_LAYER_OPTIONS_INITIALIZE_FOR_CLEARTYPE,
-		//	maskAntialiasMode = D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED,
-		//	maskTransform = Transform.Identity.ToD2DMatrix3X2F(),
-		//	opacity = 1,
-		//	opacityBrush = null,
-		//};
-		//pRenderTarget->PushLayer(layerParams, null);
-
-		//geo->Release();
 	}
 
 
@@ -97,17 +77,17 @@ public partial class RenderTarget : IDisposable
 		//pRenderTarget->PopLayer();
 	}
 
-	public override unsafe void PushLayer(Rect[] rect)
+	// TODO: If we want this to work with cleartype, we need to use D2DDeviceContext directly
+	public override unsafe void PushLayer(IList<Rect> rects)
 	{
 		ID2D1Layer* pLayer;
 		pRenderTarget->CreateLayer((D2D_SIZE_F?)null, &pLayer);
 
-		ID2D1Geometry*[] geometries = new ID2D1Geometry*[rect.Length];
-		//foreach (var r in rect)
-		for (int i = 0; i < rect.Length; i++)
+		ID2D1Geometry*[] geometries = new ID2D1Geometry*[rects.Count];
+		for (int i = 0; i < rects.Count; i++)
 		{
 			ID2D1RectangleGeometry* geo;
-			Engine.Singleton.pD2DFactory->CreateRectangleGeometry(rect[i].ToD2DRectF(), &geo).ThrowOnFailure();
+			Engine.Singleton.pD2DFactory->CreateRectangleGeometry(rects[i].ToD2DRectF(), &geo).ThrowOnFailure();
 			geometries[i] = (ID2D1Geometry*)geo;
 		}
 		ID2D1GeometryGroup* geometryGroup;
@@ -127,6 +107,7 @@ public partial class RenderTarget : IDisposable
 			opacityBrush = null,
 		};
 		pRenderTarget->PushLayer(layerParams, null);
+		pRenderTarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 
 		//pLayer->Release();
 		geometryGroup->Release();

@@ -63,7 +63,7 @@ public partial class Engine
 	private void Frame(object? sender, FrameEvent evt)
 	{
 		ProcessDeferred();
-		Window.ComputeSceneUpdateRect();
+		Window.ComputeSceneUpdateRegion();
 		Window.Redraw();
 
 		if (!Animator.IsTicking)
