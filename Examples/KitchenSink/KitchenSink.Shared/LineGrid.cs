@@ -1,9 +1,8 @@
-﻿using Maml.Graphics;
+﻿using Maml;
+using Maml.Graphics;
 using Maml.Math;
 using Maml.Observable;
 using Maml.Scene;
-
-namespace Maml;
 
 public class LineGrid : Node
 {

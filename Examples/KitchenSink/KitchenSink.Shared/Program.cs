@@ -1,4 +1,6 @@
-﻿namespace Maml;
+﻿using Maml;
+
+namespace KitchenSink;
 
 internal static class Program
 {

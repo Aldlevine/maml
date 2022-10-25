@@ -14,10 +14,10 @@
 	<link rel="modulepreload" href="./dotnet.js" />
 	<link rel="modulepreload" href="./main.js" />
 
-	<link rel="modulepreload" href="./wasm.js" />
-	<link rel="modulepreload" href="./engine.js" />
-	<link rel="modulepreload" href="./window.js" />
-	<link rel="modulepreload" href="./render-target.js" />
+	<link rel="modulepreload" href="./maml/wasm.js" />
+	<link rel="modulepreload" href="./maml/engine.js" />
+	<link rel="modulepreload" href="./maml/window.js" />
+	<link rel="modulepreload" href="./maml/render-target.js" />
 
 	<style>
 		@media (prefers-color-scheme: light) {
@@ -113,6 +113,17 @@
 			#text-measurer.character {
 				white-space: pre-wrap;
 			}
+
+		#error {
+			display: none;
+			font-size: 32px;
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			color: red;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
 	</style>
 </head>
 
@@ -120,6 +131,7 @@
 	<pre id="text-measurer"></pre>
 	<div id="canvas-container">
 		<canvas id="canvas">Sorry, nothing here for you... try a better browser next time.</canvas>
+		<div id="error">Oopsies!</div>
 	</div>
 	<script type="module" src="./main.js"></script>
 </body>

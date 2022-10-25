@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"baseUrl": "wwwroot",
 		"noImplicitAny": true,
 		"noEmitOnError": true,
 		"removeComments": false,

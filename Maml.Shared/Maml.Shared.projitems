@@ -3,48 +3,41 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>1aa34956-5c81-4d07-a1da-8cb309f82ddc</SharedGUID>
+    <SharedGUID>f3fc51d9-ef75-4f98-b635-e2f8cc2a855e</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Maml</Import_RootNamespace>
+    <Import_RootNamespace>Maml.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Animation\Animator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Color.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Engine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RenderTarget.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Graphic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Window.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\Event.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\PointerButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\VirtualKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Brush.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Color.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\DrawLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Graphic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Resource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Text.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LineGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Ellipse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\IShape.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Line.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Geometry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Rect.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Graphics\Brush.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\Event.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\PointerButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Units.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\Binding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\LazyGet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Observable\Property.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Observable\Property.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\GraphicNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.NodeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\SceneTree.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Math\Transform.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestScene1.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TwirlyNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\VirtualKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Window.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Animation\" />
   </ItemGroup>
 </Project>

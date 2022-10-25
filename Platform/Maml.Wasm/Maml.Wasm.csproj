@@ -1,29 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
-		<TargetArchitecture>wasm</TargetArchitecture>
-		<TargetOS>Browser</TargetOS>
-		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-		<UseMonoRuntime>false</UseMonoRuntime>
-		<WasmMainJSPath>wwwroot/main.js</WasmMainJSPath>
-		<OutputType>Exe</OutputType>
-		<WasmEnableES6>true</WasmEnableES6>
+  <PropertyGroup>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
-    <StartupObject>Maml.Program</StartupObject>
+		<OutputType>Library</OutputType>
+		<PublishTrimmed>true</PublishTrimmed>
+		<RootNamespace>Maml</RootNamespace>
+		<TargetArchitecture>wasm</TargetArchitecture>
+		<TargetFramework>net7.0</TargetFramework>
+		<TargetOS>Browser</TargetOS>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<DefineConstants>$(DefineConstants);MAML_WASM</DefineConstants>
+	</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <Import Project="..\..\Maml.Shared\Maml.Shared.projitems" Label="Shared" />
+
+</Project>
+
+<!--
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
+		<OutputType>Library</OutputType>
+		<PublishTrimmed>true</PublishTrimmed>
 		<RootNamespace>Maml</RootNamespace>
 		<RunAOTCompilation>true</RunAOTCompilation>
-		<PublishTrimmed>true</PublishTrimmed>
+		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+		<TargetArchitecture>wasm</TargetArchitecture>
+		<TargetFramework>net7.0</TargetFramework>
+		<TargetOS>Browser</TargetOS>
 		<TrimMode>full</TrimMode>
-		<LangVersion>preview</LangVersion>
+		<UseMonoRuntime>false</UseMonoRuntime>
+		<WasmEnableES6>true</WasmEnableES6>
+		<WasmMainJSPath>wwwroot/main.js</WasmMainJSPath>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<DefineConstants>$(DefineConstants);MAML_WASM</DefineConstants>
 	</PropertyGroup>
 
-	<!-- TypeScript -->
+	<!- - TypeScript - ->
 	<PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	</PropertyGroup>
 
@@ -39,9 +65,9 @@
 		<Content Include="tsconfig.json"></Content>
 		<TypeScriptCompile Remove="bin\**" />
 	</ItemGroup>
-	<!-- /TypeScript -->
+	<!- - /TypeScript - ->
 
-	<!-- Dependencies -->
+	<!- - Dependencies - ->
 	<ItemGroup>
 		<None Include="wwwroot/**/*.js">
 			<DependentUpon>%(Filename).ts</DependentUpon>
@@ -50,9 +76,9 @@
 			<DependentUpon>%(Filename)</DependentUpon>
 		</None>
 	</ItemGroup>
-	<!-- /Dependencies -->
+	<!- - /Dependencies - ->
 
-	<!-- ExtraFiles -->
+	<!- - ExtraFiles - ->
 	<ItemGroup>
 		<WasmExtraFilesToDeploy Include="wwwroot/**/*.html" />
 		<WasmExtraFilesToDeploy Include="wwwroot/**/*.js" />
@@ -60,8 +86,9 @@
 		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="wwwroot/**/*.ts" />
 		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="wwwroot/**/*.js.map" />
 	</ItemGroup>
-	<!-- /ExtraFiles -->
+	<!- - /ExtraFiles - ->
 
 	<Import Project="..\..\Maml.Shared\Maml.Shared.projitems" Label="Shared" />
 
 </Project>
+-->

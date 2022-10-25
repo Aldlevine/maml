@@ -1,10 +1,10 @@
-﻿using Maml.Graphics;
+﻿using Maml;
+using Maml.Animation;
+using Maml.Graphics;
 using Maml.Math;
 using Maml.Observable;
 using Maml.Scene;
 using System;
-
-namespace Maml;
 
 internal class TestScene1 : Node
 {
@@ -239,10 +239,10 @@ internal class TestScene1 : Node
 		{
 			switch (e.FrameState)
 			{
-				case Animation.FrameState.Enter:
+				case FrameState.Enter:
 					startTick = e.Tick;
 					break;
-				case Animation.FrameState.Play:
+				case FrameState.Play:
 					rotatingNode.Transform = Transform.Identity.Rotated(-(startTick - e.Tick).TotalSeconds * 0.1);
 					break;
 			}

@@ -1,16 +1,11 @@
-﻿import createDotnetRuntime from "./dotnet.js";
+﻿import createDotnetRuntime from "../dotnet.js";
 
 class Wasm {
 	public async init() : Promise<void> {
-		try {
-			const { getAssemblyExports, setModuleImports, runMain } = await createDotnetRuntime({});
-			this._getAssemblyExports = getAssemblyExports;
-			this._runMain = runMain;
-			this._setModuleImports = setModuleImports;
-		}
-		catch (err) {
-			console.error(`WASM ERROR ${err}`);
-		}
+		const { getAssemblyExports, setModuleImports, runMain } = await createDotnetRuntime({});
+		this._getAssemblyExports = getAssemblyExports;
+		this._runMain = runMain;
+		this._setModuleImports = setModuleImports;
 	}
 
 	public async getAssemblyExports<T>(assemblyName: string, qualifiedName: string): Promise<T> {

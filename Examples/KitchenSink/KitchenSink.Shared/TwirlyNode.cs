@@ -1,11 +1,10 @@
-﻿using Maml.Animation;
+﻿using Maml;
+using Maml.Animation;
 using Maml.Events;
 using Maml.Graphics;
 using Maml.Math;
 using Maml.Scene;
 using System;
-
-namespace Maml;
 
 public class TwirlyNode : Node
 {
