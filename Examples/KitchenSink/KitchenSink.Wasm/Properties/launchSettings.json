@@ -1,11 +1,14 @@
 {
 	"profiles": {
-	"Maml.Wasm": {
-		"commandName": "Project",
-		"workingDirectory": "$(ProjectDir)/bin/$(Configuration)/net7.0/browser-wasm/AppBundle",
+		"KitchenSink.Wasm": {
+			"commandName": "Project",
 			"launchBrowser": true,
-			"executablePath": "",
-			"applicationUrl": "http://localhost:8000"
+			"launchUrl": "index.html",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			},
+			"inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/debug?browser={browserInspectUri}",
+			"applicationUrl": "http://localhost:9000"
 		}
 	}
 }

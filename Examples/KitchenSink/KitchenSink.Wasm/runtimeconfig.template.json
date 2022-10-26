@@ -4,7 +4,7 @@
 			{
 				"name": "browser",
 				"html-path": "index.html",
-				"host": "browser"
+				"Host": "browser"
 			}
 		]
 	}

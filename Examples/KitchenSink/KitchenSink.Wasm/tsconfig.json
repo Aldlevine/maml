@@ -3,7 +3,7 @@
 		"noImplicitAny": true,
 		"noEmitOnError": true,
 		"removeComments": false,
-		"allowJs": true,
+		"allowJs": false,
 		"target": "ES2017",
 		"module": "ES2015",
 		"rootDir": "wwwroot",
@@ -11,8 +11,5 @@
 	},
 	"include": [
 		"wwwroot/**/*"
-	],
-	"exclude": [
-		"node_modules"
 	]
 }

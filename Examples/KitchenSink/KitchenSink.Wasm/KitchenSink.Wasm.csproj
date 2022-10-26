@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\KitchenSink.Shared\KitchenSink.Shared.projitems" Label="Shared" />
 
+	<!-- Basic Props -->
 	<PropertyGroup>
-		<!--<WwwRoot>..\..\..\Platform\Maml.Wasm\wwwroot</WwwRoot>-->
 		<WwwRoot>wwwroot</WwwRoot>
-	</PropertyGroup>
 
-	<PropertyGroup>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
@@ -14,7 +13,7 @@
 		<RootNamespace>KitchenSink</RootNamespace>
 		<RunAOTCompilation>true</RunAOTCompilation>
 		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-    <StartupObject>KitchenSink.Program</StartupObject>
+		<StartupObject>KitchenSink.Program</StartupObject>
 		<TargetArchitecture>wasm</TargetArchitecture>
 		<TargetFramework>net7.0</TargetFramework>
 		<TargetOS>Browser</TargetOS>
@@ -22,9 +21,18 @@
 		<UseMonoRuntime>false</UseMonoRuntime>
 		<WasmEnableES6>true</WasmEnableES6>
 		<WasmMainJSPath>$(WwwRoot)/main.js</WasmMainJSPath>
-		<WasmBuildAppDependsOn>CompileTypescript</WasmBuildAppDependsOn>
+		<WasmBuildAppDependsOn>$(WasmBuildAppDependsOn);CompileTypescript</WasmBuildAppDependsOn>
+		<WasmBuildNative>true</WasmBuildNative>
 	</PropertyGroup>
+	<!-- /Basic Props -->
 
+	<!-- Maml -->
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Platform\Maml.Wasm\Maml.Wasm.csproj" />
+	</ItemGroup>
+	<!-- /Maml -->
+
+	<!-- TypeScript -->
 	<ItemGroup>
 		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.8.3">
 			<PrivateAssets>all</PrivateAssets>
@@ -33,8 +41,9 @@
 		<Content Include="tsconfig.json"></Content>
 		<TypeScriptCompile Remove="bin\**" />
 	</ItemGroup>
+	<!-- /TypeScript -->
 
-	<!-- ExtraFiles -->
+	<!-- WasmExtraFiles -->
 	<ItemGroup>
 		<WasmExtraFilesToDeploy Include="$(WwwRoot)/**/*.js" TargetPath="./%(RecursiveDir)/%(FileName)%(Extension)" />
 		<WasmExtraFilesToDeploy Include="$(WwwRoot)/**/*.html" TargetPath="./%(RecursiveDir)/%(FileName)%(Extension)" />
@@ -42,8 +51,9 @@
 		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="$(WwwRoot)/**/*.ts" TargetPath="./%(RecursiveDir)/%(FileName)%(Extension)" />
 		<WasmExtraFilesToDeploy Condition="$(Configuration) == Debug" Include="$(WwwRoot)/**/*.js.map" TargetPath="./%(RecursiveDir)/%(FileName)%(Extension)" />
 	</ItemGroup>
-	<!-- /ExtraFiles -->
+	<!-- /WasmExtraFiles -->
 
+	<!-- TypeScriptDependencies -->
 	<ItemGroup>
 		<None Include="wwwroot/**/*.js">
 			<DependentUpon>%(Filename).ts</DependentUpon>
@@ -52,31 +62,25 @@
 			<DependentUpon>%(Filename)</DependentUpon>
 		</None>
 	</ItemGroup>
+	<!-- /TypeScriptDependencies -->
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Platform\Maml.Wasm\Maml.Wasm.csproj" />
-	</ItemGroup>
+	<!-- MamlTypeScript -->
+	<Target Name="CopyMamlTypeScript" BeforeTargets="BeforeBuild">
+		<ItemGroup>
+			<MamlTypeScriptFiles Include="../../../Platform/Maml.Wasm/wwwroot/**/*.*" />
+		</ItemGroup>
 
-	<Import Project="..\KitchenSink.Shared\KitchenSink.Shared.projitems" Label="Shared" />
-
-	<ItemGroup>
-	  <None Include="wwwroot\dotnet.d.ts" Visible="false" />
-	  <None Include="wwwroot\maml\" Visible="false" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<MamlTSFiles Include="../../../Platform/Maml.Wasm/wwwroot/**/*.*" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="wwwroot\maml\" />
-	</ItemGroup>
-
-	<Target Name="CopyMamlTS" BeforeTargets="BeforeBuild">
 		<Message Text="Copying Maml TS Files" />
-		<Copy SourceFiles="@(MamlTSFiles)" DestinationFolder="wwwroot/maml" />
+		<Copy SourceFiles="@(MamlTypeScriptFiles)" DestinationFolder="wwwroot/maml" />
 		<Copy SourceFiles="../../../Platform/Maml.Wasm/wwwroot/dotnet.d.ts" DestinationFolder="wwwroot" />
 	</Target>
 
+	<ItemGroup>
+	  <None Remove="wwwroot\maml\**\*" />
+		<None Include="wwwroot\dotnet.d.ts" Visible="false" />
+	</ItemGroup>
+	<!-- /MamlTypeScript -->
+
 </Project>
+
 
