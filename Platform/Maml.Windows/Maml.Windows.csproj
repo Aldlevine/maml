@@ -19,18 +19,6 @@
 		<DefineConstants>$(DefineConstants);MAML_WIN</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DebugType>none</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DebugType>none</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-		<DebugType>none</DebugType>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.63-beta">
 			<PrivateAssets>all</PrivateAssets>

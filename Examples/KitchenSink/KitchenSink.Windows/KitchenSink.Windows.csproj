@@ -1,41 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
-    <LangVersion>10</LangVersion>
-    <Platform>windows</Platform>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
-    <EnableNETAnalyzers>False</EnableNETAnalyzers>
-    <Platforms>AnyCPU;x64;x86</Platforms>
-    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <StartupObject>KitchenSink.Program</StartupObject>
-    <RootNamespace>KitchenSink</RootNamespace>
-	  <PublishAot>true</PublishAot>
-  </PropertyGroup>
-
 	<PropertyGroup>
-		<DefineConstants>$(DefineConstants);MAML_WIN</DefineConstants>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<EnableNETAnalyzers>False</EnableNETAnalyzers>
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
+		<OutputType>Exe</OutputType>
+		<Platform>windows</Platform>
+		<Platforms>AnyCPU;x64;x86</Platforms>
+		<PublishAot>true</PublishAot>
+		<RootNamespace>KitchenSink</RootNamespace>
+		<RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+		<StartupObject>KitchenSink.Program</StartupObject>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
 	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Platform\Maml.Windows\Maml.Windows.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Platform\Maml.Windows\Maml.Windows.csproj" />
+	</ItemGroup>
 
-  <Import Project="..\KitchenSink.Shared\KitchenSink.Shared.projitems" Label="Shared" />
+	<Import Project="..\KitchenSink.Shared\KitchenSink.Shared.projitems" Label="Shared" />
 
 </Project>
