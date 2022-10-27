@@ -4,7 +4,7 @@
 
 ---
 
-Maml is currently in active development and far from production ready at the moment. However, though incomplete, many of the fundamentals have been developed to **Good Enough^TM^** standards, and functional "applications" can be produced which run on both Windows and Web.
+Maml is currently in active development and far from production ready at the moment. However, though incomplete, many of the fundamentals have been developed to **Good Enough™** standards, and functional "applications" can be produced which run on both Windows and Web.
 
 ---
 
@@ -14,7 +14,7 @@ Maml is a retained mode UI library which provides an abstraction layer on top of
 
 Unlike Blazor hybrid (and similar), Maml focuses on producing high performance native applications without reliance on web technologies, while at the same time targeting web with a more "native-esque" approach. In this way we can produce from a single codebase both a web apps and native apps without sacrificing performance on native platforms.
 
-Unlike Uno Platform, Maml is provides a "from ground up" API. It is not a port of existing Windows UI libraries to other platforms. Furthermore, rather than "reskinning" existing native UI components, Maml builds on low-level drawing / input / etc... APIs. Once the low level APIs are hooked up for a given platform, all of the platform agnostic code (ideally the majority of the codebase) should **Just Work^TM^**.
+Unlike Uno Platform, Maml is provides a "from ground up" API. It is not a port of existing Windows UI libraries to other platforms. Furthermore, rather than "reskinning" existing native UI components, Maml builds on low-level drawing / input / etc... APIs. Once the low level APIs are hooked up for a given platform, all of the platform agnostic code (ideally the majority of the codebase) should **Just Work™**.
 
 ## Future
 
