@@ -73,7 +73,7 @@ public class Animator
 
 	internal void Tick()
 	{
-		if (frame == null) { return; }
+		if (frame == null && NextFrame == null && LateFrame == null) { return; }
 
 		lock (Engine.Singleton.EventMutex)
 		{
@@ -87,10 +87,16 @@ public class Animator
 				Delta = delta,
 			};
 
-			Parallel.ForEach(NextFrame?.GetInvocationList() ?? Array.Empty<EventHandler<FrameEvent>>(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
-			NextFrame = null;
+			if (NextFrame != null)
+			{
+				Parallel.ForEach(NextFrame.GetInvocationList(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
+				NextFrame = null;
+			}
 
-			Parallel.ForEach(frame.GetInvocationList(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
+			if (frame != null)
+			{
+				Parallel.ForEach(frame?.GetInvocationList(), (inv, state) => ((EventHandler<FrameEvent>)inv).Invoke(this, evt));
+			}
 
 			LateFrame?.Invoke(this, evt);
 

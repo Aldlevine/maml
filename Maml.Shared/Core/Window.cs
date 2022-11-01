@@ -41,6 +41,7 @@ public abstract class WindowBase : ObservableObject
 	};
 	public Vector2 Size => SizeProperty[this].Get();
 
+	public event EventHandler<RenderTarget>? Measure;
 
 	public abstract event EventHandler<ResizeEvent>? Resize;
 	public abstract event EventHandler<PointerEvent>? PointerMove;
@@ -116,7 +117,7 @@ public abstract class WindowBase : ObservableObject
 	{
 		foreach (var node in SceneTree.Nodes)
 		{
-			if (node is GraphicNode graphicNode && graphicNode.NeedsRedraw)
+			if (node is IGraphicNode graphicNode && graphicNode.NeedsRedraw)
 			{
 				PushUpdateRect(graphicNode.PreviousBoundingRect);
 				PushUpdateRect(graphicNode.PreviousBoundingRect = graphicNode.GetBoundingRect());
@@ -125,9 +126,18 @@ public abstract class WindowBase : ObservableObject
 		return UpdateRegion;
 	}
 
+	public void InvokeMeasure()
+	{
+		if (RenderTarget != null)
+		{
+			Measure?.Invoke(this, RenderTarget);
+		}
+	}
+
 	public void Draw()
 	{
 		if (RenderTarget == null) { return; }
+
 		RenderTarget.BeginDraw();
 		RenderTarget.SetTransform(Transform.Identity);
 		Rect updateRect = Rect.Merge(UpdateRegion.ToArray());

@@ -6,18 +6,19 @@ namespace Maml.Graphics;
 unsafe public partial class Text : Resource
 {
 	internal IDWriteTextLayout* pResource;
-	internal IDWriteTextLayout* GetResource(Engine engine, bool noCache = false)
+	//internal IDWriteTextLayout* GetResource(Engine engine, bool noCache = false)
+	internal IDWriteTextLayout* GetResource(RenderTarget renderTarget, bool noCache = false)
 	{
 		if (pResource == null)
 		{
-			MakeResource(engine);
+			MakeResource(renderTarget);
 		}
 		else
 		{
 			if (noCache || IsDirty)
 			{
 				FreeResources();
-				MakeResource(engine);
+				MakeResource(renderTarget);
 			}
 		}
 		return pResource;
@@ -27,8 +28,10 @@ unsafe public partial class Text : Resource
 		pResource->Release();
 	}
 
-	internal void MakeResource(Engine engine)
+	//internal void MakeResource(Engine engine)
+	internal void MakeResource(RenderTarget renderTarget)
 	{
+		Engine engine = Engine.Singleton;
 		IDWriteTextFormat* pTextFormat;
 		engine.pDWriteFactory->CreateTextFormat(
 			Font.Name,

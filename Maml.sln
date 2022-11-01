@@ -29,6 +29,14 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KitchenSink.Shared", "Examp
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Maml.Shared", "Maml.Shared\Maml.Shared.shproj", "{F3FC51D9-EF75-4F98-B635-E2F8CC2A855E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicLayout", "BasicLayout", "{7E7E2284-FDDA-4CA6-8279-B364FD36D0D8}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "BasicLayout.Shared", "Examples\BasicLayout\BasicLayout.Shared\BasicLayout.Shared.shproj", "{FCCD7D00-4F7F-4EF3-AE87-9EEBB88417B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicLayout.Windows", "Examples\BasicLayout\BasicLayout.Windows\BasicLayout.Windows.csproj", "{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicLayout.Wasm", "Examples\BasicLayout\BasicLayout.Wasm\BasicLayout.Wasm.csproj", "{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +95,30 @@ Global
 		{3BB6D996-793C-4B29-9CC4-7D78A9343098}.Release|x64.Build.0 = Release|Any CPU
 		{3BB6D996-793C-4B29-9CC4-7D78A9343098}.Release|x86.ActiveCfg = Release|Any CPU
 		{3BB6D996-793C-4B29-9CC4-7D78A9343098}.Release|x86.Build.0 = Release|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Debug|x64.Build.0 = Debug|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Debug|x86.Build.0 = Debug|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Release|x64.ActiveCfg = Release|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Release|x64.Build.0 = Release|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Release|x86.ActiveCfg = Release|Any CPU
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E}.Release|x86.Build.0 = Release|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Debug|x64.Build.0 = Debug|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Debug|x86.Build.0 = Debug|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Release|x64.ActiveCfg = Release|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Release|x64.Build.0 = Release|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Release|x86.ActiveCfg = Release|Any CPU
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +130,10 @@ Global
 		{7795E5AF-61B8-491C-B180-4BE0DD80E732} = {173A2F0D-34BB-4A42-B705-3EF2EA26903F}
 		{3BB6D996-793C-4B29-9CC4-7D78A9343098} = {173A2F0D-34BB-4A42-B705-3EF2EA26903F}
 		{E1A373C7-2BE5-4CDE-8BBC-40C61CCEDA9C} = {173A2F0D-34BB-4A42-B705-3EF2EA26903F}
+		{7E7E2284-FDDA-4CA6-8279-B364FD36D0D8} = {2A85AD2D-14D3-4915-BFDD-06FD2EAFA87F}
+		{FCCD7D00-4F7F-4EF3-AE87-9EEBB88417B5} = {7E7E2284-FDDA-4CA6-8279-B364FD36D0D8}
+		{DDA5D4DD-244A-47D4-AB12-AB44B82A3C4E} = {7E7E2284-FDDA-4CA6-8279-B364FD36D0D8}
+		{CDCB0A25-F185-4524-81E8-F3FEB4C1CC9B} = {7E7E2284-FDDA-4CA6-8279-B364FD36D0D8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {49BDDA21-2560-43F3-8208-CBB18CB46D29}
@@ -106,8 +142,11 @@ Global
 		Examples\KitchenSink\KitchenSink.Shared\KitchenSink.Shared.projitems*{3bb6d996-793c-4b29-9cc4-7d78a9343098}*SharedItemsImports = 5
 		Examples\KitchenSink\KitchenSink.Shared\KitchenSink.Shared.projitems*{7795e5af-61b8-491c-b180-4be0dd80e732}*SharedItemsImports = 5
 		Maml.Shared\Maml.Shared.projitems*{7aaa3e0a-67d8-4b68-bdeb-172aed8da09b}*SharedItemsImports = 5
+		Examples\BasicLayout\BasicLayout.Shared\BasicLayout.Shared.projitems*{cdcb0a25-f185-4524-81e8-f3feb4c1cc9b}*SharedItemsImports = 5
 		Maml.Shared\Maml.Shared.projitems*{d72acc65-dd46-4f24-bfd0-9195cb25614d}*SharedItemsImports = 5
+		Examples\BasicLayout\BasicLayout.Shared\BasicLayout.Shared.projitems*{dda5d4dd-244a-47d4-ab12-ab44b82a3c4e}*SharedItemsImports = 5
 		Examples\KitchenSink\KitchenSink.Shared\KitchenSink.Shared.projitems*{e1a373c7-2be5-4cde-8bbc-40c61cceda9c}*SharedItemsImports = 13
 		Maml.Shared\Maml.Shared.projitems*{f3fc51d9-ef75-4f98-b635-e2f8cc2a855e}*SharedItemsImports = 13
+		Examples\BasicLayout\BasicLayout.Shared\BasicLayout.Shared.projitems*{fccd7d00-4f7f-4ef3-ae87-9eebb88417b5}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

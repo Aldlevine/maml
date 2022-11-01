@@ -64,6 +64,11 @@ public struct Font
 
 public partial class Text : Resource
 {
+	unsafe public Text()
+	{
+		Engine.Singleton.Window.Measure += (s, r) => GetResource(r);
+	}
+
 	public static BasicProperty<Text, string> StringProperty = new("")
 	{
 		Changed = (self) => self.IsDirty = true,

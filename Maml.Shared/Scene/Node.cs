@@ -1,8 +1,20 @@
 ﻿using Maml.Animation;
 using Maml.Math;
 using Maml.Observable;
+using System;
+using System.Collections.Generic;
 
 namespace Maml.Scene;
+
+public sealed class ChildrenPlaceholder : Node
+{
+	public Node Self;
+	public ChildrenPlaceholder(Node self) : base()
+	{
+		Self = self;
+	}
+	protected override NodeCollection Template() => new();
+}
 
 public partial class Node : ObservableObject
 {
@@ -10,9 +22,17 @@ public partial class Node : ObservableObject
 	protected static Window Window => Engine.Singleton.Window;
 	protected static Animator Animator => Engine.Singleton.Animator;
 
+	public event EventHandler<Node>? TreeChanged;
+
 	public Node()
 	{
+		Content = Template();
+
+		Content.ParentNode = this;
 		Children.ParentNode = this;
+
+		Changed += (s, p) => TreeChanged?.Invoke(this, this);
+		TreeChanged += (s, n) => Parent?.TreeChanged?.Invoke(this, n);
 	}
 
 	private Node? parent;
@@ -49,6 +69,10 @@ public partial class Node : ObservableObject
 			children.ParentNode = this;
 		}
 	}
+
+	public NodeCollection Content { get; private set; }
+	protected virtual NodeCollection Template() => new() { new ChildrenPlaceholder(this), };
+
 	public override string? ToString() => $"{GetType().Name}#{Name}";
 
 	#region Properties

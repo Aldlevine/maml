@@ -4,9 +4,17 @@ using Maml.Observable;
 
 namespace Maml.Scene;
 
-public class GraphicNode : Node
+public interface IGraphicNode
 {
-	public bool NeedsRedraw { get; internal set; } = true;
+	bool NeedsRedraw { get; set; }
+	void Draw(RenderTarget renderTarget);
+	Rect PreviousBoundingRect { get; set; }
+	Rect GetBoundingRect();
+}
+
+public class GraphicNode : Node, IGraphicNode
+{
+	public bool NeedsRedraw { get; set; } = true;
 	public static BasicProperty<GraphicNode, Graphic?> GraphicProperty { get; } = new(null);
 	public Graphic? Graphic
 	{
@@ -16,7 +24,7 @@ public class GraphicNode : Node
 
 	public virtual void Draw(RenderTarget renderTarget) => Graphic?.Draw(renderTarget, GlobalTransform);
 
-	internal Rect PreviousBoundingRect = new();
+	public Rect PreviousBoundingRect { get; set; } = new();
 	public virtual Rect GetBoundingRect() => GlobalTransform * Graphic?.GetBoundingRect() ?? new Rect();
 
 	public GraphicNode()

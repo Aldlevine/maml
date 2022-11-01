@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>Sample ES6</title>
+	<meta charset="UTF-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+	<meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)" />
+	<meta name="theme-color" content="#fff" media="(prefers-color-scheme: light)" />
+	<link rel="manifest" href="manifest.json" />
+
+	<link rel="modulepreload" href="./dotnet.js" />
+	<link rel="modulepreload" href="./main.js" />
+
+	<link rel="modulepreload" href="./maml/wasm.js" />
+	<link rel="modulepreload" href="./maml/engine.js" />
+	<link rel="modulepreload" href="./maml/window.js" />
+	<link rel="modulepreload" href="./maml/render-target.js" />
+
+	<style>
+		@media (prefers-color-scheme: light) {
+			:root {
+				--theme-bg: #fff;
+				--theme-color: #000;
+			}
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--theme-bg: #333;
+				--theme-color: #fff;
+			}
+		}
+
+		html {
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			user-select: none;
+			pointer-events: none;
+			touch-action: none;
+			overflow: hidden;
+
+			background: var(--theme-bg);
+			color: var(--theme-color);
+		}
+
+		body {
+			position: fixed;
+			margin: 0;
+			padding: 0;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			display: flex;
+			align-items: flex-end;
+			overflow: hidden;
+		}
+
+		#out {
+			position: absolute;
+			padding-left: calc(env(safe-area-inset-left) + 4px);
+			padding-top: calc(env(safe-area-inset-top) + 4px);
+			padding-right: calc(env(safe-area-inset-right) + 4px);
+			padding-bottom: calc(env(safe-area-inset-bottom) + 4px);
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+			color: var(--theme-color);
+		}
+
+		#out > .output {
+			padding: 4px;
+			color: var(--theme-color);
+		}
+
+		#canvas-container {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			pointer-events: all;
+		}
+
+		#canvas {
+			user-select: none;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
+		}
+
+		#text-measurer {
+			padding: 0;
+			margin: 0;
+			position: fixed;
+			left: 0;
+			top: 0;
+			display: inline-block;
+			visibility: hidden;
+		}
+			#text-measurer.none {
+				white-space: pre;
+			}
+			#text-measurer.normal {
+				white-space: pre-wrap;
+				word-break: break-word;
+			}
+			#text-measurer.word {
+				white-space: pre-wrap;
+				word-break: keep-all;
+			}
+			#text-measurer.character {
+				white-space: pre-wrap;
+			}
+
+		#error {
+			display: none;
+			font-size: 32px;
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			color: red;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
+	</style>
+</head>
+
+<body>
+	<pre id="text-measurer"></pre>
+	<div id="canvas-container">
+		<canvas id="canvas">Sorry, nothing here for you... try a better browser next time.</canvas>
+		<div id="error">Oopsies!</div>
+	</div>
+	<script type="module" src="./main.js"></script>
+</body>
+
+</html>

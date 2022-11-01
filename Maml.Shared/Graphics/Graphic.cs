@@ -72,6 +72,17 @@ public partial class GeometryGraphic : Graphic
 
 public partial class TextGraphic : Graphic
 {
+	public TextGraphic()
+	{
+		Changed += (s, e) => measure();
+	}
+
+	unsafe private void measure()
+	{
+		if (Engine.Singleton.Window?.RenderTarget == null) { return; }
+		Text?.GetResource(Engine.Singleton.Window.RenderTarget);
+	}
+
 	public static BasicProperty<TextGraphic, Text?> TextProperty { get; } = new(null);
 	public Text? Text
 	{

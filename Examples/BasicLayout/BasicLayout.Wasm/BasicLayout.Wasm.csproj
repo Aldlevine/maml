@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\KitchenSink.Shared\KitchenSink.Shared.projitems" Label="Shared" />
+<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\BasicLayout.Shared\BasicLayout.Shared.projitems" Label="Shared" />
 
 	<!-- Basic Props -->
 	<PropertyGroup>
@@ -10,10 +10,10 @@
 		<Nullable>enable</Nullable>
 		<OutputType>Exe</OutputType>
 		<PublishTrimmed>true</PublishTrimmed>
-		<RootNamespace>KitchenSink</RootNamespace>
+		<RootNamespace>BasicLayout</RootNamespace>
 		<RunAOTCompilation>true</RunAOTCompilation>
 		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
-		<StartupObject>KitchenSink.Program</StartupObject>
+		<StartupObject>BasicLayout.Program</StartupObject>
 		<TargetArchitecture>wasm</TargetArchitecture>
 		<TargetFramework>net7.0</TargetFramework>
 		<TargetOS>Browser</TargetOS>
@@ -39,7 +39,11 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<Content Include="tsconfig.json"></Content>
+		<Compile Remove="wwwroot\maml\**" />
+		<EmbeddedResource Remove="wwwroot\maml\**" />
+		<None Remove="wwwroot\maml\**" />
 		<TypeScriptCompile Remove="bin\**" />
+		<TypeScriptCompile Remove="wwwroot\maml\**" />
 	</ItemGroup>
 	<!-- /TypeScript -->
 
@@ -76,7 +80,6 @@
 	</Target>
 
 	<ItemGroup>
-		<None Remove="wwwroot\maml\**\*" />
 		<None Include="wwwroot\dotnet.d.ts" Visible="false" />
 	</ItemGroup>
 	<!-- /MamlTypeScript -->

@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Observable\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Observable\Property.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\GraphicNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scene\Layout\Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.Input.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scene\Node.NodeCollection.cs" />

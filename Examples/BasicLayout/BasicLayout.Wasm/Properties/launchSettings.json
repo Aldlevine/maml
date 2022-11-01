@@ -1,0 +1,14 @@
+{
+	"profiles": {
+		"BasicLayout.Wasm": {
+			"commandName": "Project",
+			"launchBrowser": true,
+			"launchUrl": "index.html",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			},
+			"inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/debug?browser={browserInspectUri}",
+			"applicationUrl": "http://localhost:9000"
+		}
+	}
+}

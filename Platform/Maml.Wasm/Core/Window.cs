@@ -9,6 +9,8 @@ public partial class Window : WindowBase
 {
 	public override RenderTarget? RenderTarget { get; }
 
+	//public override event EventHandler<RenderTarget>? Measure;
+
 	public override event EventHandler<ResizeEvent>? Resize;
 	public override event EventHandler<PointerEvent>? PointerMove;
 	public override event EventHandler<PointerEvent>? PointerDown;

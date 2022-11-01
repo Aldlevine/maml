@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"noImplicitAny": true,
+		"noEmitOnError": true,
+		"removeComments": false,
+		"allowJs": false,
+		"target": "ES2017",
+		"module": "ES2015",
+		"rootDir": "wwwroot",
+		"lib": [ "ES2015", "ES2017", "DOM" ]
+	},
+	"include": [
+		"wwwroot/**/*"
+	]
+}

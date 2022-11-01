@@ -17,21 +17,33 @@ public class SceneTree
 		{
 			if (Root != null)
 			{
-				return GetNodes(Root);
+				return GetNodes(Root, Root.Content);
 			}
 
 			return Array.Empty<Node>();
 		}
 	}
 
-	public IEnumerable<Node> GetNodes(Node root)
+	public IEnumerable<Node> GetNodes(Node root, Node.NodeCollection children)
 	{
 		yield return root;
-		foreach (var child in root.Children)
+		//foreach (var child in root.Children)
+		foreach (var child in children)
 		{
-			foreach (var childNode in GetNodes(child))
+			if (child is ChildrenPlaceholder cp)
 			{
-				yield return childNode;
+				foreach (var childNode in GetNodes(cp.Self, cp.Self.Children))
+				{
+					if (childNode == child) { continue; }
+					yield return childNode;
+				}
+			}
+			else
+			{
+				foreach (var childNode in GetNodes(child, child.Content))
+				{
+					yield return childNode;
+				}
 			}
 		}
 	}
@@ -41,9 +53,9 @@ public class SceneTree
 	{
 		foreach (var node in Nodes)
 		{
-			if (node is GraphicNode graphicNode)
+			if (node is IGraphicNode graphicNode)
 			{
-				if (graphicNode.VisibleInTree && graphicNode.GetBoundingRect().Intersects(updateRegion))
+				if (node.VisibleInTree && graphicNode.GetBoundingRect().Intersects(updateRegion))
 				{
 					graphicNode.Draw(renderTarget);
 					graphicNode.NeedsRedraw = false;

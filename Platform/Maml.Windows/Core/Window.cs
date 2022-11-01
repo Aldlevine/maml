@@ -35,6 +35,8 @@ public partial class Window
 
 	protected override double GetDpiRatio() => GetDpiForWindow(hWnd) * stdDpiInv;
 
+	//public override event EventHandler<RenderTarget>? Measure;
+
 	public override event EventHandler<ResizeEvent>? Resize;
 	public override event EventHandler<PointerEvent>? PointerMove;
 	public override event EventHandler<PointerEvent>? PointerDown;
@@ -244,9 +246,9 @@ public partial class Window
 
 			PixelSizeProperty[this].SetDirty();
 			DpiRatioProperty[this].SetDirty();
-
 			Resize?.Invoke(this, new ResizeEvent { Size = PixelSize });
 
+			Engine.Singleton.ProcessDeferred();
 			PushUpdateRect(new Rect { Size = Size, });
 
 			Redraw();

@@ -61,7 +61,7 @@ public partial class RenderTarget : IDisposable
 
 	unsafe public override void DrawText(Text text, Brush brush)
 	{
-		var resource = text.GetResource(Engine.Singleton);
+		var resource = text.GetResource(this);
 		pRenderTarget->DrawTextLayout(default, resource, brush.GetResource(pRenderTarget), D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
 	}
 

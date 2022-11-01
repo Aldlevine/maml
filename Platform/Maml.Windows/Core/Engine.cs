@@ -16,6 +16,12 @@ public partial class Engine
 
 	public override void Run()
 	{
+		Animator.NextFrame += (s, e) =>
+		{
+			Window.InvokeMeasure();
+			//Animator.Tick();
+		};
+
 		Window.PushUpdateRect(new Rect { Size = Window.Size, });
 
 		while (true)
@@ -30,7 +36,7 @@ public partial class Engine
 				TranslateMessage(in msg);
 				DispatchMessage(in msg);
 			}
-
+			Window.InvokeMeasure();
 			Animator.Tick();
 		}
 	}
